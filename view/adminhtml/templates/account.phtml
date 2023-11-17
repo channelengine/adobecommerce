@@ -1,0 +1,48 @@
+<?php
+
+/** @var Account $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Account;
+
+?>
+<div id="ce-loader">
+    <?=  $block->getLayout()->createBlock(Account::class)
+        ->setTemplate("ChannelEngine_ChannelEngineIntegration::loader.phtml")->toHtml();
+    ?>
+</div>
+<div class="channel-engine">
+    <header>
+        <img src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/logo.svg'); ?>"
+             height="30" alt="ChannelEngine"/>
+    </header>
+    <main>
+        <div class="ce-onboarding">
+            <div class="ce-onboarding-steps">
+                <div class="ce-step active">
+                    <div class="ce-step-number">1</div>
+                    <div class="ce-step-title"><?= __('Account'); ?></div>
+                </div>
+                <div class="ce-step">
+                    <div class="ce-step-number">2</div>
+                    <div class="ce-step-title"><?= __('Product synchronization'); ?></div>
+                </div>
+                <div class="ce-step">
+                    <div class="ce-step-number">3</div>
+                    <div class="ce-step-title"><?= __('Order synchronization'); ?></div>
+                </div>
+                <div class="ce-step">
+                    <div class="ce-step-number">4</div>
+                    <div class="ce-step-title"><?= __('Initial sync'); ?></div>
+                </div>
+            </div>
+            <?=  $block->getLayout()->createBlock(Account::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/account.phtml")->toHtml();
+            ?>
+            <a id="ceAuth"
+               class="ce-button ce-button__primary"><?= __('Connect and continue'); ?></a>
+            <input type="hidden" id="ceAuthUrl"
+                   value="<?= $block->getAuthUrl(); ?>">
+            <input type="hidden" id="ce-state-url" value="<?= $block->getStateUrl() ?>">
+        </div>
+    </main>
+</div>

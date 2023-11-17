@@ -1,0 +1,58 @@
+<?php
+
+/** @var Scope $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Scope;
+
+$websites = $block->getWebsites();
+$selectedStoreId = $block->getFirstSelectedStore();
+$selectedStore = $block->getSelectedStoreName($selectedStoreId);
+
+?>
+<div class="ce-scope-switcher-header-wrapper">
+    <div class="ce-scope-switcher-header">
+        <span class="ce-scope-switcher-label">
+            <?= __('Scope:') ?>
+        </span>
+        <div class="ce-scope-switcher-wrapper">
+            <button id="ce-scope-btn" class="ce-scope-switcher" data-selected-scope="<?= $selectedStoreId ?>">
+                <?= $selectedStore ?>
+            </button>
+            <ul id="ce-scope-list" class="ce-scope-switcher-list">
+                <?php foreach ($websites as $website): ?>
+                    <li class="ce-scope-switcher-website ce-disabled">
+                        <span><?= $website->getName(); ?></span>
+                        <ul>
+                            <?php foreach ($website->getGroups() as $group): ?>
+                                <li class="ce-scope-switcher-website ce-disabled">
+                                    <span class="ce-scope-switcher-group"> <?= $group->getName(); ?></span>
+                                </li>
+                                <?php foreach ($block->getStores($group) as $store): ?>
+                                    <li class="ce-scope-switcher-store-website ce-scope-switcher-item ce-scope-item"
+                                        value="<?= $store->getId(); ?>">
+                                        <a href="#" class="ce-scope-switcher-item ce-scope-switcher-store">
+                                            <?= $store->getName(); ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <div class="ce-scope-tooltip-wrapper">
+            <a class="ce-scope-tooltip" href="https://docs.magento.com/user-guide/configuration/scope.html"
+               onclick="this.target='_blank'" title="What is this?">
+                <span>
+                    What is this?
+                </span>
+            </a>
+        </div>
+    </div>
+    <div id="ce-save-changes" class="ce-save-btn-wrapper ce-hidden">
+        <button id="ce-save-config" class="ce-button ce-button__primary ce-scope-button">
+            <?= __('Save changes')?>
+        </button>
+    </div>
+</div>

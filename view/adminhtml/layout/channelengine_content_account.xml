@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="ChannelEngine_ChannelEngineIntegration::css/main.css"/>
+        <css src="ChannelEngine_ChannelEngineIntegration::css/loader.css"/>
+        <css src="ChannelEngine_ChannelEngineIntegration::css/notifications.css"/>
+        <css src="ChannelEngine_ChannelEngineIntegration::css/price-settings.css"/>
+
+        <link src="ChannelEngine_ChannelEngineIntegration::js/AjaxService.js"/>
+        <link src="ChannelEngine_ChannelEngineIntegration::js/StoreViewSelector.js"/>
+        <link src="ChannelEngine_ChannelEngineIntegration::js/Auth.js"/>
+        <link src="ChannelEngine_ChannelEngineIntegration::js/Loader.js"/>
+        <link src="ChannelEngine_ChannelEngineIntegration::js/Notifications.js"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Account"
+                   template="ChannelEngine_ChannelEngineIntegration::account.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

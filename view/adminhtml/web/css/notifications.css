@@ -1,0 +1,65 @@
+.ce-notice {
+    margin: 0 0 2rem;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    border: none;
+    border-radius: 0;
+    color: #333;
+    font-size: 1.4rem;
+    padding: 1.8rem 4rem 1.8rem 5.5rem;
+    position: relative;
+    text-shadow: none;
+}
+
+.ce-notice p {
+    margin: 0;
+}
+
+.ce-notice-error {
+    background: #fcc;
+}
+
+.ce-notice-error::before {
+    color: #e22626;
+    font-family: 'Admin Icons';
+    content: '\e632';
+    font-size: 1.5rem;
+    left: 2.2rem;
+    margin-top: -1.1rem;
+    background: none;
+    border: 0;
+    font-style: normal;
+    font-weight: 400;
+    height: auto;
+    line-height: inherit;
+    position: absolute;
+    speak: none;
+    text-shadow: none;
+    top: 50%;
+    width: auto;
+}
+
+.ce-notice-success {
+    background: #fffbbb;
+}
+
+.ce-notice-success::before {
+    color: #79a22e;
+    content: '\e62d';
+    background: none;
+    border: 0;
+    font-family: 'Admin Icons';
+    font-size: 1.9rem;
+    font-style: normal;
+    font-weight: 400;
+    height: auto;
+    left: 1.9rem;
+    line-height: inherit;
+    position: absolute;
+    speak: none;
+    text-shadow: none;
+    top: 50%;
+    margin-top: -1.25rem;
+    width: auto;
+}

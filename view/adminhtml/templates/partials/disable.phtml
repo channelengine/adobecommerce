@@ -1,0 +1,39 @@
+<?php
+
+/** @var Dashboard $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Dashboard;
+
+?>
+<script src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/TriggerSyncService.js') ?>"></script>
+<script src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/Enable.js')?>"></script>
+<div class="ce-page ce-disabled-page">
+    <p>
+        <?= __('Integration between Magento 2 and ChannelEngine is disabled. Synchronization is not performed in the background.'); ?>
+    </p>
+    <div class="ce-disable-page-content">
+        <div class="ce-input-group">
+            <label>
+                <span class="label"><?= __('Enable the integration'); ?></span>
+                <span class="ce-help">
+                    <span class="ce-help-tooltip">
+                        <?= __('By enabling integration, you will be asked whether you want to perform full synchronization (products and orders) again since synchronization was disabled for some time.'); ?>
+                    </span>
+                </span>
+                <label class="ce-switch">
+                    <input id="ce-enable-switch" type="checkbox">
+                    <span class="ce-switch__slider"></span>
+                </label>
+            </label>
+        </div>
+    </div>
+    <input id="ce-trigger-sync-url" type="hidden"
+           value="<?= $block->getTriggerSyncUrl(); ?>">
+    <input id="ce-check-status-url" type="hidden"
+           value="<?= $block->getCheckStatusUrl(); ?>">
+    <div id="ce-trigger-modal" class="ce-hidden">
+        <?=  $block->getLayout()->createBlock(Dashboard::class)
+            ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/triggerSync.phtml")->toHtml();
+        ?>
+    </div>
+</div>

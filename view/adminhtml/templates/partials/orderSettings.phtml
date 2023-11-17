@@ -1,0 +1,240 @@
+<?php
+
+/** @var OrderSettings $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Dashboard;
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\OrderSettings;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\Configuration\OrdersConfigurationService;
+
+$orderSettings = $block->getOrderSettings();
+
+?>
+<script src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/MerchantOrderSettings.js') ?>"></script>
+<h1><?= __("Order synchronization settings") ?></h1>
+<form class="ce-form" onsubmit="return false">
+    <h3><?= __('Merchant fulfilled orders synchronization'); ?></h3>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Import merchant fulfilled orders'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('If this field is checked, background download process of the orders (from the ChannelEngine) fulfilled by the merchant will be enabled.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-merchant-fulfilled" class="ce-dropdown"
+                    data-merchant-fulfilled-orders-enabled="<?= !$orderSettings || $orderSettings->isEnableOrdersByMerchantSync() ? 1 : 0 ?>">
+                <span id="ce-merchant-fulfilled-text" class="ce-dropdown-text">
+                    <?= !$orderSettings || $orderSettings->isEnableOrdersByMerchantSync() ? __('Yes') : __('No'); ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-merchant-fulfilled-list" class="ce-dropdown-list">
+                    <li id="ce-merchant-fulfilled-item-yes" class="ce-dropdown-list-item" value="1">
+                        <span class="ce-dropdown-list-item-text"><?= __('Yes'); ?></span>
+                    </li>
+                    <li id="ce-merchant-fulfilled-item-no" class="ce-dropdown-list-item" value="0">
+                        <span class="ce-dropdown-list-item-text"><?= __('No'); ?></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Unknown order lines handling'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select how you want to handle unknown order lines in orders imported from ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper ce-order-settings">
+            <button id="ce-unknown-lines" class="ce-dropdown" data-unknown-lines="
+                <?= $orderSettings ? $orderSettings->getUnknownLinesHandling() : 'include_full'; ?>"
+                <?= $orderSettings && !$orderSettings->isEnableOrdersByMerchantSync() ? 'disabled=true' : '' ?>
+            >
+            <span id="ce-unknown-lines-text" class="ce-dropdown-text">
+                <?php
+                if ($orderSettings) {
+                    switch ($orderSettings->getUnknownLinesHandling()) {
+                        case OrdersConfigurationService::EXCLUDE_FULL:
+                            echo __('Exclude full order');
+                            break;
+                        case OrdersConfigurationService::INCLUDE_FULL:
+                            echo __('Include full order');
+                            break;
+                    }
+                } else {
+                    echo __('Include full order');
+                }
+                ?>
+            </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-unknown-lines-list" class="ce-dropdown-list">
+                    <li class="ce-dropdown-list-item ce-unknown-lines" value="include_full">
+                        <span class="ce-dropdown-list-item-text"><?= __('Include full order'); ?></span>
+                    </li>
+                    <li class="ce-dropdown-list-item ce-unknown-lines" value="exclude_full">
+                        <span class="ce-dropdown-list-item-text"><?= __('Exclude full order'); ?></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Synchronize shipments'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('When this option is disabled, the integration should not create or update shipment information for orders.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-shipments-sync" class="ce-dropdown"
+                    data-shipments-sync-enabled="<?= !$orderSettings || $orderSettings->isEnableShipmentInfoSync() ? 1 : 0; ?>"
+                <?= !$orderSettings || $orderSettings->isEnableOrdersByMerchantSync() ? '' : 'disabled=true' ?>>
+                <span id="ce-shipments-sync-text" class="ce-dropdown-text">
+                    <?= !$orderSettings || $orderSettings->isEnableShipmentInfoSync() ? __('Yes') : __('No'); ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-shipments-sync-list" class="ce-dropdown-list">
+                    <li id="ce-shipments-sync-item-yes" class="ce-dropdown-list-item" value="1">
+                        <span class="ce-dropdown-list-item-text"><?= __('Yes'); ?></span>
+                    </li>
+                    <li id="ce-shipments-sync-item-no" class="ce-dropdown-list-item" value="0">
+                        <span class="ce-dropdown-list-item-text"><?= __('No'); ?></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Synchronize cancellations'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __("If this option is disabled when a cancellation order occurs, the integration doesn't need to sync this information to the ChannelEngine."); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-cancellations-sync" class="ce-dropdown"
+                    data-cancellations-sync-enabled="<?= !$orderSettings || $orderSettings->isEnableOrderCancellationSync() ? 1 : 0; ?>"
+                <?= !$orderSettings || $orderSettings->isEnableOrdersByMerchantSync() ? '' : 'disabled=true' ?>>
+                <span id="ce-cancellations-sync-text" class="ce-dropdown-text">
+                    <?= !$orderSettings || $orderSettings->isEnableOrderCancellationSync() ? __('Yes') : __('No'); ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-cancellations-sync-list" class="ce-dropdown-list">
+                    <li id="ce-cancellations-sync-item-yes" class="ce-dropdown-list-item" value="1">
+                        <span class="ce-dropdown-list-item-text"><?= __('Yes'); ?></span>
+                    </li>
+                    <li id="ce-cancellations-sync-item-no" class="ce-dropdown-list-item" value="0">
+                        <span class="ce-dropdown-list-item-text"><?= __('No'); ?></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <?php
+    if ($block->isEnterprise()) {
+        ?>
+        <div class="ce-input-group ce-flex">
+            <label>
+                <span class="label"><?= __('Synchronize returns'); ?></span>
+                <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __("If this option is disabled when a return order occurs, the integration doesn't need to sync this information to the ChannelEngine."); ?>
+                </span>
+            </span>
+            </label>
+            <div class="ce-dropdown-wrapper">
+                <button id="ce-returns-sync" class="ce-dropdown"
+                        data-returns-sync-enabled="<?= !$orderSettings || $orderSettings->isEnableReturnsSync() ? 1 : 0; ?>"
+                    <?= !$orderSettings || $orderSettings->isEnableOrdersByMerchantSync() ? '' : 'disabled=true' ?>>
+                <span id="ce-returns-sync-text" class="ce-dropdown-text">
+                    <?= !$orderSettings || $orderSettings->isEnableReturnsSync() ? __('Yes') : __('No'); ?>
+                </span>
+                </button>
+                <div class="ce-dropdown-menu">
+                    <ul id="ce-returns-sync-list" class="ce-dropdown-list">
+                        <li id="ce-returns-sync-item-yes" class="ce-dropdown-list-item" value="1">
+                            <span class="ce-dropdown-list-item-text"><?= __('Yes'); ?></span>
+                        </li>
+                        <li id="ce-returns-sync-item-no" class="ce-dropdown-list-item" value="0">
+                            <span class="ce-dropdown-list-item-text"><?= __('No'); ?></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <?php
+    } ?>
+    <h3><?= __('Marketplace fulfilled orders synchronization'); ?></h3>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Import order fulfilled by marketplace'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select whether you want to import ChannelEngine orders fulfilled by marketplace or not.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper ce-order-settings">
+            <button id="ce-import-fulfilled" class="ce-dropdown" data-fulfilled-orders="
+                <?= ($orderSettings && $orderSettings->isEnableOrdersByMarketplaceSync()) ? 1 : 0; ?>"
+            >
+            <span id="ce-import-fulfilled-text" class="ce-dropdown-text">
+                <?php
+                if ($orderSettings && $orderSettings->isEnableOrdersByMarketplaceSync()) {
+                    echo __('Yes');
+                } else {
+                    echo __('No');
+                }
+                ?>
+            </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-import-fulfilled-list" class="ce-dropdown-list">
+                    <li class="ce-dropdown-list-item ce-fulfilled" value="0">
+                        <span class="ce-dropdown-list-item-text"><?= __('No'); ?></span>
+                    </li>
+                    <li class="ce-dropdown-list-item ce-fulfilled" value="1">
+                        <span class="ce-dropdown-list-item-text"><?= __('Yes'); ?></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label class="label"><?= ($orderSettings && $orderSettings->getFromDate()) ?
+                (__('Orders fulfilled by the marketplace are imported starting from ') . $orderSettings->getFromDate()) . '.' : ''; ?></label>
+    </div>
+    <div class="ce-input-group ce-flex" style="display: <?= $block->shouldRenderOrdersFromDateField() ? '' : 'none'; ?>">
+        <label>
+            <span class="label"><?= __('Import order fulfilled by marketplace from'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please choose start date for importing orders fulfilled by marketplace.'); ?>
+                </span>
+            </span>
+            <input type="text" class="input-text ce-import-fulfilled-date" id="ce-import-fulfilled-date"
+                   style="width: auto" name="ce-import-fulfilled-date"
+                <?= !$orderSettings || !$orderSettings->isEnableOrdersByMarketplaceSync() ? 'disabled=true' : '' ?>
+                <?= !$orderSettings || $orderSettings->getFromDate() === '' ? '' : $orderSettings->getFromDate() ?>>
+            <button type="button" class="ui-datepicker-trigger v-middle ce-import-fulfilled-date"
+                    style="margin-left: 375px"></button>
+        </label>
+    </div>
+    <div id="ce-modal-order-sync" class="ce-hidden">
+        <?=  $block->getLayout()->createBlock(Dashboard::class)
+            ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml();
+        ?>
+    </div>
+</form>

@@ -1,0 +1,170 @@
+<?php
+
+/**  @var ProductSync $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\ProductSync;
+
+$groups = $block->getCustomerGroups();
+$selectedGroup = '';
+$selectedGroupId = '';
+$priceSettings = $block->getPriceSettings();
+$priceAttributes = $block->getPriceAttributes();
+$exportProductsEnabled = $block->isExportProductsEnabled();
+
+if (!empty($groups[0])) {
+    $selectedGroup = $groups[0]['label'];
+    $selectedGroupId = $groups[0]['value'];
+}
+
+$pricingAttribute = 'Final price';
+
+if ($priceSettings) {
+    foreach ($priceAttributes as $attribute) {
+        if ($attribute['value'] === $priceSettings->getPriceAttribute()) {
+            $pricingAttribute = $attribute['label'];
+        }
+    }
+
+    $selectedGroupId = $priceSettings->getCustomerGroup();
+    foreach ($groups as $group) {
+        if ($group['value'] === $priceSettings->getCustomerGroup()) {
+            $selectedGroup = $group['label'];
+        }
+    }
+}
+
+?>
+<h1><?= __("Product synchronization settings") ?></h1>
+<form class="ce-form" onsubmit="return false">
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Export products'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('If this field is disabled, the plugin will not synchronize products to ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-export-products" class="ce-dropdown" data-group-export-products="
+                <?= $exportProductsEnabled ? 1 : 0?>
+            ">
+            <span id="ce-export-products-text" class="ce-dropdown-text">
+                <?= $exportProductsEnabled ? __('Yes') : __("No");?>
+            </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-export-products-list" class="ce-dropdown-list">
+                    <li id="ce-export-products-item-yes" class="ce-dropdown-list-item" value="1">
+                        <span class="ce-dropdown-list-item-text"><?= __('Yes');?></span>
+                    </li>
+                    <li id="ce-export-products-item-no" class="ce-dropdown-list-item" value="0">
+                        <span class="ce-dropdown-list-item-text"><?= __('No');?></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <h3><?= __("Price synchronization"); ?></h3>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Use customer group pricing'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select “Yes” if you want to use a product price for a particular customer group instead of all customers.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-pricing" class="ce-dropdown" data-group-pricing="
+            <?= ($priceSettings && $priceSettings->isGroupPricing()) ? 1 : 0;?>
+            ">
+            <span id="ce-pricing-text" class="ce-dropdown-text">
+                <?= ($priceSettings && $priceSettings->isGroupPricing()) ? __('Yes') : __('No');?>
+            </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-pricing-list" class="ce-dropdown-list">
+                    <li id="ce-pricing-item-no" class="ce-dropdown-list-item" value="0">
+                        <span class="ce-dropdown-list-item-text"><?= __('No');?></span>
+                    </li>
+                    <li id="ce-pricing-item-yes" class="ce-dropdown-list-item" value="1">
+                        <span class="ce-dropdown-list-item-text"><?= __('Yes');?></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="ce-price-attribute" class="<?= ($priceSettings && $priceSettings->isGroupPricing()) ?
+        'ce-input-group ce-hidden' :'ce-input-group ce-flex';?>">
+        <label>
+            <span class="label"><?= __('Select price attribute');?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the price attribute in Magento that should be used during the product synchronization.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-pricing-attribute-btn" class="ce-dropdown"
+                    data-price-attribute-id="<?=  ($priceSettings && $priceSettings->getPriceAttribute()) ? $priceSettings->getPriceAttribute() : 'FINAL_PRICE';
+                    ?>">
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= __($pricingAttribute);?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-attributes-list" class="ce-dropdown-list">
+                    <li class="ce-dropdown-list-item ce-attribute-item" value="FINAL_PRICE"><?= __('Final price');?></li>
+                    <?php
+                    foreach ($priceAttributes as $priceAttribute) {
+                        echo '<li class="ce-dropdown-list-item ce-attribute-item" value="' . $priceAttribute['value'] . '">' .
+                            $priceAttribute['label'] . '</li>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="ce-customer-group" class="<?= ($priceSettings && $priceSettings->isGroupPricing()) ?
+        'ce-input-group ce-flex' :'ce-input-group ce-hidden';?>">
+        <label>
+            <span class="label"><?= __('Select customer group'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select a customer group for which the product price should be taken from'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-customer-group-btn" class="ce-dropdown"
+                    data-customer-group-id="<?= $selectedGroupId; ?>">
+                <span id="ce-customer-group-text" class="ce-dropdown-text">
+                    <?= $selectedGroup ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-customer-group-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($groups as $group) {
+                        echo '<li class="ce-dropdown-list-item ce-customer-group-item" value="' . $group['value'] . '">' .
+                            $group['label'] . '</li>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="ce-price-attribute-quantity" class="<?= ($priceSettings && $priceSettings->isGroupPricing()) ?
+        'ce-input-group ce-flex' :'ce-input-group ce-hidden';?>">
+        <label>
+            <span class="label"><?= __('Set quantity'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Set the quantity associated with a customer group price that should be taken during product synchronization.'); ?>
+                </span>
+            </span>
+            <input id="ce-attribute-quantity" type="text" value="<?= $priceSettings ? $priceSettings->getQuantity() : ''; ?>"/>
+        </label>
+    </div>
+</form>

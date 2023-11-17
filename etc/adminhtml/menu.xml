@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add
+                id="ChannelEngine_ChannelEngineIntegration::channelengine_menu"
+                title="ChannelEngine"
+                translate="title"
+                module="ChannelEngine_ChannelEngineIntegration"
+                sortOrder="50"
+                resource="ChannelEngine_ChannelEngineIntegration::channelengine_menu"
+                parent="Magento_Backend::stores"
+        />
+        <add
+                id="ChannelEngine_ChannelEngineIntegration::channelengine_config"
+                title="Configuration"
+                translate="title"
+                module="ChannelEngine_ChannelEngineIntegration"
+                sortOrder="10"
+                resource="ChannelEngine_ChannelEngineIntegration::channelengine_menu"
+                action="channelengine/content/welcome"
+                parent="ChannelEngine_ChannelEngineIntegration::channelengine_menu"
+        />
+    </menu>
+</config>

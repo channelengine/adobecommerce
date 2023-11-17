@@ -1,0 +1,20 @@
+.ce-stock-select {
+    height: auto;
+    max-width: 100%;
+    min-width: 15rem;
+    overflow: auto;
+    padding: 0;
+    resize: both;
+    -webkit-appearance: none;
+    background-color: #fff;
+    border: 1px solid #adadad;
+    border-radius: 1px;
+    box-shadow: none;
+    color: #303030;
+    font-size: 1.4rem;
+    font-weight: 400;
+    line-height: 1.36;
+    transition: border-color .1s linear;
+    vertical-align: baseline;
+    width: 400px;
+}

@@ -1,0 +1,94 @@
+<?php
+
+/** @var Dashboard $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Dashboard;
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Scope;
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Dashboard\Notifications;
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\ProductSync;
+
+/** @var ProductSync $productSyncBlock */
+$productSyncBlock = $block->getLayout()->createBlock(ProductSync::class);
+
+?>
+<div id="ce-loader">
+    <?=  $block->getLayout()->createBlock(Dashboard::class)
+        ->setTemplate("ChannelEngine_ChannelEngineIntegration::loader.phtml")->toHtml();
+    ?>
+</div>
+<div class="channel-engine">
+    <main class="ce-config-page">
+        <div>
+            <?=  $block->getLayout()->createBlock(Scope::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/scope.phtml")->toHtml();
+            ?>
+        </div>
+        <div class="ce-tabs">
+            <ul class="nav-tab-wrapper">
+                <li class="nav-tab-active">
+                    <a href="<?= $block->getSubpageUrl('dashboard') ?>"
+                       class="nav-tab">
+                <span>
+                    <?= __('Dashboard'); ?>
+                </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= $block->getSubpageUrl('config') ?>"
+                       class="nav-tab">
+                <span>
+                    <?= __('Configuration'); ?>
+                </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= $block->getSubpageUrl('transactions') ?>"
+                       class="nav-tab">
+                <span>
+                    <?= __('Transaction log'); ?>
+                </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="ce-page-content">
+            <div id="sync-in-progress">
+                <?=  $block->getLayout()->createBlock(Dashboard::class)
+                    ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/syncProgress.phtml")->toHtml();
+                ?>
+            </div>
+            <div id="sync-completed" class="ce-page ce-page-centered">
+                <?=  $block->getLayout()->createBlock(Dashboard::class)
+                    ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/syncCompleted.phtml")->toHtml();
+                ?>
+            </div>
+            <div id="notifications">
+                <?=  $block->getLayout()->createBlock(Notifications::class)
+                    ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/notifications.phtml")->toHtml();
+                ?>
+            </div>
+            <div id="disabled-integration">
+                <?=  $block->getLayout()->createBlock(Dashboard::class)
+                    ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/disable.phtml")->toHtml();
+                ?>
+            </div>
+        </div>
+        <div id="ce-modal-dashboard" class="ce-hidden">
+            <?=  $block->getLayout()->createBlock(Dashboard::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml();
+            ?>
+        </div>
+        <div id="ce-modal-transactions" class="ce-hidden">
+            <?=  $block->getLayout()->createBlock(Dashboard::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml();
+            ?>
+        </div>
+        <input id="ce-status" type="hidden" value="<?= $block->getStatus(); ?>">
+        <input id="ce-check-status" type="hidden" value="<?= $block->getCheckStatusUrl() ?>">
+        <input id="ce-enable-plugin" type="hidden" value="<?= $block->getEnablePluginUrl() ?>">
+        <input id="ce-disable-plugin" type="hidden" value="<?= $block->getDisablePluginUrl()?>">
+        <input id="ce-store-scope" type="hidden" value="<?= $block->getStoreId() ?>">
+        <input id="ce-product-sync-enabled" type="hidden" value="<?= $productSyncBlock->isExportProductsEnabled(); ?>">
+        <input type="hidden" id="ce-state-url" value="<?= $block->getStateUrl() ?>">
+    </main>
+</div>

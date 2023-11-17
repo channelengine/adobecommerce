@@ -1,0 +1,29 @@
+<?php
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Welcome;
+
+/** @var Welcome $block */
+
+$startOnboardingUrl = $block->getStartOnboardingUrl();
+?>
+<div id="ce-loader" class="ce-overlay ce-hidden">
+    <div class="ce-loader"></div>
+</div>
+<div class="channel-engine">
+    <header>
+        <img src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/logo.svg'); ?>"
+             height="30" alt="ChannelEngine"/>
+    </header>
+    <main>
+        <div class="ce-onboarding ce-page ce-page-centered">
+            <img src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/icon.svg'); ?>"
+                 alt="ChannelEngine"
+                 class="ce-icon__big"/>
+            <div class="ce-title"><?= $block->escapeQuote((string)__('Welcome to ChannelEngine')); ?></div>
+            <h2 class="ce-subtitle"><?= $block->escapeQuote((string)__('It will only take 5 minutes of your time to configure the integration.')); ?></h2>
+            <a id="ce-configure"
+               class="ce-button ce-button__primary"><?= $block->escapeQuote((string)__('Configure')); ?></a>
+            <input id="ceOnboardingUrl" type="hidden" value="<?= $startOnboardingUrl; ?>">
+        </div>
+    </main>
+</div>

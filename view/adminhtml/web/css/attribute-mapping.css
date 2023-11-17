@@ -1,0 +1,29 @@
+.ce-ean:after {
+    margin-left: 10px;
+    top: 0.3rem;
+    color: #e22626;
+    content: '*';
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.ce-required-attribute {
+    border-color: #e22626;
+}
+
+.ce-required-attribute:before {
+    border-top-color: #e22626;
+    border-right-color: #e22626;
+    border-bottom-color: #e22626;
+}
+
+.ce-sku-warning {
+    border: 1px #f08e87 solid;
+    padding: 10px;
+    background: #fffbbb;
+    margin-bottom: 15px;
+    width: 1270px;
+}

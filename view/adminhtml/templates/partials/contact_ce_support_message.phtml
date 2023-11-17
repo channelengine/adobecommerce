@@ -1,0 +1,12 @@
+<?php
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Config\ContactChannelEngineSupportMessage;
+
+/** @var ContactChannelEngineSupportMessage $block */
+if (!empty($block->getText())): ?>
+    <div class="message message-warning">
+        <?= /* @escapeNotVerified */
+        $block->escapeHtml($block->getText()); ?>
+    </div>
+
+<?php endif; ?>

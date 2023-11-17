@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="controller_action_predispatch">
+        <observer name="service_register"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\ServiceRegisterObserver"/>
+    </event>
+
+    <event name="admin_system_config_changed_section_currency">
+        <observer name="admin_system_config_changed_section_currency"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\ChangedSectionCurrency"/>
+    </event>
+
+    <event name="catalog_category_save_after">
+        <observer name="ce_category_save_after"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\CategoryChangedObserver"/>
+    </event>
+
+    <event name="catalog_category_delete_after_done">
+        <observer name="ce_category_delete_after"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\CategoryChangedObserver"/>
+    </event>
+
+    <event name="catalog_product_save_after">
+        <observer name="ce_product_update"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\ProductCreateObserver"/>
+    </event>
+
+    <event name="catalog_product_delete_after_done">
+        <observer name="ce_product_delete"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\ProductDeleteObserver"/>
+    </event>
+
+    <event name="catalog_entity_attribute_save_after">
+        <observer name="ce_attribute_save"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\AttributeSaveObserver"/>
+    </event>
+
+    <event name="sales_order_save_before">
+        <observer name="ce_order_save"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\OrderObserver"/>
+    </event>
+
+    <event name="sales_order_shipment_save_before">
+        <observer name="ce_order_shipment_save"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\ShipmentSaveObserver"/>
+    </event>
+
+    <event name="sales_order_shipment_track_save_before">
+        <observer name="ce_order_shipment_track_save"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\ShipmentTrackSaveObserver"/>
+    </event>
+
+    <event name="sales_order_shipment_track_delete_before">
+        <observer name="ce_order_shipment_track_delete"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\ShipmentTrackDeleteObserver"/>
+    </event>
+
+    <event name="rma_save_after">
+        <observer name="ce_rma_save_after"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\ReturnsObserver"/>
+    </event>
+</config>

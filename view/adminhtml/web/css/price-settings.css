@@ -1,0 +1,113 @@
+.ce-dropdown-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.ce-dropdown {
+    background: white;
+    width: 400px;
+    padding: 0;
+    height: 33px;
+    margin-left: 20px;
+    text-align: left;
+}
+
+.ce-active:after {
+    transform: rotate(180deg);
+}
+
+.ce-dropdown-text {
+    top: -102%;
+    position: relative;
+    left: 1%;
+    width: 360px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ce-dropdown:after {
+    border-color: #000 transparent transparent transparent;
+    border-style: solid;
+    border-width: .5rem .4rem 0 .4rem;
+    content: '';
+    height: 0;
+    margin-top: 18px;
+    position: relative;
+    left: 1.7rem;
+    top: -120%;
+    transition: all .2s linear;
+    width: 0;
+    display: inline-block;
+}
+
+.ce-dropdown:before {
+    background-color: #e3e3e3;
+    border: 1px solid #adadad;
+    bottom: 0;
+    content: '';
+    position: relative;
+    right: 0;
+    top: -4%;
+    width: 3rem;
+    display: flex;
+    left: 93%;
+    height: 33px;
+}
+
+.ce-dropdown-menu {
+    position: absolute;
+    margin-left: 20px;
+    margin-top: 25px;
+    z-index: 10;
+}
+
+.ce-dropdown-list {
+    width: 400px;
+    position: static;
+    display: none;
+    max-height: 45rem;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #007bdb;
+    border-radius: 1px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    color: #41362f;
+    font-weight: 400;
+    left: 0;
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    right: 0;
+    top: 100%;
+    text-align: left;
+    font-size: 1.4rem;
+}
+
+.ce-dropdown-list-item {
+    border: none;
+    display: block;
+    padding: 0;
+    transition: background-color .1s linear;
+    color: #41362f;
+    font-weight: 400;
+    list-style: none;
+}
+
+.ce-dropdown-list-item:hover {
+    background-color: #e3e3e3;
+}
+
+.ce-dropdown-list-item-text {
+    cursor: pointer;
+    display: block;
+    padding: .6875em 1em;
+    color: #41362f;
+    font-weight: 400;
+    list-style: none;
+}
+
+.ce-order-settings {
+    margin-top: 0.5rem;
+}

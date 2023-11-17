@@ -1,0 +1,57 @@
+<?php
+
+/**  @var ProductSync $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\ProductSync;
+
+?>
+<div id="ce-loader">
+    <?=  $block->getLayout()->createBlock(ProductSync::class)
+        ->setTemplate("ChannelEngine_ChannelEngineIntegration::loader.phtml")->toHtml();
+    ?>
+</div>
+<div class="channel-engine">
+    <main>
+        <div class="ce-onboarding">
+            <div class="ce-onboarding-steps">
+                <div class="ce-step active">
+                    <div class="ce-step-number">1</div>
+                    <div class="ce-step-title"><?= __('Account'); ?></div>
+
+                </div>
+                <div class="ce-step active">
+                    <div class="ce-step-number">2</div>
+                    <div class="ce-step-title"><?= __('Product synchronization'); ?></div>
+                </div>
+                <div class="ce-step">
+                    <div class="ce-step-number">3</div>
+                    <div class="ce-step-title"><?= __('Order synchronization'); ?></div>
+                </div>
+                <div class="ce-step">
+                    <div class="ce-step-number">4</div>
+                    <div class="ce-step-title"><?= __('Initial sync'); ?></div>
+                </div>
+            </div>
+            <?=  $block->getLayout()->createBlock(ProductSync::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/priceSettings.phtml")->toHtml();
+            echo $block->getLayout()->createBlock(ProductSync::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/stockSettings.phtml")->toHtml();
+            echo $block->getLayout()->createBlock(ProductSync::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/attributeMapping.phtml")->toHtml();
+            echo $block->getLayout()->createBlock(ProductSync::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/extraDataMapping.phtml")->toHtml();
+            ?>
+            <a id="ceSave"
+               class="ce-button ce-button__primary"><?= __('Save and continue', 'channelengine'); ?></a>
+            <input id="ceProductSave" type="hidden"
+                   value="<?= $block->getProductSaveUrl(); ?>">
+            <input type="hidden" id="ce-state-url" value="<?= $block->getStateUrl() ?>">
+            <input type="hidden" id="ce-store-id" value="<?= $block->getStoreId() ?>">
+            <div id="ce-modal" class="ce-hidden">
+                <?=  $block->getLayout()->createBlock(ProductSync::class)
+                    ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml();
+                ?>
+            </div>
+        </div>
+    </main>
+</div>

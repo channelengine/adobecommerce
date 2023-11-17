@@ -1,0 +1,75 @@
+.ce-loader-overlay {
+    background: rgba(255,255,255,0.5);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 399;
+}
+
+.ce-loader {
+    font-size: 4rem;
+    left: 50%;
+    margin-left: -2rem;
+    margin-top: -2rem;
+    position: absolute;
+    top: 50%;
+    display: inline-block;
+    height: 1em;
+    margin-right: 1.5rem;
+    width: 1em;
+}
+
+.ce-loader > span {
+    animation-name: fade;
+    animation-duration: .72s;
+    animation-iteration-count: infinite;
+    background-color: #fff;
+    border-radius: 6px;
+    clip: rect(0 .28571429em .1em 0);
+    height: .1em;
+    margin-top: .5em;
+    position: absolute;
+    width: 1em;
+}
+
+.ce-loader span:nth-child(1) {
+    animation-delay: .27s;
+    transform: rotate(-315deg);
+}
+
+.ce-loader span:nth-child(2) {
+    animation-delay: .36s;
+    transform: rotate(-270deg);
+}
+
+.ce-loader span:nth-child(3) {
+    animation-delay: .45s;
+    transform: rotate(-225deg);
+}
+
+.ce-loader span:nth-child(4) {
+    animation-delay: .54s;
+    transform: rotate(-180deg);
+}
+
+.ce-loader span:nth-child(5) {
+    animation-delay: .63s;
+    transform: rotate(-135deg);
+}
+
+.ce-loader span:nth-child(6) {
+    animation-delay: .72s;
+    transform: rotate(-90deg);
+}
+
+.ce-loader span:nth-child(7) {
+    animation-delay: .81s;
+    transform: rotate(-45deg);
+}
+
+.ce-loader span:nth-child(8) {
+    animation-delay: .9s;
+    transform: rotate(0deg);
+}

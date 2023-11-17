@@ -1,0 +1,146 @@
+{
+    "channel_engine_entity": {
+        "column": {
+            "id": true,
+            "type": true,
+            "data": true,
+            "index_1": true,
+            "index_2": true,
+            "index_3": true,
+            "index_4": true,
+            "index_5": true,
+            "index_6": true,
+            "index_7": true
+        },
+        "index": {
+            "CHANNEL_ENGINE_ENTITY_TYPE_INDEX_1": true,
+            "CHANNEL_ENGINE_ENTITY_TYPE_INDEX_2": true,
+            "CHANNEL_ENGINE_ENTITY_TYPE_INDEX_3": true,
+            "CHANNEL_ENGINE_ENTITY_TYPE_INDEX_4": true,
+            "CHANNEL_ENGINE_ENTITY_TYPE_INDEX_5": true,
+            "CHANNEL_ENGINE_ENTITY_TYPE_INDEX_6": true,
+            "CHANNEL_ENGINE_ENTITY_TYPE_INDEX_7": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "channel_engine_queue": {
+        "column": {
+            "id": true,
+            "type": true,
+            "index_1": true,
+            "index_2": true,
+            "index_3": true,
+            "index_4": true,
+            "index_5": true,
+            "index_6": true,
+            "index_7": true,
+            "index_8": true,
+            "index_9": true,
+            "parent_id": true,
+            "status": true,
+            "context": true,
+            "serialized_task": true,
+            "queue_name": true,
+            "last_execution_progress": true,
+            "progress_base_points": true,
+            "retries": true,
+            "failure_description": true,
+            "create_time": true,
+            "start_time": true,
+            "earliest_start_time": true,
+            "queue_time": true,
+            "last_update_time": true,
+            "priority": true
+        },
+        "index": {
+            "CHANNEL_ENGINE_QUEUE_TYPE_INDEX_1": true,
+            "CHANNEL_ENGINE_QUEUE_TYPE_INDEX_2": true,
+            "CHANNEL_ENGINE_QUEUE_TYPE_INDEX_3": true,
+            "CHANNEL_ENGINE_QUEUE_TYPE_INDEX_4": true,
+            "CHANNEL_ENGINE_QUEUE_TYPE_INDEX_5": true,
+            "CHANNEL_ENGINE_QUEUE_TYPE_INDEX_6": true,
+            "CHANNEL_ENGINE_QUEUE_TYPE_INDEX_7": true,
+            "CHANNEL_ENGINE_QUEUE_TYPE_INDEX_8": true,
+            "CHANNEL_ENGINE_QUEUE_TYPE_INDEX_9": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "channel_engine_events": {
+        "column": {
+            "id": true,
+            "type": true,
+            "data": true,
+            "context": true,
+            "index_1": true,
+            "index_2": true
+        },
+        "index": {
+            "CHANNEL_ENGINE_EVENTS_TYPE_INDEX_1": true,
+            "CHANNEL_ENGINE_EVENTS_TYPE_INDEX_2": true,
+            "CHANNEL_ENGINE_EVENTS_TYPE_CONTEXT": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "channel_engine_logs": {
+        "column": {
+            "id": true,
+            "type": true,
+            "data": true,
+            "index_1": true,
+            "index_2": true,
+            "index_3": true,
+            "index_4": true,
+            "index_5": true,
+            "index_6": true,
+            "index_7": true
+        },
+        "index": {
+            "CHANNEL_ENGINE_LOGS_TYPE_INDEX_1": true,
+            "CHANNEL_ENGINE_LOGS_TYPE_INDEX_2": true,
+            "CHANNEL_ENGINE_LOGS_TYPE_INDEX_3": true,
+            "CHANNEL_ENGINE_LOGS_TYPE_INDEX_4": true,
+            "CHANNEL_ENGINE_LOGS_TYPE_INDEX_5": true,
+            "CHANNEL_ENGINE_LOGS_TYPE_INDEX_6": true,
+            "CHANNEL_ENGINE_LOGS_TYPE_INDEX_7": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "channel_engine_returns": {
+        "column": {
+            "id": true,
+            "type": true,
+            "data": true,
+            "context": true,
+            "index_1": true,
+            "index_2": true
+        },
+        "index": {
+            "CHANNEL_ENGINE_RETURNS_TYPE_INDEX_1": true,
+            "CHANNEL_ENGINE_RETURNS_TYPE_INDEX_2": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "channel_engine_order": {
+        "column": {
+            "id": true,
+            "order_id": true,
+            "channel_name": true,
+            "channel_order_no": true,
+            "order_canceled": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "CHANNEL_ENGINE_ORDER_ORDER_ID_SALES_ORDER_ENTITY_ID": true
+        }
+    }
+}

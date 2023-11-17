@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\App\Request\CsrfValidator">
+        <plugin name="channelengine" type="ChannelEngine\ChannelEngineIntegration\Utility\CsrfValidatorSkip"/>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="sales_order_grid_data_source" xsi:type="string">
+                    ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\Order\Grid\Collection
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\Order\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">sales_order_grid</argument>
+            <argument name="resourceModel" xsi:type="string">Magento\Sales\Model\ResourceModel\Order</argument>
+        </arguments>
+    </type>
+    <preference for="Magento\Shipping\Block\Adminhtml\Order\Tracking\View"
+                type="ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\View\Notification" />
+    <preference for="ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Contracts\ReturnsService"
+                type="ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\NullReturnsService"/>
+    <preference for="ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Contracts\ReturnsService"
+                type="ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ReturnsService"/>
+    <preference for="ChannelEngine\ChannelEngineIntegration\Api\ReturnsServiceFactoryInterface"
+                type="ChannelEngine\ChannelEngineIntegration\Model\ReturnsServiceFactory"/>
+</config>

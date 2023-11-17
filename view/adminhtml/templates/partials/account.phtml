@@ -1,0 +1,78 @@
+<?php
+/**
+ * @var Account $block
+ */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Account;
+
+$websites = $block->getWebsites();
+$currentStoreName = $block->getCurrentSelectionName();
+$currentId = $block->getCurrentStoreId();
+$connectedStores = $block->getConnectedStoreIds();
+
+?>
+<h1><?= __("Connect the store with your ChannelEngine account") ?></h1>
+<form class="ce-form">
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Select storeview'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select a storeview from the list of available storeviews in your Magento installation.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper ce-dropdown-account">
+            <button class="ce-dropdown" id="ce-store-change-button" data-store-id="<?= $currentId ?>">
+                    <span class="ce-dropdown-list-item-text" id="ce-dropdown-text">
+                        <?= $currentStoreName; ?>
+                    </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul class="ce-dropdown-list" id="ce-store-change-list">
+                    <?php foreach ($websites as $website): ?>
+                        <li class="ce-dropdown-list-disabled-item ce-disabled">
+                            <span><?= $website->getName(); ?></span>
+                            <ul>
+                                <?php foreach ($website->getGroups() as $group): ?>
+                                    <li class="ce-dropdown-list-disabled-item ce-disabled">
+                                        <span class="ce-account-group"><?= $group->getName(); ?></span>
+                                    </li>
+                                    <?php foreach ($block->getStores($group) as $store): ?>
+                                        <li class="<?= in_array($store->getId(), $connectedStores, true) ?
+                                            "ce-dropdown-list-item ce-store-view ce-disabled" : "ce-dropdown-list-item ce-store-view" ?>"
+                                            value="<?= $store->getId(); ?>">
+                                            <span class="ce-account-store"><?= $store->getName(); ?></span>
+                                        </li>
+                                    <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            </ul>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group">
+        <label>
+            <span class="label"><?= __('Account name'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('The account name is a subdomain of your ChannelEngine instance (subdomain.channelengine.net). For example, the account name for ChannelEngine instance myshop.channelengine.net is myshop.'); ?>
+                </span>
+            </span>
+            <input id="ceAccountName" type="text" autocomplete="new-password"/>
+        </label>
+    </div>
+    <div class="ce-input-group">
+        <label>
+            <span class="label"><?= __('API Key'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('You can generate merchant API key inside ChannelEngine under Settings > Merchant API keys.'); ?>
+                </span>
+            </span>
+            <input id="ceApiKey" type="password" autocomplete="new-password"/>
+        </label>
+    </div>
+</form>

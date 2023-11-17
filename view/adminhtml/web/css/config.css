@@ -1,0 +1,43 @@
+.ce-disable-header {
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    border-top: 1px solid lightgray;
+    margin-top: 20px;
+    border-bottom: 1px solid lightgray;
+}
+
+.ce-disable-integration {
+    flex-grow: 46;
+    display: flex;
+    align-items: center;
+}
+
+.ce-disable-integration .label {
+    margin-right: 40px;
+}
+
+.ce-manual-sync {
+    flex-grow: 1;
+}
+
+.ce-manual-sync span {
+    margin-right: 35px;
+}
+
+.ce-manual-sync .ce-button.ce-button__primary.ce-start-sync,
+.channel-engine .ce-page #ce-disconnect-btn {
+    background-color: #373330;
+    border-color: #373330;
+}
+
+.ce-save-btn-wrapper {
+    margin-right: 18px;
+    float: right;
+}
+
+.channel-engine .ce-config-page {
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+}

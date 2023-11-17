@@ -1,0 +1,54 @@
+<?php
+
+/** @var Notifications $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Dashboard\Notifications;
+
+?>
+<div class="ce-page ce-horizontal ce-notifications-page">
+    <script type="text/javascript"
+            src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/DashboardNotifications.js') ?>">
+    </script>
+    <script type="text/javascript"
+            src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/ModalService.js') ?>">
+    </script>
+    <script type="text/javascript"
+            src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/Details.js') ?>">
+    </script>
+    <img src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/warning.png'); ?>"
+         alt="" class="ce-icon__big">
+    <div class="ce-notifications">
+        <h2><?= __('Notifications'); ?></h2>
+        <div class="ce-notifications__items">
+            <div class="ce-notifications__load-more">
+                <button id="ce-load-more-btn" class="ce-button ce-button__primary"><?= __('Load more'); ?></button>
+            </div>
+        </div>
+    </div>
+    <input id="ce-notifications-url" type="hidden"
+           value="<?= $block->getNotificationUrl() ?>">
+    <input id="ce-details-url" type="hidden"
+           value="<?= $block->getNotificationDetailsUrl() ?>">
+    <input id="ce-details-get" type="hidden"
+           value="<?= $block->getDetailsUrl() ?>">
+    <input id="ce-show-details-text" type="hidden" value="<?= __('Show details'); ?>">
+    <input id="ce-details-header" type="hidden" value="<?= __('Transaction log details'); ?>">
+    <input id="ce-modal-button-text" type="hidden" value="<?= __('Close'); ?>">
+    <input id="ce-details-identifier" type="hidden" value="<?= __('Identifier'); ?>">
+    <input id="ce-details-message" type="hidden" value="<?= __('Message'); ?>">
+    <input id="ce-details-display" type="hidden" value="<?= __('Displayed'); ?>">
+    <input id="ce-details-to" type="hidden" value="<?= __('to'); ?>">
+    <input id="ce-details-from" type="hidden" value="<?= __('of'); ?>">
+    <input id="ce-details-page-size" type="hidden" value="<?= __('Page size:'); ?>">
+    <input id="ce-details-go-to-previous" type="hidden"
+           value="<?= __('Go to previous page'); ?>">
+    <input id="ce-details-previous" type="hidden" value="<?= __('Previous'); ?>">
+    <input id="ce-details-go-to-next" type="hidden" value="<?= __('Go to next page'); ?>">
+    <input id="ce-details-next" type="hidden" value="<?= __('Next'); ?>">
+    <input id="ce-notifications-offset" type="hidden" value="0">
+</div>
+<div id="ce-modal" class="ce-hidden">
+    <?=  $block->getLayout()->createBlock(Notifications::class)
+        ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml();
+    ?>
+</div>

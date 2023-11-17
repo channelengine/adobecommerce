@@ -1,0 +1,210 @@
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="channel_engine_entity" resource="default" engine="innodb" comment="ChannelEngine entity table">
+        <column xsi:type="int" name="id" padding="11" unsigned="false" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="type" nullable="false" length="191" comment="Entity type"/>
+        <column xsi:type="text" name="data" nullable="false" comment="Serialized entity data"/>
+        <column xsi:type="varchar" name="index_1" length="191" comment="Index 1"/>
+        <column xsi:type="varchar" name="index_2" length="191" comment="Index 2"/>
+        <column xsi:type="varchar" name="index_3" length="191" comment="Index 3"/>
+        <column xsi:type="varchar" name="index_4" length="191" comment="Index 4"/>
+        <column xsi:type="varchar" name="index_5" length="191" comment="Index 5"/>
+        <column xsi:type="varchar" name="index_6" length="191" comment="Index 6"/>
+        <column xsi:type="varchar" name="index_7" length="191" comment="Index 7"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="TYPE_INDEX_1" indexType="btree">
+            <column name="type"/>
+            <column name="index_1"/>
+        </index>
+        <index referenceId="TYPE_INDEX_2" indexType="btree">
+            <column name="type"/>
+            <column name="index_2"/>
+        </index>
+        <index referenceId="TYPE_INDEX_3" indexType="btree">
+            <column name="type"/>
+            <column name="index_3"/>
+        </index>
+        <index referenceId="TYPE_INDEX_4" indexType="btree">
+            <column name="type"/>
+            <column name="index_4"/>
+        </index>
+        <index referenceId="TYPE_INDEX_5" indexType="btree">
+            <column name="type"/>
+            <column name="index_5"/>
+        </index>
+        <index referenceId="TYPE_INDEX_6" indexType="btree">
+            <column name="type"/>
+            <column name="index_6"/>
+        </index>
+        <index referenceId="TYPE_INDEX_7" indexType="btree">
+            <column name="type"/>
+            <column name="index_7"/>
+        </index>
+    </table>
+    <table name="channel_engine_queue" resource="default" engine="innodb" comment="ChannelEngine queue table">
+        <column xsi:type="int" name="id" padding="11" unsigned="false" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="type" nullable="false" length="191" comment="Entity type"/>
+        <column xsi:type="varchar" name="index_1" length="191" comment="Index 1"/>
+        <column xsi:type="varchar" name="index_2" length="191" comment="Index 2"/>
+        <column xsi:type="varchar" name="index_3" length="191" comment="Index 3"/>
+        <column xsi:type="varchar" name="index_4" length="191" comment="Index 4"/>
+        <column xsi:type="varchar" name="index_5" length="191" comment="Index 5"/>
+        <column xsi:type="varchar" name="index_6" length="191" comment="Index 6"/>
+        <column xsi:type="varchar" name="index_7" length="191" comment="Index 7"/>
+        <column xsi:type="varchar" name="index_8" length="191" comment="Index 8"/>
+        <column xsi:type="varchar" name="index_9" length="191" comment="Index 9"/>
+        <column xsi:type="int" name="parent_id" comment="Queue item parent id"/>
+        <column xsi:type="varchar" name="status" length="32" comment="Queue item status"/>
+        <column xsi:type="varchar" name="context" length="191" comment="Queue item context"/>
+        <column xsi:type="text" name="serialized_task" comment="Serialized task"/>
+        <column xsi:type="varchar" name="queue_name" length="191" comment="Queue name"/>
+        <column xsi:type="int" name="last_execution_progress" padding="11" comment="Last execution progress"/>
+        <column xsi:type="int" name="progress_base_points" padding="11" comment="Progress base points"/>
+        <column xsi:type="int" name="retries" padding="2" comment="Number of retries"/>
+        <column xsi:type="text" name="failure_description" comment="Failure description"/>
+        <column xsi:type="int" name="create_time" padding="11" comment="Queue item create time"/>
+        <column xsi:type="int" name="start_time" padding="11" comment="Queue item start time"/>
+        <column xsi:type="int" name="earliest_start_time" padding="11" comment="Queue item earliest start time"/>
+        <column xsi:type="int" name="queue_time" padding="11" comment="Queue item queue time"/>
+        <column xsi:type="int" name="last_update_time" padding="11" comment="Queue item last update time"/>
+        <column xsi:type="int" name="priority" padding="6" comment="Queue item priority"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="TYPE_INDEX_1" indexType="btree">
+            <column name="type"/>
+            <column name="index_1"/>
+        </index>
+        <index referenceId="TYPE_INDEX_2" indexType="btree">
+            <column name="type"/>
+            <column name="index_2"/>
+        </index>
+        <index referenceId="TYPE_INDEX_3" indexType="btree">
+            <column name="type"/>
+            <column name="index_3"/>
+        </index>
+        <index referenceId="TYPE_INDEX_4" indexType="btree">
+            <column name="type"/>
+            <column name="index_4"/>
+        </index>
+        <index referenceId="TYPE_INDEX_5" indexType="btree">
+            <column name="type"/>
+            <column name="index_5"/>
+        </index>
+        <index referenceId="TYPE_INDEX_6" indexType="btree">
+            <column name="type"/>
+            <column name="index_6"/>
+        </index>
+        <index referenceId="TYPE_INDEX_7" indexType="btree">
+            <column name="type"/>
+            <column name="index_7"/>
+        </index>
+        <index referenceId="TYPE_INDEX_8" indexType="btree">
+            <column name="type"/>
+            <column name="index_8"/>
+        </index>
+        <index referenceId="TYPE_INDEX_9" indexType="btree">
+            <column name="type"/>
+            <column name="index_9"/>
+        </index>
+    </table>
+    <table name="channel_engine_events" resource="default" engine="innodb" comment="ChannelEngine events table">
+        <column xsi:type="int" name="id" padding="11" unsigned="false" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="type" nullable="false" length="191" comment="Event type"/>
+        <column xsi:type="text" name="data" nullable="false" comment="Serialized event data"/>
+        <column xsi:type="varchar" name="context" nullable="false" comment="Event context"/>
+        <column xsi:type="varchar" name="index_1" nullable="false" length="191" comment="Index 1"/>
+        <column xsi:type="varchar" name="index_2" nullable="false" length="191" comment="Index 2"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="TYPE_INDEX_1" indexType="btree">
+            <column name="type"/>
+            <column name="index_1"/>
+        </index>
+        <index referenceId="TYPE_INDEX_2" indexType="btree">
+            <column name="type"/>
+            <column name="index_2"/>
+        </index>
+        <index referenceId="TYPE_CONTEXT" indexType="btree">
+            <column name="type"/>
+            <column name="context"/>
+        </index>
+    </table>
+    <table name="channel_engine_logs" resource="default" engine="innodb" comment="ChannelEngine logs table">
+        <column xsi:type="int" name="id" padding="11" unsigned="false" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="type" nullable="false" length="191" comment="Event type"/>
+        <column xsi:type="text" name="data" nullable="false" comment="Serialized event data"/>
+        <column xsi:type="varchar" name="index_1" nullable="false" length="191" comment="Index 1"/>
+        <column xsi:type="varchar" name="index_2" nullable="false" length="191" comment="Index 2"/>
+        <column xsi:type="varchar" name="index_3" nullable="false" length="191" comment="Index 3"/>
+        <column xsi:type="varchar" name="index_4" nullable="false" length="191" comment="Index 4"/>
+        <column xsi:type="varchar" name="index_5" nullable="false" length="191" comment="Index 5"/>
+        <column xsi:type="varchar" name="index_6" nullable="false" length="191" comment="Index 6"/>
+        <column xsi:type="varchar" name="index_7" nullable="false" length="191" comment="Index 7"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="TYPE_INDEX_1" indexType="btree">
+            <column name="type"/>
+            <column name="index_1"/>
+        </index>
+        <index referenceId="TYPE_INDEX_2" indexType="btree">
+            <column name="type"/>
+            <column name="index_2"/>
+        </index>
+        <index referenceId="TYPE_INDEX_3" indexType="btree">
+            <column name="type"/>
+            <column name="index_3"/>
+        </index>
+        <index referenceId="TYPE_INDEX_4" indexType="btree">
+            <column name="type"/>
+            <column name="index_4"/>
+        </index>
+        <index referenceId="TYPE_INDEX_5" indexType="btree">
+            <column name="type"/>
+            <column name="index_5"/>
+        </index>
+        <index referenceId="TYPE_INDEX_6" indexType="btree">
+            <column name="type"/>
+            <column name="index_6"/>
+        </index>
+        <index referenceId="TYPE_INDEX_7" indexType="btree">
+            <column name="type"/>
+            <column name="index_7"/>
+        </index>
+    </table>
+    <table name="channel_engine_returns" resource="default" engine="innodb" comment="ChannelEngine returns table">
+        <column xsi:type="int" name="id" padding="11" unsigned="false" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="type" nullable="false" length="191" comment="Return type"/>
+        <column xsi:type="text" name="data" nullable="false" comment="Serialized return data"/>
+        <column xsi:type="varchar" name="index_1" nullable="false" length="191" comment="Index 1"/>
+        <column xsi:type="varchar" name="index_2" nullable="false" length="191" comment="Index 2"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="TYPE_INDEX_1" indexType="btree">
+            <column name="type"/>
+            <column name="index_1"/>
+        </index>
+        <index referenceId="TYPE_INDEX_2" indexType="btree">
+            <column name="type"/>
+            <column name="index_2"/>
+        </index>
+    </table>
+    <table  name="channel_engine_order" resource="default" engine="innodb" comment="ChannelEngine order extension table">
+        <column xsi:type="int" name="id" padding="11" unsigned="false" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="int" name="order_id" padding="10" unsigned="true" nullable="false" comment="Magento order id"/>
+        <column xsi:type="varchar" name="channel_name" nullable="false" comment="ChannelEngine channel name"/>
+        <column xsi:type="varchar" name="channel_order_no" nullable="false" length="191" comment="ChannelEngine channel order number"/>
+        <column xsi:type="boolean" name="order_canceled" nullable="false" comment="Is order cancelled"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="CHANNEL_ENGINE_ORDER_ORDER_ID_SALES_ORDER_ENTITY_ID"
+                    table="channel_engine_order" column="order_id" referenceTable="sales_order"
+                    referenceColumn="entity_id" onDelete="CASCADE"/>
+    </table>
+</schema>

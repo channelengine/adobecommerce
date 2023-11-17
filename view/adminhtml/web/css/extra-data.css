@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css?family=Work+Sans:400,700');
+
+.channel-engine .ce-extra-data-heading {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 645px;
+    margin-bottom: 15px;
+    align-items: baseline;
+}
+
+.channel-engine .ce-button-add-mapping {
+    background-color: #373330;
+    border-color: #373330;
+    padding: 6px 15px;
+    height: 31px;
+    font-weight: bold;
+}
+
+.channel-engine .ce-button-add-mapping:hover {
+    background-color: #373330;
+    border-color: #373330;
+    box-shadow: 0 0 0 1px #007bdb;
+    color: #fff;
+    text-decoration: none;
+}
+
+.channel-engine .ce-extra-data-dropdown {
+    margin-left: 0;
+}
+
+.channel-engine .ce-extra-data-dropdown::after {
+    left: 2.1rem;
+}
+
+.channel-engine .ce-extra-data-dropdown::before {
+    top: -3%;
+}
+
+.channel-engine .ce-extra-data-dropdown-menu {
+    margin-left: 0;
+}
+
+.channel-engine .ce-input-extra-data-mapping {
+    width: 645px;
+    display: flex;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.channel-engine .ce-small-number-input {
+    height: 33px;
+    margin-left: 13px;
+}
+
+.channel-engine .ce-delete-icon::before {
+    font-family: 'Admin Icons';
+    content: '\e630';
+    color: #41362f;
+    font-size: 2rem;
+    margin-top: -1.1rem;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    margin-left: -70%;
+}
+
+.channel-engine .ce-delete-icon {
+    height: 33px;
+    width: 40px;
+    margin-left: 13px;
+}
+
+.channel-engine .ce-extra-data-input {
+    height: 33px;
+    display: flex;
+}

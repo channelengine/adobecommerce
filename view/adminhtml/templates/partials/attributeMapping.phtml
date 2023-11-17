@@ -1,0 +1,471 @@
+<?php
+
+/**  @var ProductSync $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\ProductSync;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsService;
+
+$attributes = $block->getAttributes();
+$priceAttributes = $block->getPriceAttributes();
+$notMapped = $block->getNotMappedOption();
+$defaultShippingCostValue = $block->getDefaultSelectedAttribute($priceAttributes, 'Price');
+$defaultMsrp = $block->getDefaultSelectedAttribute($priceAttributes, 'Price');
+$defaultPurchasePrice = $block->getDefaultSelectedAttribute($priceAttributes, 'Price');
+$defaultShippingTime = $block->getDefaultSelectedAttribute($attributes, 'Shipping time');
+$defaultBrand = $block->getDefaultSelectedAttribute($attributes, 'Manufacturer');
+$defaultColor = $block->getDefaultSelectedAttribute($attributes, 'Color');
+$defaultSize = $block->getDefaultSelectedAttribute($attributes, 'Size');
+$defaultEan = $block->getDefaultSelectedAttribute($attributes, 'EAN');
+$defaultName = $block->getDefaultSelectedAttribute($attributes, 'Name');
+$defaultDescription = $block->getDefaultSelectedAttribute($attributes, 'Description');
+$defaultCategory = $block->getDefaultSelectedAttribute($attributes, 'Category');
+$attributeMappings = $block->getAttributeMappings();
+
+if ($attributeMappings) {
+    foreach ($priceAttributes as $priceAttribute) {
+        if ($priceAttribute['value'] === $attributeMappings->getShippingCost()) {
+            $defaultShippingCostValue['label'] = $priceAttribute['label'];
+            $defaultShippingCostValue['value'] = $priceAttribute['value'];
+        }
+
+        if ($priceAttribute['value'] === $attributeMappings->getMsrp()) {
+            $defaultMsrp['label'] = $priceAttribute['label'];
+            $defaultMsrp['value'] = $priceAttribute['value'];
+        }
+
+        if ($priceAttribute['value'] === $attributeMappings->getPurchasePrice()) {
+            $defaultPurchasePrice['label'] = $priceAttribute['label'];
+            $defaultPurchasePrice['value'] = $priceAttribute['value'];
+        }
+    }
+
+    foreach ($attributes as $attribute) {
+        if ($attribute['value'] === $attributeMappings->getShippingTime()) {
+            $defaultShippingTime['label'] = $attribute['label'];
+            $defaultShippingTime['value'] = $attribute['value'];
+            $defaultShippingTime['type'] = array_key_exists('type', $attribute) ? $attribute['type'] : '';
+        }
+
+        if ($attribute['value'] === $attributeMappings->getBrand()) {
+            $defaultBrand['label'] = $attribute['label'];
+            $defaultBrand['value'] = $attribute['value'];
+            $defaultBrand['type'] = array_key_exists('type', $attribute) ? $attribute['type'] : '';
+        }
+
+        if ($attribute['value'] === $attributeMappings->getColor()) {
+            $defaultColor['label'] = $attribute['label'];
+            $defaultColor['value'] = $attribute['value'];
+            $defaultColor['type'] = array_key_exists('type', $attribute) ? $attribute['type'] : '';
+        }
+
+        if ($attribute['value'] === $attributeMappings->getSize()) {
+            $defaultSize['label'] = $attribute['label'];
+            $defaultSize['value'] = $attribute['value'];
+            $defaultSize['type'] = array_key_exists('type', $attribute) ? $attribute['type'] : '';
+        }
+
+        if ($attribute['value'] === $attributeMappings->getEan()) {
+            $defaultEan['label'] = $attribute['label'];
+            $defaultEan['value'] = $attribute['value'];
+            $defaultEan['type'] = array_key_exists('type', $attribute) ? $attribute['type'] : '';
+        }
+
+        if ($attribute['value'] === $attributeMappings->getName()) {
+            $defaultName['label'] = $attribute['label'];
+            $defaultName['value'] = $attribute['value'];
+            $defaultName['type'] = array_key_exists('type', $attribute) ? $attribute['type'] : '';
+        }
+
+        if ($attribute['value'] === $attributeMappings->getDescription()) {
+            $defaultDescription['label'] = $attribute['label'];
+            $defaultDescription['value'] = $attribute['value'];
+            $defaultDescription['type'] = array_key_exists('type', $attribute) ? $attribute['type'] : '';
+        }
+
+        if ($attribute['value'] === $attributeMappings->getCategory()) {
+            $defaultCategory['label'] = $attribute['label'];
+            $defaultCategory['value'] = $attribute['value'];
+            $defaultCategory['type'] = array_key_exists('type', $attribute) ? $attribute['type'] : '';
+        }
+    }
+}
+
+?>
+<form class="ce-form" onsubmit="return false">
+    <h3><?= __("Attribute mapping") ?></h3>
+    <div id="ce-sku-warning" class="ce-hidden ce-sku-warning">
+        <?= __('SKU might not be a required field in product attribute configuration. In order for product
+         synchronization to work properly, the ChannelEngine module requires SKU to be the required product attribute.
+          Mapping to Merchant product number cannot be changed later.'); ?>
+    </div>
+    <div class="ce-input-group ce-flex"
+         style="display: <?= $block->shouldRenderProductNumberMapping() ? '' : 'none'; ?>">
+        <label>
+            <span class="label"><?= __('Merchant product number'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to merchant product number attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-product-number" class="ce-dropdown"
+                    data-product-number-attribute="<?= ($attributeMappings && $attributeMappings->getMerchantProductNumber()) ?: AttributeMappingsService::PRODUCT_ID; ?>">
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= /** @noinspection NestedTernaryOperatorInspection */ ($attributeMappings && $attributeMappings->getMerchantProductNumber()) ?
+                        ($attributeMappings->getMerchantProductNumber() === AttributeMappingsService::PRODUCT_ID ?
+                            __('ID') : __('SKU')) : __('ID'); ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-product-number-list" class="ce-dropdown-list">
+                    <li id="ce-product-id" class="ce-dropdown-list-item ce-mapping-item"
+                        value="<?= AttributeMappingsService::PRODUCT_ID; ?>">
+                        <span class="ce-dropdown-list-item-text">
+                        <?= __('ID'); ?>
+                        </span>
+                    </li>
+                    <li id="ce-product-sku" class="ce-dropdown-list-item ce-mapping-item"
+                        value="<?= AttributeMappingsService::PRODUCT_SKU; ?>">
+                        <span class="ce-dropdown-list-item-text">
+                            <?= __('SKU'); ?>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Name'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to name attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-name" class="ce-dropdown"
+                    data-name-attribute="<?= $defaultName['value'] ?: $notMapped['value']; ?>"
+                    data-name-type="<?= array_key_exists('type', $defaultName) ? $defaultName['type'] : ''; ?>"
+            >
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultName['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-name-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($attributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" data-type="' . $attribute['type'] . '" value="' . $attribute['value'] . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Description'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to description attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-description" class="ce-dropdown"
+                    data-description-attribute="<?= $defaultDescription['value'] ?: $notMapped['value']; ?>"
+                    data-description-type="<?= array_key_exists('type', $defaultDescription) ? $defaultDescription['type'] : ''; ?>">
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultDescription['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-description-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($attributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" data-type="' . $attribute['type'] . '" value="' . $attribute['value'] . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Category'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to category attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-category" class="ce-dropdown"
+                    data-category-attribute="<?= $defaultCategory['value'] ?: $notMapped['value']; ?>"
+                    data-category-type="<?= array_key_exists('type', $defaultCategory) ? $defaultCategory['type'] : ''; ?>"
+            >
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultCategory['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-category-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($attributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" data-type="' . $attribute['type'] . '" value="' . $attribute['value'] . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Shipping cost'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to shipping cost attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-shipping-cost" class="ce-dropdown"
+                    data-shipping-cost-attribute="<?= $defaultShippingCostValue['value'] ?: $notMapped['value']; ?>">
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultShippingCostValue['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-shipping-cost-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($priceAttributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" value="' . $attribute['value'] . '">
+                              <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('MSRP'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to MSRP attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-msrp" class="ce-dropdown"
+                    data-msrp-attribute="<?= $defaultMsrp['value'] ?: $notMapped['value']; ?>">
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultMsrp['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-msrp-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($priceAttributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" value="' . $attribute['value'] . '">
+                            <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Purchase price'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to purchase price attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-purchase-price" class="ce-dropdown"
+                    data-purchase-price-attribute="<?= $defaultPurchasePrice['value'] ?: $notMapped['value']; ?>">
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultPurchasePrice['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-purchase-price-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($priceAttributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" value="' . $attribute['value'] . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Shipping time'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to shipping time attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-shipping-time" class="ce-dropdown"
+                    data-shipping-time-attribute="<?= $defaultShippingTime['value'] ?: $notMapped['value']; ?>"
+                    data-shipping-time-type="<?= array_key_exists('type', $defaultShippingTime) ? $defaultShippingTime['type'] : ''; ?>"
+            >
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultShippingTime['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-shipping-time-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($attributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" data-type="' . $attribute['type'] . '" value="' . $attribute['value'] . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Brand'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to brand attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-brand" class="ce-dropdown"
+                    data-brand-attribute="<?= $defaultBrand['value'] ?: $notMapped['value']; ?>"
+                    data-brand-type="<?= array_key_exists('type', $defaultBrand) ? $defaultBrand['type'] : ''; ?>"
+            >
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultBrand['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-brand-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($attributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" data-type="' . $attribute['type'] . '" value="' . $attribute['value'] . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Color'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to color attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-color" class="ce-dropdown"
+                    data-color-attribute="<?= $defaultColor['value'] ?: $notMapped['value']; ?>"
+                    data-color-type="<?= array_key_exists('type', $defaultColor) ? $defaultColor['type'] : ''; ?>"
+            >
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultColor['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-color-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($attributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" data-type="' . $attribute['type'] . '" value="' . $attribute['value'] . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Size'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to size attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-size" class="ce-dropdown"
+                    data-size-attribute="<?= $defaultSize['value'] ?: $notMapped['value']; ?>"
+                    data-size-type="<?= array_key_exists('type', $defaultSize) ? $defaultSize['type'] : ''; ?>"
+            >
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultSize['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-size-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($attributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" data-type="' . $attribute['type'] . '" value="' . $attribute['value'] . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label ce-ean"><?= __('EAN'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= __('Please select the Magento attribute that you want to map to EAN attribute in ChannelEngine.'); ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-attribute-ean" class="ce-dropdown"
+                    data-ean-attribute="<?= $defaultEan['value'] ?: $notMapped['value']; ?>"
+                    data-ean-type="<?= array_key_exists('type', $defaultEan) ? $defaultEan['type'] : ''; ?>" >
+                <span id="ce-pricing-attribute-text" class="ce-dropdown-text">
+                    <?= $defaultEan['label'] ?: $notMapped['label']; ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-ean-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($attributes as $attribute) {
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" data-type="' . $attribute['type'] . '" value="' . $attribute['value'] . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $attribute['label'] . '</span></option>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+</form>

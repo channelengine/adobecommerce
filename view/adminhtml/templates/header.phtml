@@ -1,0 +1,44 @@
+<?php
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Header;
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Config;
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Account;
+
+/** @var Config $configBlock */
+$configBlock = $block->getLayout()->createBlock(Config::class);
+/** @var Account $accountBlock */
+$accountBlock = $block->getLayout()->createBlock(Account::class);
+/** @var Header $block */
+?>
+
+<header>
+    <img src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/logo.svg'); ?>"
+         height="30" alt="ChannelEngine"/>
+    <span style="float: right;">
+        <?= __('Account name: '); ?>
+        <span id="accountNameHeader">
+             <?= $block->getAccountName(); ?>
+        </span>
+        ( <a id="disconnect-header"><?= __('Disconnect'); ?> </a> )
+    </span>
+    <span>
+        <input id="disconnect-url" type="hidden"
+               value="<?= $configBlock->getDisconnectUrl(); ?>">
+        <input id="state-url" type="hidden"
+               value="<?= $accountBlock->getStateUrl(); ?>">
+        <input id="store-scope" type="hidden"
+               value="<?= $configBlock->getStoreId() ?>">
+        <input id="disconnect-header-text" type="hidden"
+               value="<?= __('Disconnect account'); ?>">
+        <input id="disconnect-button-text" type="hidden"
+               value="<?= __('Disconnect'); ?>">
+        <input id="disconnect-text" type="hidden"
+               value="<?= __('You are about to disconnect your ChannelEngine account.'); ?>">
+        <div id="disconnect-modal-content-wrapper" class="ce-hidden">
+            <div id="disconnect-modal-content">
+                <label id="disconnect-modal-label">
+                </label>
+            </div>
+        </div>
+    </span>
+</header>

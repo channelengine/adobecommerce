@@ -1,0 +1,54 @@
+<?php
+
+/** @var OrderSettings $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\OrderSettings;
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\ReturnsSettings;
+
+?>
+<div id="ce-loader">
+    <?=  $block->getLayout()->createBlock(OrderSettings::class)
+        ->setTemplate("ChannelEngine_ChannelEngineIntegration::loader.phtml")->toHtml();
+    ?>
+</div>
+<div class="channel-engine">
+    <main>
+        <div class="ce-onboarding">
+            <div class="ce-onboarding-steps">
+                <div class="ce-step active">
+                    <div class="ce-step-number">1</div>
+                    <div class="ce-step-title"><?= __('Account'); ?></div>
+                </div>
+                <div class="ce-step active">
+                    <a href="<?= $block->getProductSyncPageUrl(); ?>">
+                        <div class="ce-step-number">2</div>
+                    </a>
+                    <div class="ce-step-title"><?= __('Product synchronization'); ?></div>
+                </div>
+                <div class="ce-step active">
+                    <div class="ce-step-number">3</div>
+                    <div class="ce-step-title"><?= __('Order synchronization'); ?></div>
+                </div>
+                <div class="ce-step">
+                    <div class="ce-step-number">4</div>
+                    <div class="ce-step-title"><?= __('Initial sync'); ?></div>
+                </div>
+            </div>
+            <?=  $block->getLayout()->createBlock(OrderSettings::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/orderSettings.phtml")->toHtml();
+            ?>
+            <?php
+            if ($block->isEnterprise()) {
+                echo $block->getLayout()->createBlock(ReturnsSettings::class)
+                    ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/returns.phtml")->toHtml();
+            }
+            ?>
+            <a id="ceStatusesSave"
+               class="ce-button ce-button__primary"><?= __('Save and continue'); ?></a>
+            <input id="ceStatusesSaveUrl" type="hidden"
+                   value="<?= $block->getOrderSettingsUrl(); ?>">
+            <input type="hidden" id="ce-state-url" value="<?= $block->getStateUrl() ?>">
+            <input type="hidden" id="ce-store-id" value="<?= $block->getStoreId() ?>">
+        </div>
+    </main>
+</div>

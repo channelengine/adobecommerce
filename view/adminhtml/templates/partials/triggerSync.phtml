@@ -1,0 +1,61 @@
+<?php
+
+/** @var Dashboard $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Dashboard;
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\ProductSync;
+
+/** @var ProductSync $productSyncBlock */
+$productSyncBlock = $block->getLayout()->createBlock(ProductSync::class);
+$productSyncEnabled = $productSyncBlock->isExportProductsEnabled();
+?>
+<div class="ce-modal">
+    <script src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/TriggerSyncModal.js') ?>"></script>
+    <div class="ce-modal-dialog ce-modal-xl ce-trigger-sync-modal">
+        <div class="ce-modal-content">
+            <input id="product-sync-enabled" type="hidden"
+                   value="<?= (bool)$productSyncEnabled; ?>">
+            <header>
+                <h3><?= __('Manually trigger synchronization'); ?></h3>
+                <span class="ce-close-modal ce-close-button">✕</span>
+            </header>
+            <main>
+                <h3>
+                    <?= __('Choose what you would like to synchronize:'); ?>
+                </h3>
+                <div>
+                    <div class="ce-input-group">
+                        <label>
+                            <span class="label"><?= __('Synchronize products'); ?></span>
+                            <span class="ce-help">
+                                <span class="ce-help-tooltip">
+                                    <?= __('The integration will synchronize all published shop products to ChannelEngine in the background.'); ?>
+                                </span>
+                            </span>
+                            <input id="ce-product-sync-checkbox" type="checkbox">
+                        </label>
+                    </div>
+                    <div class="ce-input-group">
+                        <label>
+                            <span class="label"><?= __('Synchronize orders'); ?></span>
+                            <span class="ce-help">
+                                <span id="ce-order-sync-tooltip" class="ce-help-tooltip">
+                                    <?= __('The integration will synchronize new and closed orders (fulfilled by the merchant and fulfilled by the marketplace) from ChannelEngine into the shop.'); ?>
+                                </span>
+                            </span>
+                            <input id="ce-order-sync-checkbox" type="checkbox">
+                        </label>
+                    </div>
+                </div>
+            </main>
+            <footer>
+                <button id="ce-start-sync-btn" class="ce-button ce-button__primary ce-close-modal" disabled>
+                    <?= __('Start sync now'); ?>
+                </button>
+                <button class="ce-button ce-button__secondary ce-close-modal">
+                    <?= __('Skip sync'); ?>
+                </button>
+            </footer>
+        </div>
+    </div>
+</div>

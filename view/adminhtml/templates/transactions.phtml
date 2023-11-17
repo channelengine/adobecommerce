@@ -1,0 +1,147 @@
+<?php
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Scope;
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Transactions;
+
+/** @var Transactions $block */
+?>
+<div id="ce-loader">
+    <?=  $block->getLayout()->createBlock(Transactions::class)
+        ->setTemplate("ChannelEngine_ChannelEngineIntegration::loader.phtml")->toHtml();
+    ?>
+</div>
+<div class="channel-engine">
+    <main class="ce-config-page">
+        <div>
+            <?=  $block->getLayout()->createBlock(Scope::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/scope.phtml")->toHtml();
+            ?>
+        </div>
+        <div class="ce-tabs">
+            <ul class="nav-tab-wrapper">
+                <li>
+                    <a href="<?= $block->getSubpageUrl('dashboard') ?>"
+                       class="nav-tab">
+                <span>
+                    <?= __('Dashboard'); ?>
+                </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= $block->getSubpageUrl('config') ?>"
+                       class="nav-tab">
+                <span>
+                    <?= __('Configuration'); ?>
+                </span>
+                    </a>
+                </li>
+                <li class="nav-tab-active">
+                    <a href="<?= $block->getSubpageUrl('transactions') ?>"
+                       class="nav-tab">
+                <span>
+                    <?= __('Transaction log'); ?>
+                </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="ce-page-content">
+            <h1><?= __('Transactions history log'); ?></h1>
+            <ul class="sub-page-nav">
+                <li><a id="ce-product-link" href="#"
+                       class="ce-current"><?= __('Product sync'); ?></a></li>
+                <li><a id="ce-order-link" href="#"><?= __('Order sync'); ?></a></li>
+                <li><a id="ce-errors-link" href="#"><?= __('Errors'); ?></a></li>
+            </ul>
+            <table class="ce-table">
+                <thead>
+                <tr>
+                    <th scope="col"><?= __('Task Type'); ?></th>
+                    <th scope="col" class="text-center"><?= __('Status'); ?></th>
+                    <th scope="col"
+                        class="text-center ce-table-compact-view"><?= __('Details'); ?></th>
+                    <th scope="col"
+                        class="text-center ce-table-full-view"><?= __('Start Time'); ?></th>
+                    <th scope="col"
+                        class="text-center ce-table-full-view"><?= __('Time Completed'); ?></th>
+                    <th scope="col"
+                        class="text-center ce-table-full-view"><?= __('Details'); ?></th>
+                </tr>
+                </thead>
+                <tbody id="ce-table-body">
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="10">
+                        <div class="ce-table-pagination">
+                            <div class="ce-horizontal">
+                                <div class="ce-pagination-status">
+                                    <?= __('Displayed'); ?>
+                                    <strong id="ce-logs-from">1</strong> <?= __('to'); ?>
+                                    <strong id="ce-logs-to">17</strong> <?= __('of'); ?>
+                                    <strong id="ce-logs-total">17</strong>
+                                </div>
+                                <div class="ce-page-size">
+                                    <label><?= __('Page size:'); ?>
+                                    </label>
+                                    <div class="ce-page-size-wrapper">
+                                        <button id="ce-page-size" data-page-size="10">
+                                            <span id="ce-page-size-text">10</span>
+                                        </button>
+                                        <div class="ce-page-size-list-wrapper">
+                                            <ul id="ce-page-size-list">
+                                                <li value="10"><span>10</span></li>
+                                                <li value="25"><span>25</span></li>
+                                                <li value="50"><span>50</span></li>
+                                                <li value="100"><span>100</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ce-pagination-pages">
+                                <button class="ce-button ce-button__prev"
+                                        title="<?= __('Go to the previous page'); ?>">
+                                </button>
+                                <button class="ce-button ce-button__next"
+                                        title="<?= __('Go to the next page'); ?>">
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+        <input id="ce-transactions-get" type="hidden"
+               value="<?= $block->getLogsUrl(); ?>">
+        <input id="ce-details-get" type="hidden"
+               value="<?= $block->getDetailsUrl(); ?>">
+        <input id="ce-view-details-translation" type="hidden"
+               value="<?= __('View details'); ?>">
+        <input id="ce-start-translation" type="hidden" value="<?= __('Start time'); ?>">
+        <input id="ce-completed-translation" type="hidden"
+               value="<?= __('Time completed'); ?>">
+        <input id="ce-modal-header" type="hidden" value="<?= __('Transaction log details'); ?>">
+        <input id="ce-modal-button-text" type="hidden" value="<?= __('Close'); ?>">
+        <input id="ce-details-identifier" type="hidden" value="<?= __('Identifier'); ?>">
+        <input id="ce-details-message" type="hidden" value="<?= __('Message'); ?>">
+        <input id="ce-details-display" type="hidden" value="<?= __('Displayed'); ?>">
+        <input id="ce-details-to" type="hidden" value="<?= __('to'); ?>">
+        <input id="ce-details-from" type="hidden" value="<?= __('of'); ?>">
+        <input id="ce-details-page-size" type="hidden" value="<?= __('Page size:'); ?>">
+        <input id="ce-details-go-to-previous" type="hidden"
+               value="<?= __('Go to previous page'); ?>">
+        <input id="ce-details-previous" type="hidden" value="<">
+        <input id="ce-details-go-to-next" type="hidden" value="<?= __('Go to next page'); ?>">
+        <input id="ce-details-next" type="hidden" value=">">
+        <input id="ce-no-results" type="hidden" value="<?= __('No results'); ?>">
+        <input id="ce-store-scope" type="hidden" value="<?= $block->getStoreId() ?>">
+        <input type="hidden" id="ce-state-url" value="<?= $block->getStateUrl() ?>">
+    </main>
+    <div id="ce-modal" class="ce-hidden">
+        <?=  $block->getLayout()->createBlock(Transactions::class)
+            ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml();
+        ?>
+    </div>
+</div>
