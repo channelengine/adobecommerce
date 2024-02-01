@@ -117,7 +117,7 @@ class ProductService implements ProductsService
         $this->storeManager->setCurrentStore($storeId);
         $this->searchCriteriaBuilder->addFilter('entity_id', $ids, 'in');
         $criteria = $this->searchCriteriaBuilder->create();
-        if (count($ids) === 1) {
+        if (count($ids) === 1 && array_key_exists(0, $ids)) {
             $products[] = $this->productRepository->getById($ids[0], false, $storeId);
         } else {
             $products = $this->productRepository->getList($criteria)->getItems();
