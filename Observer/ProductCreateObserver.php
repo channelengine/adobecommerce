@@ -3,8 +3,10 @@
 namespace ChannelEngine\ChannelEngineIntegration\Observer;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductDeleted;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductReplaced;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductUpsert;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Handlers\ProductDeletedEventHandler;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Handlers\ProductReplacedEventHandler;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Handlers\ProductUpsertEventHandler;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigEntity;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigurationManager;
@@ -24,6 +26,8 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Catalog\Model\ProductRepository;
 
 /**
  * Class ProductCreateObserver
@@ -40,14 +44,31 @@ class ProductCreateObserver implements ObserverInterface
      * @var Initializer
      */
     private $initializer;
+    /**
+     * @var Configurable
+     */
+    protected $configurableType;
+    /**
+     * @var ProductRepository
+     */
+    protected $productRepository;
 
     /**
      * @param StoreManagerInterface $storeManager
+     * @param Configurable $configurableType
+     * @param ProductRepository $productRepository
      * @param Initializer $initializer
      */
-    public function __construct(StoreManagerInterface $storeManager, Initializer $initializer)
+    public function __construct(
+        StoreManagerInterface $storeManager,
+        Configurable $configurableType,
+        ProductRepository $productRepository,
+        Initializer $initializer
+    )
     {
         $this->storeManager = $storeManager;
+        $this->configurableType = $configurableType;
+        $this->productRepository = $productRepository;
         $this->initializer = $initializer;
     }
 
@@ -66,7 +87,8 @@ class ProductCreateObserver implements ObserverInterface
         $this->initializer->init();
 
         $product = $observer->getData('product');
-        if (!$product) {
+
+        if (!$product || in_array($product->getTypeId(), ['bundle', 'grouped'])) {
             return;
         }
 
@@ -117,6 +139,12 @@ class ProductCreateObserver implements ObserverInterface
             return;
         }
 
+        $productId = $product->getId();
+        $parentIds = $this->configurableType->getParentIdsByChild($productId);
+        if ($parentIds) {
+            $product = $this->productRepository->getById($parentIds[0]);
+        }
+
         if (!in_array($product->getTypeId(), ['simple', 'bundle', 'grouped', 'configurable'], true)) {
             return;
         }
@@ -136,8 +164,25 @@ class ProductCreateObserver implements ObserverInterface
             return;
         }
 
-        $handler = new ProductUpsertEventHandler();
-        $handler->handle(new ProductUpsert($product->getId()));
+        if (ProductCreateBeforeObserver::isProductCreated()) {
+            $handler = new ProductUpsertEventHandler();
+            $handler->handle(new ProductUpsert($product->getId()));
+        } else {
+            $handler = new ProductReplacedEventHandler();
+            $handler->handle(new ProductReplaced($product->getId()));
+        }
+
+        if ($product->getTypeId() === 'configurable') {
+            $variantsBefore = ProductCreateBeforeObserver::getVariantsBefore();
+            $variantsNew = $product->getExtensionAttributes()->getConfigurableProductLinks();
+
+            $newStandaloneProductIds = array_diff($variantsBefore, $variantsNew);
+
+            $handler = new ProductUpsertEventHandler();
+            foreach ($newStandaloneProductIds as $newStandaloneProductId) {
+                $handler->handle(new ProductUpsert($newStandaloneProductId));
+            }
+        }
     }
 
     /**

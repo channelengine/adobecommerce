@@ -2,8 +2,10 @@
 
 namespace ChannelEngine\ChannelEngineIntegration\Observer;
 
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductDeleted;
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Handlers\ProductDeletedEventHandler;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductPurged;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductReplaced;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Handlers\ProductPurgedEventHandler;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Handlers\ProductReplacedEventHandler;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigEntity;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigurationManager;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
@@ -20,6 +22,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 
 /**
  * Class ProductDeleteObserver
@@ -32,13 +35,22 @@ class ProductDeleteObserver implements ObserverInterface
      * @var Initializer
      */
     private $initializer;
+    /**
+     * @var Configurable
+     */
+    protected $configurableType;
 
     /**
      * @param Initializer $initializer
+     * @param Configurable $configurableType
      */
-    public function __construct(Initializer $initializer)
+    public function __construct(
+        Configurable $configurableType,
+        Initializer $initializer
+    )
     {
         $this->initializer = $initializer;
+        $this->configurableType = $configurableType;
     }
 
     /**
@@ -55,7 +67,8 @@ class ProductDeleteObserver implements ObserverInterface
         $this->initializer->init();
 
         $product = $observer->getData('product');
-        if (!$product) {
+
+        if (!$product || in_array($product->getTypeId(), ['bundle', 'grouped'])) {
             return;
         }
 
@@ -85,8 +98,27 @@ class ProductDeleteObserver implements ObserverInterface
         $productId = ($mappings && $mappings->getMerchantProductNumber() === AttributeMappingsService::PRODUCT_ID) ?
             $product->getId() : $product->getSku();
 
-        $handler = new ProductDeletedEventHandler();
-        $handler->handle(new ProductDeleted($productId));
+        $childProductIds = [];
+        $parentProductIds = [];
+        if ($product->getTypeId() === 'configurable') {
+            $configurableProduct = $product->getTypeInstance();
+            $childProducts = $configurableProduct->getUsedProducts($product);
+
+            foreach ($childProducts as $childProduct) {
+                $childProductIds[] = $childProduct->getId();
+            }
+        } else if ($product->getTypeId() === 'virtual' || $product->getTypeId() === 'simple') {
+            $parentProductIds = $this->configurableType->getParentIdsByChild($product->getId());
+        }
+
+        $handler = new ProductPurgedEventHandler();
+        $handler->handle(new ProductPurged($productId));
+
+        $toSyncProductIds = $childProductIds ?: ($parentProductIds ?: []);
+        foreach ($toSyncProductIds as $toSyncProductId) {
+            $handler = new ProductReplacedEventHandler();
+            $handler->handle(new ProductReplaced($toSyncProductId));
+        }
     }
 
     /**

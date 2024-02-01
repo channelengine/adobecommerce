@@ -6,6 +6,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Htt
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Http\DTO\HttpRequest;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Http\Exceptions\RequestNotSuccessfulException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Products\DTO\Product;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Products\DTO\Product as APIProduct;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Data\Transformer;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
@@ -86,4 +87,61 @@ class Proxy extends AuthorizedProxy
 
 		$this->post($request);
 	}
+
+    /**
+     * Deletes products and all their related data, including its descendants, parent, and grandparent.
+     *
+     * @param $merchantProductNo
+     * @param APIProduct[] $arrayOfAPIProducts
+     *
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws QueryFilterInvalidParamException
+     * @throws RequestNotSuccessfulException
+     */
+    public function purgeAndReplaceProducts($merchantProductNo, array $arrayOfAPIProducts)
+    {
+        $request = new HttpRequest('products/' . $merchantProductNo . '/replace');
+        $request->setBody(Transformer::batchTransform($arrayOfAPIProducts));
+
+        $this->post($request);
+    }
+
+    /**
+     * Deletes products and all their related data, including its descendants, parent, and grandparent.
+     *
+     * @param $merchantProductNo
+     * @param APIProduct[] $arrayOfAPIProducts
+     *
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws QueryFilterInvalidParamException
+     * @throws RequestNotSuccessfulException
+     */
+    public function purgeAndReplaceProductsWithoutStock($merchantProductNo, array $arrayOfAPIProducts)
+    {
+        $request = new HttpRequest('products/' . $merchantProductNo . '/replace');
+        $request->setBody(Transformer::batchTransform($arrayOfAPIProducts));
+        $request->setHeaders(['ignoreStock' => 'true']);
+
+        $this->post($request);
+    }
+
+    /**
+     * Purges entire product structure regardless of whether a child, parent, or grandparent {merchantProductNo} is passed in the body.
+     *
+     * @param array $arrayOfMerchantProductNumbers
+     *
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws QueryFilterInvalidParamException
+     * @throws RequestNotSuccessfulException
+     */
+    public function purgeProducts(array $arrayOfMerchantProductNumbers)
+    {
+        $request = new HttpRequest('products/purge');
+        $request->setBody(['MerchantProductNos' => $arrayOfMerchantProductNumbers]);
+
+        $this->post($request);
+    }
 }

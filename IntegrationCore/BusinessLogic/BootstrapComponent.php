@@ -11,6 +11,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\Configuration\OrdersConfigurationService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Contracts\ProductEventsBufferService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Contracts\ProductsSyncConfigService;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Handlers\TickEventHandler;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Contracts\DetailsService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Contracts\TransactionLogService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Listeners\AbortedListener;
@@ -212,6 +213,13 @@ class BootstrapComponent extends BaseBootstrapComponent
             QueueItemStateTransitionEventBus::class,
             static function () {
                 return QueueItemStateTransitionEventBus::getInstance();
+            }
+        );
+
+        ServiceRegister::registerService(
+            TickEventHandler::class,
+            static function () {
+                return new TickEventHandler();
             }
         );
     }

@@ -3,6 +3,8 @@
 namespace ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Contracts;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductDeleted;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductPurged;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductReplaced;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductUpsert;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Entities\ProductEvent;
 
@@ -29,7 +31,25 @@ interface ProductEventsBufferService
      *
      * @return void
      */
-    public function recordUpsert(ProductUpsert  $upsert);
+    public function recordUpsert(ProductUpsert $upsert);
+
+    /**
+     * Records replaced product event.
+     *
+     * @param ProductReplaced $replaced
+     *
+     * @return void
+     */
+    public function recordReplaced(ProductReplaced $replaced);
+
+    /**
+     * Records product purged event
+     *
+     * @param ProductPurged $purged
+     *
+     * @return void
+     */
+    public function recordPurged(ProductPurged $purged);
 
     /**
      * Gets events with given type.

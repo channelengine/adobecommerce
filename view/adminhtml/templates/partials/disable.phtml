@@ -11,6 +11,9 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Dashboard;
     <p>
         <?= __('Integration between Magento 2 and ChannelEngine is disabled. Synchronization is not performed in the background.'); ?>
     </p>
+    <p style="display: <?= $block->shouldRenderIntegrationDisabledThreeLevelSyncMessage() ? '' : 'none'; ?>">
+        <?= __('The integration is disabled because the product attribute which corresponds with the chosen  three level sync attribute was deleted in the shop.'); ?>
+    </p>
     <div class="ce-disable-page-content">
         <div class="ce-input-group">
             <label>

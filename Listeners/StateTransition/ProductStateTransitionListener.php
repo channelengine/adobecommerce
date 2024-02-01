@@ -2,7 +2,7 @@
 
 namespace ChannelEngine\ChannelEngineIntegration\Listeners\StateTransition;
 
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\InitialSync\ProductSync;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\ManualSync\ProductsResyncTask;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Events\QueueStatusChangedEvent;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueItemDeserializationException;
@@ -32,7 +32,7 @@ class ProductStateTransitionListener
         $task = $queueItem->getTask();
         $stateService = new StateService();
 
-        if (!($task instanceof ProductSync)) {
+        if (!($task instanceof ProductsResyncTask)) {
             return;
         }
 

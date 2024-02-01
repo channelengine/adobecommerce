@@ -8,6 +8,7 @@ use ChannelEngine\ChannelEngineIntegration\DTO\ExtraDataAttributeMappings;
 use ChannelEngine\ChannelEngineIntegration\DTO\PriceSettings;
 use ChannelEngine\ChannelEngineIntegration\DTO\ReturnsSettings;
 use ChannelEngine\ChannelEngineIntegration\DTO\StockSettings;
+use ChannelEngine\ChannelEngineIntegration\DTO\ThreeLevelSyncSettings;
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Http\Exceptions\RequestNotSuccessfulException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Orders\Http\Proxy;
@@ -16,6 +17,8 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Authori
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Authorization\Exceptions\CurrencyMismatchException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\Configuration\OrdersConfigurationService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\Configuration\OrderSyncConfig;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Entities\SyncConfig;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Contracts\ProductsSyncConfigService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Exceptions\BaseException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
@@ -31,6 +34,7 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ReturnsSetting
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StockSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StoreService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ThreeLevelSyncSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Traits\GetPostParamsTrait;
 use ChannelEngine\ChannelEngineIntegration\Traits\SetsContextTrait;
 use Magento\Backend\App\Action;
@@ -114,7 +118,7 @@ class Save extends Action
                 isset($params['groupPricing']) ? (int)$params['groupPricing'] : '',
                 $params['priceAttribute'] ?? '',
                 $params['customerGroup'] ?? '',
-                $params['quantity'] ? (int)$params['quantity'] : 0,
+                $params['quantity'] ? (int)$params['quantity'] : 0
             );
 
             $this->saveStockSettings(
@@ -123,6 +127,10 @@ class Save extends Action
                 $params['selectedInventories'] ?? [],
                 $params['stockQuantity'] ?? ''
             );
+
+            $this->saveThreeLevelSyncSettings($params['exportProducts'], $params['threeLevelSync'] ?? []);
+
+            $this->saveSyncConfig($params['enableStockSync'] === '1' ?? false, $params['threeLevelSync'] ?? []);
 
             $this->saveAttributeMappings($params['exportProducts'], $params['attributeMappings'] ?? []);
 
@@ -255,6 +263,66 @@ class Save extends Action
 
         $settings = new StockSettings($enableStockSync, $inventories, $quantity);
         $this->getStockSettingsService()->setStockSettings($settings);
+    }
+
+    /**
+     * @param bool $exportProducts
+     * @param array $threeLevelSync
+     *
+     * @return void
+     *
+     * @throws BaseException
+     * @throws QueryFilterInvalidParamException
+     */
+    private function saveThreeLevelSyncSettings(bool $exportProducts, array $threeLevelSync):void
+    {
+        if (!$exportProducts) {
+            return;
+        }
+
+        $enableThreeLevelSync = $threeLevelSync['enableThreeLevelSync'] === '1' ?? false;
+        $newSyncAttribute = $threeLevelSync['syncAttribute'];
+
+        $currentThreeLevelSyncSettings = $this->getThreeLevelSyncSettingsService()->getThreeLevelSyncSettings();
+        $oldSyncAttribute = '';
+        if ($currentThreeLevelSyncSettings) {
+            $oldSyncAttribute = $currentThreeLevelSyncSettings->getSyncAttribute();
+        }
+
+        $attributeToBeSaved = $enableThreeLevelSync || !$currentThreeLevelSyncSettings ? $newSyncAttribute : $oldSyncAttribute;
+
+        $settings = new ThreeLevelSyncSettings($enableThreeLevelSync, $attributeToBeSaved, false);
+
+        $this->getThreeLevelSyncSettingsService()->setThreeLevelSyncSettings($settings);
+    }
+
+    /**
+     * @param bool $exportProducts
+     * @param array $threeLevelSync
+     *
+     * @return void
+     *
+     * @throws BaseException
+     * @throws QueryFilterInvalidParamException
+     */
+    private function saveSyncConfig(bool $enableStockSync, array $threeLevelSync): void
+    {
+        $enableThreeLevelSync = $threeLevelSync['enableThreeLevelSync'] === '1' ?? false;
+        $newSyncAttribute = $threeLevelSync['syncAttribute'];
+
+        $currentThreeLevelSyncSettings = $this->getThreeLevelSyncSettingsService()->getThreeLevelSyncSettings();
+        $oldSyncAttribute = '';
+        if ($currentThreeLevelSyncSettings) {
+            $oldSyncAttribute = $currentThreeLevelSyncSettings->getSyncAttribute();
+        }
+
+        $attributeToBeSaved = $enableThreeLevelSync || !$currentThreeLevelSyncSettings ? $newSyncAttribute : $oldSyncAttribute;
+
+        $settings = new SyncConfig();
+        $settings->setEnabledStockSync($enableStockSync);
+        $settings->setThreeLevelSyncAttribute($attributeToBeSaved);
+        $settings->setThreeLevelSyncStatus($enableThreeLevelSync);
+        $this->getProductsSyncConfigService()->set($settings);
     }
 
     /**
@@ -429,6 +497,16 @@ class Save extends Action
     }
 
     /**
+     * Retrieves instance of ProductsSyncConfigService.
+     *
+     * @return ProductsSyncConfigService
+     */
+    protected function getProductsSyncConfigService()
+    {
+        return ServiceRegister::getService(ProductsSyncConfigService::class);
+    }
+
+    /**
      * @return AuthorizationService
      */
     private function getAuthService(): AuthorizationService
@@ -470,6 +548,14 @@ class Save extends Action
     private function getStockSettingsService(): StockSettingsService
     {
         return ServiceRegister::getService(StockSettingsService::class);
+    }
+
+    /**
+     * @return ThreeLevelSyncSettingsService
+     */
+    private function getThreeLevelSyncSettingsService(): ThreeLevelSyncSettingsService
+    {
+        return ServiceRegister::getService(ThreeLevelSyncSettingsService::class);
     }
 
     /**

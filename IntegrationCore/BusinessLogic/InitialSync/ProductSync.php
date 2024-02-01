@@ -68,15 +68,21 @@ class ProductSync extends TransactionalOrchestrator
             if (ConfigurationManager::getInstance()->getConfigValue('syncProducts', 1)) {
                 $this->page++;
 
-                return $this->createSubJob(new ProductsUpsertTask($ids));
+                return $this->createSubJob($this->getSubJobInstance($ids));
             }
         } catch (QueryFilterInvalidParamException $exception) {
             Logger::logError($exception->getMessage());
 
             return null;
         }
+
+        return null;
     }
 
+    protected function getSubJobInstance($ids)
+    {
+        return new ProductsUpsertTask($ids);
+    }
 
     /**
      * Provides product service.

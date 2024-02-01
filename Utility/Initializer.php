@@ -72,6 +72,7 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StockSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StoreService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\SupportService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ThreeLevelSyncSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\Infrastructure\LoggerService;
 use Magento\Framework\Notification\NotifierPool;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Shipments\Contracts\ShipmentsService as BaseShipmentsService;
@@ -252,6 +253,13 @@ class Initializer
             StockSettingsService::class,
             static function () {
                 return new StockSettingsService();
+            }
+        );
+
+        ServiceRegister::registerService(
+            ThreeLevelSyncSettingsService::class,
+            static function () {
+                return new ThreeLevelSyncSettingsService();
             }
         );
 

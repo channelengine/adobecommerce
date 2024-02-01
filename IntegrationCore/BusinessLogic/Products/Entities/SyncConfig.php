@@ -10,7 +10,15 @@ class SyncConfig extends Entity
 {
     const CLASS_NAME = __CLASS__;
 
-    protected $fields = ['id', 'language', 'priceField', 'defaultStock', 'enabledStockSync'];
+    protected $fields = [
+        'id',
+        'language',
+        'priceField',
+        'defaultStock',
+        'enabledStockSync',
+        'threeLevelSyncStatus',
+        'threeLevelSyncAttribute'
+    ];
 
     /**
      * @var string
@@ -28,6 +36,16 @@ class SyncConfig extends Entity
 	 * @var boolean
 	 */
 	protected $enabledStockSync;
+
+    /**
+     * @var boolean
+     */
+    protected $threeLevelSyncStatus;
+
+    /**
+     * @var ?string
+     */
+    protected $threeLevelSyncAttribute;
 
     /**
      * @return string
@@ -85,13 +103,45 @@ class SyncConfig extends Entity
 		return $this->enabledStockSync;
 	}
 
-	/**
-	 * @param bool $enabledStockSync
-	 */
-	public function setEnabledStockSync($enabledStockSync)
-	{
-		$this->enabledStockSync = $enabledStockSync;
-	}
+    /**
+     * @return bool
+     */
+    public function getThreeLevelSyncStatus()
+    {
+        return $this->threeLevelSyncStatus;
+    }
+
+    /**
+     * @param ?bool $threeLevelSyncStatus
+     */
+    public function setThreeLevelSyncStatus($threeLevelSyncStatus)
+    {
+        $this->threeLevelSyncStatus = $threeLevelSyncStatus ?: false;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getThreeLevelSyncAttribute()
+    {
+        return $this->threeLevelSyncAttribute;
+    }
+
+    /**
+     * @param ?string $threeLevelSyncAttribute
+     */
+    public function setThreeLevelSyncAttribute($threeLevelSyncAttribute)
+    {
+        $this->threeLevelSyncAttribute = $threeLevelSyncAttribute;
+    }
+
+    /**
+     * @param bool $enabledStockSync
+     */
+    public function setEnabledStockSync($enabledStockSync)
+    {
+        $this->enabledStockSync = $enabledStockSync;
+    }
 
     public function getConfig()
     {

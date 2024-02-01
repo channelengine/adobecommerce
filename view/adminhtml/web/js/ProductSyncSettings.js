@@ -38,6 +38,8 @@ document.addEventListener(
                 selectedInventories = [],
                 enableStockSync = document.getElementById('ce-stock').getAttribute('stock-enabled'),
                 stockQuantity = document.getElementById('ceStockQuantity'),
+                enableThreeLevelSync = document.getElementById('ce-three-level-sync').getAttribute('three-level-sync-enabled'),
+                threeLevelSyncAttribute = document.getElementById('ce-attribute-three-level-sync'),
                 productNumber = document.getElementById('ce-attribute-product-number'),
                 name = document.getElementById('ce-attribute-name'),
                 description = document.getElementById('ce-attribute-description'),
@@ -112,6 +114,11 @@ document.addEventListener(
                     selectedInventories: selectedInventories,
                     enableStockSync: enableStockSync,
                     stockQuantity: stockQuantity.value,
+                    threeLevelSync: {
+                        enableThreeLevelSync: enableThreeLevelSync,
+                        syncAttribute: threeLevelSyncAttribute.getAttribute('data-three-level-sync-attribute'),
+                        syncAttributeType: threeLevelSyncAttribute.getAttribute('data-three-level-sync-type'),
+                    },
                     attributeMappings: {
                         productNumber: productNumber.getAttribute('data-product-number-attribute'),
                         name: name.getAttribute('data-name-attribute'),

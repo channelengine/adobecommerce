@@ -95,7 +95,7 @@ class ProductEventHandlerTask extends Task
             ConfigurationManager::getInstance()->setContext($context);
 
             if ($this->isAuthorized()) {
-                $handler = new TickEventHandler();
+                $handler = ServiceRegister::getService(TickEventHandler::class);
                 $handler->handle();
             }
 

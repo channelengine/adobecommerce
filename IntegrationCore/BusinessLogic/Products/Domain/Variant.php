@@ -93,6 +93,10 @@ class Variant
 	 * @var string
 	 */
     protected $categoryTrail;
+    /**
+     * @var string
+     */
+    protected $threeLevelSyncAttributeValue;
 
     /**
      * Variant constructor.
@@ -117,6 +121,7 @@ class Variant
      * @param string[] $additionalImageUrls
      * @param CustomAttribute[] $customAttributes
      * @param string $categoryTrail
+     * @param string|null $threeLevelSyncAttribute
      */
     public function __construct(
         $id,
@@ -139,7 +144,8 @@ class Variant
         $mainImageUrl = null,
         array $additionalImageUrls = [],
         array $customAttributes = [],
-	    $categoryTrail = ''
+	    $categoryTrail = '',
+        $threeLevelSyncAttribute = null
     ) {
         $this->id = $id;
         $this->parent = $parent;
@@ -162,6 +168,7 @@ class Variant
         $this->additionalImageUrls = $additionalImageUrls;
         $this->customAttributes = $customAttributes;
         $this->categoryTrail = $categoryTrail;
+        $this->threeLevelSyncAttributeValue = $threeLevelSyncAttribute;
     }
 
     /**
@@ -331,4 +338,20 @@ class Variant
 	{
 		return $this->categoryTrail;
 	}
+
+    /**
+     * @return string|null
+     */
+    public function getThreeLevelSyncAttributeValue()
+    {
+        return $this->threeLevelSyncAttributeValue;
+    }
+
+    /**
+     * @param string|null $threeLevelSyncAttributeValue
+     */
+    public function setThreeLevelSyncAttributeValue($threeLevelSyncAttributeValue)
+    {
+        $this->threeLevelSyncAttributeValue = $threeLevelSyncAttributeValue;
+    }
 }

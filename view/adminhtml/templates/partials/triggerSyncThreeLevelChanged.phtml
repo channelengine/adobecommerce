@@ -1,0 +1,32 @@
+<?php
+
+/** @var Dashboard $block */
+
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Dashboard;
+use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\ProductSync;
+
+?>
+<div class="ce-modal">
+    <script src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/TriggerSyncModal.js') ?>"></script>
+    <div class="ce-modal-dialog ce-modal-xl ce-trigger-sync-modal three-level-sync-changed-modal">
+        <div class="ce-modal-content">
+            <header>
+                <h3><?= __('Start product synchronization'); ?></h3>
+                <span class="ce-close-modal ce-close-button">✕</span>
+            </header>
+            <main>
+                <div>
+                    <?= __('Please note that by changing the three-level synchronization configuration the initial product synchronization will be started in the background.'); ?>
+                </div>
+            </main>
+            <footer>
+                <button id="ce-cancel-config-modal-btn" class="ce-button ce-button__secondary ce-close-modal">
+                    <?= __('Cancel'); ?>
+                </button>
+                <button id="ce-save-config-modal-btn" class="ce-button ce-button__primary ce-close-modal">
+                    <?= __('Save configuration'); ?>
+                </button>
+            </footer>
+        </div>
+    </div>
+</div>

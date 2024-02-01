@@ -93,6 +93,12 @@ class ExtraFieldsService
             $fieldValue = $value;
 
             if (is_array($value)) {
+                foreach ($value as $index => $field) {
+                    if (is_bool($field)) {
+                        $value[$index] = $field ? 'yes' : 'no';
+                    }
+                }
+
                 $fieldValue = implode(' ', $value);
             }
 

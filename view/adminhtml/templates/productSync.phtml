@@ -37,6 +37,8 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\ProductSync;
             echo $block->getLayout()->createBlock(ProductSync::class)
                 ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/stockSettings.phtml")->toHtml();
             echo $block->getLayout()->createBlock(ProductSync::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/threeLevelSync.phtml")->toHtml();
+            echo $block->getLayout()->createBlock(ProductSync::class)
                 ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/attributeMapping.phtml")->toHtml();
             echo $block->getLayout()->createBlock(ProductSync::class)
                 ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/extraDataMapping.phtml")->toHtml();

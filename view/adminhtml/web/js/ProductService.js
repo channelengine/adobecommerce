@@ -20,6 +20,11 @@ if (!window.ChannelEngine) {
             inventory.classList.add('ce-disabled-product');
         }
 
+        this.disableThreeLevelSynchronizationFields = function (button, attributeName) {
+            button.setAttribute('disabled', 'true');
+            attributeName.setAttribute('disabled', 'true');
+        }
+
         this.disableAttributeMappingsFields = function (attributeName,
                                                         attributeDescription,
                                                         attributeCategory,
@@ -80,6 +85,11 @@ if (!window.ChannelEngine) {
             inventory.classList.remove('ce-disabled-product');
         }
 
+        this.enableThreeLevelSynchronizationFields = function (button, attributeName) {
+            button.removeAttribute('disabled');
+            attributeName.removeAttribute('disabled');
+        }
+
         this.enableAttributeMappingsFields = function (attributeName,
                                                        attributeDescription, attributeCategory, attributeShippingCost,
                                                        attributeMSRP, attributePurchasePrice, attributeShippingTime,
@@ -131,6 +141,8 @@ if (!window.ChannelEngine) {
             stockBtn,
             inventory,
             stockQuantity,
+            enableThreeLevelSyncBtn,
+            attributeThreeLevelSync,
             attributeName,
             attributeDescription,
             attributeCategory,
@@ -152,6 +164,7 @@ if (!window.ChannelEngine) {
 
             this.enablePriceSettingsFields(button, attributeButton, customerGroupBtn, attributeQuantity);
             this.enableStockSynchronizationFields(stockBtn, inventory, stockQuantity);
+            this.enableThreeLevelSynchronizationFields(enableThreeLevelSyncBtn, attributeThreeLevelSync);
             this.enableAttributeMappingsFields(
                 attributeName,
                 attributeDescription,
@@ -181,6 +194,8 @@ if (!window.ChannelEngine) {
             stockBtn,
             inventory,
             stockQuantity,
+            enableThreeLevelSyncBtn,
+            attributeThreeLevelSync,
             attributeName,
             attributeDescription,
             attributeCategory,
@@ -202,6 +217,7 @@ if (!window.ChannelEngine) {
 
             this.disablePriceSettingsFields(button, attributeButton, customerGroupBtn, attributeQuantity);
             this.disableStockSynchronizationFields(stockBtn, inventory, stockQuantity);
+            this.disableThreeLevelSynchronizationFields(enableThreeLevelSyncBtn, attributeThreeLevelSync);
             this.disableAttributeMappingsFields(
                 attributeName,
                 attributeDescription,

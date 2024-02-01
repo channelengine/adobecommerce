@@ -15,6 +15,7 @@
         <link src="ChannelEngine_ChannelEngineIntegration::js/ProductSyncSettings.js"/>
         <link src="ChannelEngine_ChannelEngineIntegration::js/ProductService.js"/>
         <link src="ChannelEngine_ChannelEngineIntegration::js/StockSettings.js"/>
+        <link src="ChannelEngine_ChannelEngineIntegration::js/ThreeLevelSyncSettings.js"/>
         <link src="ChannelEngine_ChannelEngineIntegration::js/AttributesMapping.js"/>
         <link src="ChannelEngine_ChannelEngineIntegration::js/Loader.js"/>
         <link src="ChannelEngine_ChannelEngineIntegration::js/Notifications.js"/>

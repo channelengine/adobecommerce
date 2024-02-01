@@ -111,7 +111,7 @@ class TransactionLogs extends Action
         }
 
         if ($taskType === 'ProductSync') {
-            $filters['taskType'] = ['ProductSync', 'ProductsDeleteTask', 'ProductsUpsertTask'];
+            $filters['taskType'] = ['ProductSync', 'ProductsPurgeTask', 'ProductsUpsertTask', 'ProductsResyncTask', 'ProductsReplaceTask'];
         }
 
         if ($status) {

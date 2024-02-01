@@ -21,6 +21,8 @@ document.addEventListener(
             yesExportProducts = document.getElementById('ce-export-products-item-yes'),
             exportProductsButtonText = document.getElementById('ce-export-products-text'),
             stockBtn = document.getElementById('ce-stock'),
+            threeLevelSyncBtn = document.getElementById('ce-three-level-sync'),
+            attributeThreeLevelSync = document.getElementById('ce-attribute-three-level-sync'),
             inventory = document.getElementById('ce-inventory-select'),
             stockQuantity = document.getElementById('ceStockQuantity'),
             attributeName = document.getElementById('ce-attribute-name'),
@@ -117,6 +119,8 @@ document.addEventListener(
                 stockBtn,
                 inventory,
                 stockQuantity,
+                threeLevelSyncBtn,
+                attributeThreeLevelSync,
                 attributeName,
                 attributeDescription,
                 attributeCategory,
@@ -147,6 +151,8 @@ document.addEventListener(
                 stockBtn,
                 inventory,
                 stockQuantity,
+                threeLevelSyncBtn,
+                attributeThreeLevelSync,
                 attributeName,
                 attributeDescription,
                 attributeCategory,
@@ -205,6 +211,7 @@ document.addEventListener(
         function disableFields() {
             ChannelEngine.productsService.disablePriceSettingsFields(button, attributeButton, customerGroupBtn, attributeQuantity);
             ChannelEngine.productsService.disableStockSynchronizationFields(stockBtn, inventory, stockQuantity);
+            ChannelEngine.productsService.disableThreeLevelSynchronizationFields(threeLevelSyncBtn, attributeThreeLevelSync);
             ChannelEngine.productsService.disableAttributeMappingsFields(
                 attributeName,
                 attributeDescription,
@@ -225,6 +232,7 @@ document.addEventListener(
         function enableFields() {
             ChannelEngine.productsService.enablePriceSettingsFields(button, attributeButton, customerGroupBtn, attributeQuantity);
             ChannelEngine.productsService.enableStockSynchronizationFields(stockBtn, inventory, stockQuantity);
+            ChannelEngine.productsService.enableThreeLevelSynchronizationFields(threeLevelSyncBtn, attributeThreeLevelSync);
             ChannelEngine.productsService.enableAttributeMappingsFields(
                 attributeName,
                 attributeDescription,

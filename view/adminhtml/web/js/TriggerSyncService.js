@@ -5,6 +5,39 @@ if (!window.ChannelEngine) {
 (function () {
     function TriggerSyncService() {
         this.areEventsBinded = false;
+
+        this.showSaveConfigModal = function (onSave, url) {
+            let saveConfigModal = document.getElementById('ce-save-config-modal'),
+                closeButton = document.getElementById('ce-cancel-config-modal-btn'),
+                saveButton = document.getElementById('ce-save-config-modal-btn'),
+                secondCloseButton = saveConfigModal.getElementsByClassName('ce-close-button')[0],
+                storeScope = document.getElementById('ce-store-scope');
+
+            saveConfigModal.classList.toggle('ce-hidden');
+
+            closeButton.onclick = () => {saveConfigModal.classList.add('ce-hidden');};
+            secondCloseButton.onclick = () => {saveConfigModal.classList.add('ce-hidden');};
+            saveButton.onclick = () => {
+                closeButton.click();
+                onSave();
+                ChannelEngine.ajaxService.post(
+                    url + '?form_key=' + window.FORM_KEY + '&storeId=' + storeScope.value,
+                    {
+                        product_sync: true,
+                        order_sync: false
+                    },
+                    function (response) {
+                        if (!response.success) {
+                            ChannelEngine.notificationService.removeNotifications();
+                            ChannelEngine.notificationService.addNotification(response.message, false);
+                        } else {
+                            ChannelEngine.triggerSyncService.checkStatus();
+                        }
+                    }
+                );
+            };
+        };
+
         this.showModal = function (url) {
             let triggerModal = document.getElementById('ce-trigger-modal'),
                 ordersChecked = document.getElementById('ce-order-sync-checkbox'),
@@ -75,7 +108,7 @@ if (!window.ChannelEngine) {
                 checkStatusUrl = document.getElementById('ce-check-status-url'),
                 storeScope = document.getElementById('ce-store-scope');
 
-            ChannelEngine.ajaxService.get(
+            syncNowButton && (ChannelEngine.ajaxService.get(
                 checkStatusUrl.value + '?storeId=' + storeScope.value,
                 function (response) {
                     if (response.in_progress) {
@@ -87,7 +120,7 @@ if (!window.ChannelEngine) {
                         inProgressButton.style.display = "none";
                     }
                 }
-            );
+            ));
         }
     }
 

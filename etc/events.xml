@@ -26,7 +26,13 @@
                   instance="ChannelEngine\ChannelEngineIntegration\Observer\ProductCreateObserver"/>
     </event>
 
-    <event name="catalog_product_delete_after_done">
+    <event name="catalog_product_save_before">
+        <observer name="ce_product_save_before"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\ProductCreateBeforeObserver">
+        </observer>
+    </event>
+
+    <event name="catalog_product_delete_before">
         <observer name="ce_product_delete"
                   instance="ChannelEngine\ChannelEngineIntegration\Observer\ProductDeleteObserver"/>
     </event>

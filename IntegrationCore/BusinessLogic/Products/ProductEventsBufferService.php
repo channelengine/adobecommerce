@@ -9,6 +9,8 @@ namespace ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\P
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Contracts\ProductEventsBufferService as BaseService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductDeleted;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductPurged;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductReplaced;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductUpsert;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Entities\ProductEvent;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Repositories\ProductEventRepository;
@@ -57,6 +59,32 @@ class ProductEventsBufferService implements BaseService
         }
 
         $this->eventUpdate($productEvent, ProductEvent::UPSERT);
+    }
+
+    public function recordReplaced(ProductReplaced $replaced)
+    {
+        $productEvent = $this->getProductEvent($replaced->getId());
+
+        if (!$productEvent) {
+            $this->eventCreate($replaced->getId(), ProductEvent::REPLACED);
+
+            return;
+        }
+
+        $this->eventUpdate($productEvent, ProductEvent::REPLACED);
+    }
+
+    public function recordPurged(ProductPurged $purged)
+    {
+        $productEvent = $this->getProductEvent($purged->getId());
+
+        if (!$productEvent) {
+            $this->eventCreate($purged->getId(), ProductEvent::PURGED);
+
+            return;
+        }
+
+        $this->eventUpdate($productEvent, ProductEvent::PURGED);
     }
 
     /**

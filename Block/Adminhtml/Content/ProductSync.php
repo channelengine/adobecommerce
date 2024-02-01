@@ -5,6 +5,7 @@ namespace ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content;
 use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappings;
 use ChannelEngine\ChannelEngineIntegration\DTO\PriceSettings;
 use ChannelEngine\ChannelEngineIntegration\DTO\StockSettings;
+use ChannelEngine\ChannelEngineIntegration\DTO\ThreeLevelSyncSettings;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsService;
@@ -13,12 +14,14 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PriceSettingsS
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StockSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StoreService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ThreeLevelSyncSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Utility\UrlHelper;
 use Magento\Backend\Block\Template\Context;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
 use Magento\Customer\Model\ResourceModel\Group\Collection;
 use Magento\Framework\View\Element\Template;
 use Magento\Inventory\Model\ResourceModel\Source\Collection as SourceCollection;
+use Magento\ConfigurableProduct\Model\ConfigurableAttributeHandler;
 
 /**
  * Class ProductSync
@@ -43,6 +46,10 @@ class ProductSync extends Template
      * @var CollectionFactory
      */
     private $productAttributes;
+    /**
+     * @var ConfigurableAttributeHandler
+     */
+    private $configurableAttributeHandler;
 
     /**
      * @param UrlHelper $urlHelper
@@ -50,6 +57,7 @@ class ProductSync extends Template
      * @param SourceCollection $inventorySource
      * @param CollectionFactory $productAttributes
      * @param Context $context
+     * @param ConfigurableAttributeHandler $configurableAttributeHandler
      * @param array $data
      */
     public function __construct(
@@ -58,12 +66,14 @@ class ProductSync extends Template
         SourceCollection  $inventorySource,
         CollectionFactory $productAttributes,
         Context           $context,
+        ConfigurableAttributeHandler $configurableAttributeHandler,
         array             $data = []
     ) {
         $this->urlHelper = $urlHelper;
         $this->inventorySource = $inventorySource;
         $this->customerGroup = $customerGroup;
         $this->productAttributes = $productAttributes;
+        $this->configurableAttributeHandler = $configurableAttributeHandler;
         parent::__construct($context, $data);
     }
 
@@ -118,6 +128,32 @@ class ProductSync extends Template
     }
 
     /**
+     * Retrieves Magento product attributes which are configurable.
+     *
+     * @return array
+     *
+     * @throws QueryFilterInvalidParamException
+     */
+    public function getConfigurableAttributes(): array
+    {
+        $attributes = [];
+        $storeId = $this->getStoreService()->getStoreId();
+        $applicableAttributes = $this->configurableAttributeHandler->getApplicableAttributes($storeId);
+
+        foreach ($applicableAttributes as $attribute) {
+            if ($attribute->getAttributeCode() !== 'manufacturer') {
+                $attributes[] = [
+                    'value' => $attribute->getAttributeCode(),
+                    'label' => $attribute->getStoreLabel(),
+                    'type' => $attribute->getFrontendInput(),
+                ];
+            }
+        }
+
+        return $attributes;
+    }
+
+    /**
      * Retrieves "Not mapped" option.
      *
      * @return array
@@ -145,6 +181,26 @@ class ProductSync extends Template
             if ($attribute['label'] === $name) {
                 return $attribute;
             }
+        }
+
+        return  [
+            'value' => '',
+            'label' => '',
+        ];
+    }
+
+    /**
+     * Retrieve first attribute if possible.
+     *
+     * @param array $attributes
+     * @param string $name
+     *
+     * @return string[]
+     */
+    public function getFirstAttribute(array $attributes): array
+    {
+        if ($attributes) {
+            return $attributes[0];
         }
 
         return  [
@@ -291,6 +347,20 @@ class ProductSync extends Template
     }
 
     /**
+     * Retrieves three level sync settings.
+     *
+     * @return ThreeLevelSyncSettings|null
+     */
+    public function getThreeLevelSyncSettings(): ?ThreeLevelSyncSettings
+    {
+        try {
+            return $this->getThreeLevelSyncSettingsService()->getThreeLevelSyncSettings();
+        } catch (QueryFilterInvalidParamException $e) {
+            return null;
+        }
+    }
+
+    /**
      * Checks if export products is enabled.
      *
      * @return bool
@@ -330,6 +400,14 @@ class ProductSync extends Template
     private function getStockSettingsService(): StockSettingsService
     {
         return ServiceRegister::getService(StockSettingsService::class);
+    }
+
+    /**
+     * @return ThreeLevelSyncSettingsService
+     */
+    private function getThreeLevelSyncSettingsService(): ThreeLevelSyncSettingsService
+    {
+        return ServiceRegister::getService(ThreeLevelSyncSettingsService::class);
     }
 
     /**

@@ -22,6 +22,8 @@
                 type="ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\View\Notification" />
     <preference for="ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Contracts\ReturnsService"
                 type="ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\NullReturnsService"/>
+    <preference for="Magento\Catalog\Model\ResourceModel\Eav\Attribute"
+                type="ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\Eav\Attribute" />
     <preference for="ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Contracts\ReturnsService"
                 type="ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ReturnsService"/>
     <preference for="ChannelEngine\ChannelEngineIntegration\Api\ReturnsServiceFactoryInterface"

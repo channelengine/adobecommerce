@@ -6,6 +6,7 @@ use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappings;
 use ChannelEngine\ChannelEngineIntegration\DTO\ExtraDataAttributeMappings;
 use ChannelEngine\ChannelEngineIntegration\DTO\PriceSettings;
 use ChannelEngine\ChannelEngineIntegration\DTO\StockSettings;
+use ChannelEngine\ChannelEngineIntegration\DTO\ThreeLevelSyncSettings;
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Authorization\Contracts\AuthorizationService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Authorization\DTO\AuthInfo;
@@ -19,6 +20,7 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ExportProducts
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ExtraDataAttributeMappingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PriceSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StockSettingsService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ThreeLevelSyncSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Traits\SetsContextTrait;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
@@ -73,6 +75,7 @@ class Get extends Action
                     'accountData' => $this->getAccountData()->toArray(),
                     'priceData' => $this->getPriceData() ? $this->getPriceData()->toArray() : [],
                     'stockData' => $this->getStockData() ? $this->getStockData()->toArray() : [],
+                    'threeLevelSyncData' => $this->getThreeLevelSyncData() ? $this->getThreeLevelSyncData()->toArray() : [],
                     'attributesData' => $this->getAttributeMappingsData() ? $this->getAttributeMappingsData()->toArray() : [],
                     'ordersData' => $this->getOrderSyncSettings()->toArray(),
                     'extraData' => $extraData ? $extraData->getMappings() : [],
@@ -118,6 +121,16 @@ class Get extends Action
     private function getStockData(): ?StockSettings
     {
         return $this->getStockService()->getStockSettings();
+    }
+
+    /**
+     * @return ThreeLevelSyncSettings|null
+     *
+     * @throws QueryFilterInvalidParamException
+     */
+    private function getThreeLevelSyncData(): ?ThreeLevelSyncSettings
+    {
+        return $this->getThreeLevelSyncSettingsService()->getThreeLevelSyncSettings();
     }
 
     /**
@@ -170,6 +183,14 @@ class Get extends Action
     private function getStockService(): StockSettingsService
     {
         return ServiceRegister::getService(StockSettingsService::class);
+    }
+
+    /**
+     * @return ThreeLevelSyncSettingsService
+     */
+    private function getThreeLevelSyncSettingsService(): ThreeLevelSyncSettingsService
+    {
+        return ServiceRegister::getService(ThreeLevelSyncSettingsService::class);
     }
 
     /**

@@ -11,10 +11,15 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Ex
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsTypesService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ThreeLevelSyncSettingsService;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\UrlInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
 
 /**
  * Class ProductFactory
@@ -56,6 +61,14 @@ class ProductFactory
      * @var CategoryService
      */
     private $categoryService;
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+    /**
+     * @var ProductResource
+     */
+    private $productResource;
 
     /**
      * @param ProductRepository $productRepository
@@ -65,6 +78,8 @@ class ProductFactory
      * @param ExtraFieldsService $extraFieldsService
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param CategoryService $categoryService
+     * @param StoreManagerInterface $storeManager
+     * @param ProductResource $productResource
      */
     public function __construct(
         ProductRepository           $productRepository,
@@ -73,7 +88,9 @@ class ProductFactory
         AttributesService           $attributesService,
         ExtraFieldsService          $extraFieldsService,
         SearchCriteriaBuilder       $searchCriteriaBuilder,
-        CategoryService             $categoryService
+        CategoryService             $categoryService,
+        StoreManagerInterface       $storeManager,
+        ProductResource             $productResource
     ) {
         $this->productRepository = $productRepository;
         $this->priceService = $priceService;
@@ -82,6 +99,8 @@ class ProductFactory
         $this->extraFieldsService = $extraFieldsService;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->categoryService = $categoryService;
+        $this->storeManager = $storeManager;
+        $this->productResource = $productResource;
     }
 
     /**
@@ -225,7 +244,7 @@ class ProductFactory
             $imageUrl,
             $productImages ?? [],
             array_merge(
-                $this->extraFieldsService->getExtraFields($productAttributes, $customAttributes, $product->getData()),
+                $this->extraFieldsService->getExtraFields($productAttributes, $customAttributes, $this->getData($product)),
                 $extraDataImages
             ),
             $attributeMappings->getCategory() === 'category_ids' ? $this->categoryService->getCategoryTrail($product->getCategoryIds()) :
@@ -256,13 +275,45 @@ class ProductFactory
                 break;
         }
 
+        $threeLevelSyncSettings = $this->getThreeLevelSyncSettingsService()->getThreeLevelSyncSettings();
+        $threeLevelSyncAttribute = $threeLevelSyncSettings ? $threeLevelSyncSettings->getSyncAttribute() : '';
+        $hasThreeLevelSync = $threeLevelSyncAttribute !== '' && array_key_exists($threeLevelSyncAttribute, $productAttributes);
+        $ceProduct->setHasThreeLevelSync($hasThreeLevelSync);
+
         foreach ($variants as $variant) {
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $objectManager = ObjectManager::getInstance();
             $variant = $objectManager->get('Magento\Catalog\Model\Product')->load($variant->getId());
-            $ceProduct->addVariant($this->getVariant($variant, $ceProduct));
+
+            $domainVariant = $this->getVariant($variant, $ceProduct);
+
+            if ($ceProduct->getHasThreeLevelSync() && $variant->getData($threeLevelSyncAttribute)) {
+                $variantAttributeValue = $variant->getAttributeText($threeLevelSyncAttribute);
+                $domainVariant->setThreeLevelSyncAttributeValue($variantAttributeValue);
+            }
+
+            $ceProduct->addVariant($domainVariant);
         }
 
         return $ceProduct;
+    }
+
+    /**
+     * @param \Magento\Catalog\Model\Product $product
+     * @return array
+     */
+    private function getData(\Magento\Catalog\Model\Product $product): array
+    {
+        $this->productResource->load($product, $product->getId());
+        $attributes = $product->getAttributes();
+
+        foreach ($attributes as $attribute) {
+            $attributeCode = $attribute->getAttributeCode();
+            $attributeValue = $product->getData($attributeCode);
+
+            $data[$attributeCode] = $attributeValue;
+        }
+
+        return $data;
     }
 
     /**
@@ -281,14 +332,22 @@ class ProductFactory
         $attributeMappingsTypes = $this->getAttributeMappingsTypes();
         $productAttributes = $product->getAttributes();
         $customAttributes = $product->getCustomAttributes();
-        $images = $product->getMediaGalleryImages();
-        $imageUrl = $images->getFirstItem()->getUrl();
         $productImages = [];
 
+        $store = $this->storeManager->getStore();
+        $baseUrl = $store->getBaseUrl(UrlInterface::URL_TYPE_MEDIA);
+        $images = $product->getMediaGalleryEntries();
         foreach ($images as $image) {
-            $productImages[] = $image->getUrl();
+            $productImages[] = $baseUrl . 'catalog/product' . $image->getFile();
         }
+
+        $imageUrl = !empty($images) ? $productImages[0] : null;
         array_shift($productImages);
+
+        if ($imageUrl) {
+            $position = strstr($imageUrl, '/w/');
+            $imageUrl = str_replace($position, $product->getImage(), $imageUrl);
+        }
 
         $extraImages = array_slice($productImages, 9);
         $extraDataImages = [];
@@ -465,6 +524,14 @@ class ProductFactory
     private function getAttributeMappingsService(): AttributeMappingsService
     {
         return ServiceRegister::getService(AttributeMappingsService::class);
+    }
+
+    /**
+     * @return ThreeLevelSyncSettingsService
+     */
+    private function getThreeLevelSyncSettingsService(): ThreeLevelSyncSettingsService
+    {
+        return ServiceRegister::getService(ThreeLevelSyncSettingsService::class);
     }
 
     /**

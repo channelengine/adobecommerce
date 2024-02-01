@@ -57,7 +57,7 @@ class UpdateListener extends Listener
 
         /** @var TransactionLogAware $task */
         $task = $this->queueItem->getTask();
-        $this->transactionLog = $task->getTransactionLog();
+        $this->transactionLog = $task->getTransactionLog() ? $task->getTransactionLog() : new TransactionLog();
     }
 
     /**

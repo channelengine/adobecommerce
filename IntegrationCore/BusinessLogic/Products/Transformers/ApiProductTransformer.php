@@ -43,6 +43,95 @@ class ApiProductTransformer
     }
 
     /**
+     * @param Product $product
+     *
+     * @return array
+     */
+    public static function transformSimpleProductToThreeLevel(Product $product)
+    {
+        $grandParent = static::transform($product);
+        $grandParent->setMerchantProductNo(APIProduct::GRANDPARENT_PREFIX . $grandParent->getMerchantProductNo());
+        $grandParent->setName(APIProduct::GRANDPARENT_PREFIX . $grandParent->getName());
+
+        $parent = static::transform($product);
+        $parent->setMerchantProductNo(APIProduct::PARENT_PREFIX . $parent->getMerchantProductNo());
+        $parent->setName(APIProduct::PARENT_PREFIX . $parent->getName());
+        $parent->setParentMerchantProductNo2($grandParent->getMerchantProductNo());
+
+        $child = static::transform($product);
+        $child->setParentMerchantProductNo($parent->getMerchantProductNo());
+
+        return [$grandParent, $parent, $child];
+    }
+
+    /**
+     * @param Product $product
+     *
+     * @return array
+     */
+    public static function transformProductWithChildrenToThreeLevel(Product $product)
+    {
+        $grandParent = static::transform($product);
+        $transformedProducts = [$grandParent];
+        $listOfVirtualNumbers = [];
+        foreach ($product->getVariants() as $variant) {
+            $parentProductNo = $product->getHasThreeLevelSync() ?
+                APIProduct::PARENT_PREFIX . $product->getId() . '-' . $variant->getThreeLevelSyncAttributeValue() :
+                APIProduct::PARENT_PREFIX . $variant->getId();
+
+            $parentCreated = false;
+            if (!in_array($parentProductNo, $listOfVirtualNumbers)) {
+                $parent = static::transform($product);
+                $parentName = $product->getHasThreeLevelSync() ?
+                    APIProduct::PARENT_PREFIX . $parent->getName() . '-' . $variant->getThreeLevelSyncAttributeValue() :
+                    APIProduct::PARENT_PREFIX . $variant->getName();
+                $parent->setMerchantProductNo($parentProductNo);
+                $parent->setName($parentName);
+                $parent->setParentMerchantProductNo2($grandParent->getMerchantProductNo());
+                $transformedProducts[] = $parent;
+                $listOfVirtualNumbers[] = $parentProductNo;
+                $parentCreated = true;
+            }
+
+            $child = static::transformVariant($variant);
+            $child->setParentMerchantProductNo($parentProductNo);
+
+            $transformedProducts[] = $child;
+
+            if ($parentCreated) {
+                $index = count($transformedProducts) - 2;
+                $transformedProducts[$index]->setImageUrl($child->getImageUrl());
+                $transformedProducts[$index]->setExtraImageUrl1($child->getExtraImageUrl1());
+                $transformedProducts[$index]->setExtraImageUrl2($child->getExtraImageUrl2());
+                $transformedProducts[$index]->setExtraImageUrl3($child->getExtraImageUrl3());
+                $transformedProducts[$index]->setExtraImageUrl4($child->getExtraImageUrl4());
+                $transformedProducts[$index]->setExtraImageUrl5($child->getExtraImageUrl5());
+                $transformedProducts[$index]->setExtraImageUrl6($child->getExtraImageUrl6());
+                $transformedProducts[$index]->setExtraImageUrl7($child->getExtraImageUrl7());
+                $transformedProducts[$index]->setExtraImageUrl8($child->getExtraImageUrl8());
+                $transformedProducts[$index]->setExtraImageUrl9($child->getExtraImageUrl9());
+            }
+        }
+
+        return $transformedProducts;
+    }
+
+    /**
+     * @param Product $product
+     *
+     * @return array
+     */
+    public static function transformProductToTwoLevel(Product $product)
+    {
+        $transformedProducts = [static::transform($product)];
+        foreach ($product->getVariants() as $variant) {
+            $transformedProducts[] = static::transformVariant($variant);
+        }
+
+        return $transformedProducts;
+    }
+
+    /**
      * Transforms products and variants to API product.
      *
      * @param Product | Variant $product

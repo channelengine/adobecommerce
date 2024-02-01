@@ -15,6 +15,10 @@ document.addEventListener(
             saveBtnWrapper = document.getElementById('ce-save-changes'),
             enableStockSync = document.getElementById('ce-stock'),
             quantity = document.getElementById('ceStockQuantity'),
+            enableThreeLevelSync = document.getElementById('ce-three-level-sync'),
+            threeLevelSyncAttributeBtn = document.getElementById('ce-attribute-three-level-sync'),
+            threeLevelSyncAttributeText = document.querySelector('#ce-attribute-three-level-sync #ce-three-level-sync-attribute-text'),
+            threeLevelSyncAttributes = document.getElementById('ce-shipping-time-list')?.getElementsByTagName('li') ?? [],
             disconnectBtn = document.getElementById('ce-disconnect-btn'),
             syncNowBtn = document.getElementById('ce-sync-now'),
             stateUrl = document.getElementById('ce-state-url'),
@@ -23,13 +27,13 @@ document.addEventListener(
             groupPricingLabel = document.getElementById('ce-pricing-text'),
             priceAttributeBtn = document.getElementById('ce-pricing-attribute-btn'),
             priceAttributeBtnText = document.getElementById('ce-pricing-attribute-text'),
-            priceAttribute = document.getElementById('ce-attributes-list').getElementsByTagName('li'),
+            priceAttribute = document.getElementById('ce-attributes-list')?.getElementsByTagName('li') ?? [],
             customerGroupBtn = document.getElementById('ce-customer-group-btn'),
             customerGroupText = document.getElementById('ce-customer-group-text'),
-            customerGroups = document.getElementById('ce-customer-group-list').getElementsByTagName('li'),
+            customerGroups = document.getElementById('ce-customer-group-list')?.getElementsByTagName('li') ?? [],
             priceQuantity = document.getElementById('ce-attribute-quantity'),
             priceQuantitySection = document.getElementById('ce-price-attribute-quantity'),
-            inventories = document.getElementById('ce-inventory-select').getElementsByTagName('option'),
+            inventories = document.getElementById('ce-inventory-select')?.getElementsByTagName('option') ?? [],
             nameBtn = document.getElementById('ce-attribute-name'),
             nameText = document.querySelector('#ce-attribute-name #ce-pricing-attribute-text'),
             descriptionBtn = document.getElementById('ce-attribute-description'),
@@ -38,14 +42,14 @@ document.addEventListener(
             categoryText = document.querySelector('#ce-attribute-category #ce-pricing-attribute-text'),
             shippingCostBtn = document.getElementById('ce-attribute-shipping-cost'),
             shippingCostText = document.querySelector('#ce-attribute-shipping-cost #ce-pricing-attribute-text'),
-            priceItems = document.getElementById('ce-shipping-cost-list').getElementsByTagName('li'),
+            priceItems = document.getElementById('ce-shipping-cost-list')?.getElementsByTagName('li') ?? [],
             msrpBtn = document.getElementById('ce-attribute-msrp'),
             msrpText = document.querySelector('#ce-attribute-msrp #ce-pricing-attribute-text'),
             purchasePriceBtn = document.getElementById('ce-attribute-purchase-price'),
             purchasePriceText = document.querySelector('#ce-attribute-purchase-price #ce-pricing-attribute-text'),
             shippingTimeBtn = document.getElementById('ce-attribute-shipping-time'),
             shippingTimeText = document.querySelector('#ce-attribute-shipping-time #ce-pricing-attribute-text'),
-            attributes = document.getElementById('ce-shipping-time-list').getElementsByTagName('li'),
+            attributes = document.getElementById('ce-shipping-time-list')?.getElementsByTagName('li') ?? [],
             brandBtn = document.getElementById('ce-attribute-brand'),
             brandText = document.querySelector('#ce-attribute-brand #ce-pricing-attribute-text'),
             colorBtn = document.getElementById('ce-attribute-color'),
@@ -56,10 +60,10 @@ document.addEventListener(
             eanText = document.querySelector('#ce-attribute-ean #ce-pricing-attribute-text'),
             unknownOrderLinesBtn = document.getElementById('ce-unknown-lines'),
             unknownOrderLinesText = document.getElementById('ce-unknown-lines-text'),
-            unknownOrderLinesOptions = document.getElementById('ce-unknown-lines-list').getElementsByTagName('li'),
+            unknownOrderLinesOptions = document.getElementById('ce-unknown-lines-list')?.getElementsByTagName('li') ?? [],
             fulfilledByMarketplaceBtn = document.getElementById('ce-import-fulfilled'),
             fulfilledByMarketplaceText = document.getElementById('ce-import-fulfilled-text'),
-            fulfilledByMarketplaceOptions = document.getElementById('ce-import-fulfilled-list').getElementsByTagName('li'),
+            fulfilledByMarketplaceOptions = document.getElementById('ce-import-fulfilled-list')?.getElementsByTagName('li') ?? [],
             merchantSyncButton = document.getElementById('ce-merchant-fulfilled'),
             shipmentSyncButton = document.getElementById('ce-shipments-sync'),
             cancellationSyncButton = document.getElementById('ce-cancellations-sync'),
@@ -73,11 +77,11 @@ document.addEventListener(
         saveBtnWrapper.style.display = "block";
         ChannelEngine.triggerSyncService.checkStatus();
 
-        syncNowBtn.onclick = function () {
+        syncNowBtn && (syncNowBtn.onclick = function() {
             ChannelEngine.triggerSyncService.showModal(triggerSyncUrl.value);
-        }
+        });
 
-        disconnectBtn.onclick = function () {
+        disconnectBtn && (disconnectBtn.onclick = function () {
             let header = document.getElementById('ce-disconnect-header-text'),
                 btnText = document.getElementById('ce-disconnect-button-text'),
                 text = document.getElementById('ce-disconnect-text'),
@@ -91,9 +95,9 @@ document.addEventListener(
                 btnText.value,
                 disconnect
             );
-        };
+        });
 
-        disableSwitch.onchange = (event) => {
+        disableSwitch && (disableSwitch.onchange = (event) => {
             let header = document.getElementById('ce-disable-header-text'),
                 btnText = document.getElementById('ce-disable-button-text'),
                 text = document.getElementById('ce-disable-text'),
@@ -106,21 +110,19 @@ document.addEventListener(
                     header.value,
                     content.innerHTML,
                     btnText.value,
-                    disable
+                    () => {
+                        ChannelEngine.ajaxService.get(
+                            disableUrl.value + '?storeId=' + storeScope.value,
+                            function (response) {
+                                if (response.success) {
+                                    window.location.assign(stateUrl.value + '?storeId=' + storeScope.value);
+                                }
+                            }
+                        );
+                    }
                 );
             }
-        }
-
-        let disable = function () {
-            ChannelEngine.ajaxService.get(
-                disableUrl.value + '?storeId=' + storeScope.value,
-                function (response) {
-                    if (response.success) {
-                        window.location.assign(stateUrl.value + '?storeId=' + storeScope.value);
-                    }
-                }
-            );
-        }
+        });
 
         let disconnect = function () {
             ChannelEngine.ajaxService.get(
@@ -131,16 +133,17 @@ document.addEventListener(
             )
         }
 
-        ChannelEngine.ajaxService.get(
+        configDataUrl && (ChannelEngine.ajaxService.get(
             configDataUrl.value + '?storeId=' + storeScope.value,
             function (response) {
-                let productSyncCheckbox = document.getElementById('ce-product-sync-checkbox');;
+                let productSyncCheckbox = document.getElementById('ce-product-sync-checkbox');
                 apiKey.value = response.accountData.api_key;
                 accountName.value = response.accountData.account_name;
                 exportProducts.setAttribute('data-group-export-products', response.exportProducts);
                 if(response.exportProducts) {
                     setPriceSettings(response);
                     setStockSettings(response);
+                    setThreeLevelSyncSettings(response);
                     setAttributeMappings(response);
                     setExtraDataMappings(response);
                     productSyncCheckbox.removeAttribute('disabled');
@@ -153,7 +156,7 @@ document.addEventListener(
 
                 ChannelEngine.loader.hide();
             }
-        );
+        ));
 
         function disableProductSynchronizationFields() {
             ChannelEngine.productsService.exportProductsNotSelected(
@@ -168,6 +171,8 @@ document.addEventListener(
                 document.getElementById('ce-stock'),
                 document.getElementById('ce-inventory-select'),
                 document.getElementById('ceStockQuantity'),
+                document.getElementById('ce-three-level-sync'),
+                document.getElementById('ce-attribute-three-level-sync'),
                 document.getElementById('ce-attribute-name'),
                 document.getElementById('ce-attribute-description'),
                 document.getElementById('ce-attribute-category'),
@@ -198,6 +203,8 @@ document.addEventListener(
                 document.getElementById('ce-stock'),
                 document.getElementById('ce-inventory-select'),
                 document.getElementById('ceStockQuantity'),
+                document.getElementById('ce-three-level-sync'),
+                document.getElementById('ce-attribute-three-level-sync'),
                 document.getElementById('ce-attribute-name'),
                 document.getElementById('ce-attribute-description'),
                 document.getElementById('ce-attribute-category'),
@@ -230,6 +237,25 @@ document.addEventListener(
                     fulfilledByMarketplaceText.innerText = fulfilledByMarketplaceOptions[i].getElementsByTagName('span')[0].innerText;
                 }
             }
+        }
+
+        if (enableThreeLevelSync) {
+            let originalThreeLevelSyncEnabledValue = enableThreeLevelSync.getAttribute('three-level-sync-enabled') === '1';
+            let originalThreeLevelSyncAttributeValue = document.getElementById('ce-three-level-sync-attribute-text').innerText.toUpperCase();
+        }
+
+        function setThreeLevelSyncSettings(response) {
+            enableThreeLevelSync.setAttribute('three-level-sync-enabled', response.threeLevelSyncData.enableThreeLevelSync ? '1' : '0');
+            threeLevelSyncAttributeBtn.setAttribute('data-three-level-sync-attribute', response.threeLevelSyncData.syncAttribute);
+
+            for (let i = 0; i < threeLevelSyncAttributes.length; i++) {
+                if (threeLevelSyncAttributes[i].getAttribute('value') === response.threeLevelSyncData.syncAttribute) {
+                    threeLevelSyncAttributeText.innerText = threeLevelSyncAttributes[i].getElementsByTagName('span')[0].innerText;
+                }
+            }
+
+            originalThreeLevelSyncEnabledValue = response.threeLevelSyncData.enableThreeLevelSync;
+            originalThreeLevelSyncAttributeValue = response.threeLevelSyncData.syncAttribute.toUpperCase();
         }
 
         function setAttributeMappings(response) {
@@ -385,6 +411,18 @@ document.addEventListener(
         }
 
         saveBtn.onclick = function () {
+            let newThreeLevelSyncEnabledValue = enableThreeLevelSync.getAttribute('three-level-sync-enabled') === '1';
+            let newThreeLevelSyncAttributeValue = document.getElementById('ce-three-level-sync-attribute-text').innerText.toUpperCase();
+
+            if (originalThreeLevelSyncEnabledValue !== newThreeLevelSyncEnabledValue ||
+                (newThreeLevelSyncEnabledValue && (newThreeLevelSyncAttributeValue !== originalThreeLevelSyncAttributeValue))) {
+                ChannelEngine.triggerSyncService.showSaveConfigModal(() => saveConfig(false), triggerSyncUrl.value);
+            } else {
+                saveConfig(true);
+            }
+        }
+
+        let saveConfig = (showStartSyncModal) => {
             let productSyncCheckbox = document.getElementById('ce-product-sync-checkbox');
             if(exportProducts.getAttribute('data-group-export-products').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, '') === '1') {
                 productSyncCheckbox.removeAttribute('disabled');
@@ -449,6 +487,11 @@ document.addEventListener(
                     selectedInventories: selectedInventories,
                     enableStockSync: enableStockSync.getAttribute('stock-enabled'),
                     stockQuantity: quantity.value,
+                    threeLevelSync: {
+                        enableThreeLevelSync: enableThreeLevelSync.getAttribute('three-level-sync-enabled'),
+                        syncAttribute: threeLevelSyncAttributeBtn.getAttribute('data-three-level-sync-attribute'),
+                        syncAttributeType: threeLevelSyncAttributeBtn.getAttribute('data-three-level-sync-type'),
+                    },
                     attributeMappings: {
                         name: nameBtn.getAttribute('data-name-attribute'),
                         nameType: nameBtn.getAttribute('data-name-type'),
@@ -487,7 +530,9 @@ document.addEventListener(
                     if (response.success) {
                         ChannelEngine.notificationService.removeNotifications();
                         ChannelEngine.notificationService.addNotification(response.message, true);
-                        ChannelEngine.triggerSyncService.showModal(triggerSyncUrl.value);
+                        showStartSyncModal && ChannelEngine.triggerSyncService.showModal(triggerSyncUrl.value);
+                        originalThreeLevelSyncEnabledValue = enableThreeLevelSync.getAttribute('three-level-sync-enabled') === '1';
+                        originalThreeLevelSyncAttributeValue = document.getElementById('ce-three-level-sync-attribute-text').innerText.toUpperCase();
                     } else {
                         ChannelEngine.notificationService.removeNotifications();
                         ChannelEngine.notificationService.addNotification(response.message, false);

@@ -7,7 +7,10 @@ use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappingsTypes;
 use ChannelEngine\ChannelEngineIntegration\DTO\ExtraDataAttributeMappings;
 use ChannelEngine\ChannelEngineIntegration\DTO\PriceSettings;
 use ChannelEngine\ChannelEngineIntegration\DTO\StockSettings;
+use ChannelEngine\ChannelEngineIntegration\DTO\ThreeLevelSyncSettings;
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Contracts\ProductsSyncConfigService;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Entities\SyncConfig;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsService;
@@ -18,6 +21,7 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ExtraDataAttri
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PriceSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StockSettingsService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ThreeLevelSyncSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Traits\GetPostParamsTrait;
 use ChannelEngine\ChannelEngineIntegration\Traits\SetsContextTrait;
 use Magento\Backend\App\Action;
@@ -84,6 +88,18 @@ class ProductSync extends Action
 
         if (!$stockSettingsSaved['success']) {
             return $this->resultJsonFactory->create()->setData($stockSettingsSaved);
+        }
+
+        $threeLevelSyncSettingsSaved = $this->saveThreeLevelSyncSettings($postParams);
+
+        if (!$threeLevelSyncSettingsSaved['success']) {
+            return $this->resultJsonFactory->create()->setData($threeLevelSyncSettingsSaved);
+        }
+
+        $syncConfigSaved = $this->saveSyncConfig($postParams);
+
+        if (!$syncConfigSaved['success']) {
+            return $this->resultJsonFactory->create()->setData($syncConfigSaved);
         }
 
         $mappingsSaved = $this->saveAttributeMappings($postParams);
@@ -254,6 +270,73 @@ class ProductSync extends Action
     }
 
     /**
+     * @param array $postParams
+     *
+     * @return array
+     *
+     * @throws QueryFilterInvalidParamException
+     */
+    private function saveThreeLevelSyncSettings(array $postParams): array
+    {
+        if (!$postParams['exportProducts']) {
+            return ['success' => true];
+        }
+
+        $threeLevelSync = $postParams['threeLevelSync'] ?? [];
+        $enableThreeLevelSync = $threeLevelSync['enableThreeLevelSync'] === '1' ?? false;
+        $newSyncAttribute = $threeLevelSync['syncAttribute'];
+
+        $currentThreeLevelSyncSettings = $this->getThreeLevelSyncSettingsService()->getThreeLevelSyncSettings();
+        $oldSyncAttribute = '';
+        if ($currentThreeLevelSyncSettings) {
+            $oldSyncAttribute = $currentThreeLevelSyncSettings->getSyncAttribute();
+        }
+
+        $attributeToBeSaved = $enableThreeLevelSync || !$currentThreeLevelSyncSettings ? $newSyncAttribute : $oldSyncAttribute;
+
+        $settings = new ThreeLevelSyncSettings($enableThreeLevelSync, $attributeToBeSaved, false);
+
+        $this->getThreeLevelSyncSettingsService()->setThreeLevelSyncSettings($settings);
+
+        return ['success' => true];
+    }
+
+    /**
+     * @param array $postParams
+     *
+     * @return array
+     *
+     * @throws QueryFilterInvalidParamException
+     */
+    private function saveSyncConfig(array $postParams): array
+    {
+        if (!$postParams['exportProducts']) {
+            return ['success' => true];
+        }
+
+        $threeLevelSync = $postParams['threeLevelSync'] ?? [];
+        $enableThreeLevelSync = $threeLevelSync['enableThreeLevelSync'] === '1' ?? false;
+        $newSyncAttribute = $threeLevelSync['syncAttribute'];
+        $enableStockSync = $postParams['enableStockSync'] === '1' ?? false;
+
+        $currentThreeLevelSyncSettings = $this->getThreeLevelSyncSettingsService()->getThreeLevelSyncSettings();
+        $oldSyncAttribute = '';
+        if ($currentThreeLevelSyncSettings) {
+            $oldSyncAttribute = $currentThreeLevelSyncSettings->getSyncAttribute();
+        }
+
+        $attributeToBeSaved = $enableThreeLevelSync || !$currentThreeLevelSyncSettings ? $newSyncAttribute : $oldSyncAttribute;
+
+        $settings = new SyncConfig();
+        $settings->setEnabledStockSync($enableStockSync);
+        $settings->setThreeLevelSyncAttribute($attributeToBeSaved);
+        $settings->setThreeLevelSyncStatus($enableThreeLevelSync);
+        $this->getProductsSyncConfigService()->set($settings);
+
+        return ['success' => true];
+    }
+
+    /**
      * @param $message
      *
      * @return array
@@ -275,11 +358,29 @@ class ProductSync extends Action
     }
 
     /**
+     * Retrieves instance of ProductsSyncConfigService.
+     *
+     * @return ProductsSyncConfigService
+     */
+    protected function getProductsSyncConfigService()
+    {
+        return ServiceRegister::getService(ProductsSyncConfigService::class);
+    }
+
+    /**
      * @return StockSettingsService
      */
     private function getStockSettingsService(): StockSettingsService
     {
         return ServiceRegister::getService(StockSettingsService::class);
+    }
+
+    /**
+     * @return ThreeLevelSyncSettingsService
+     */
+    private function getThreeLevelSyncSettingsService(): ThreeLevelSyncSettingsService
+    {
+        return ServiceRegister::getService(ThreeLevelSyncSettingsService::class);
     }
 
     /**

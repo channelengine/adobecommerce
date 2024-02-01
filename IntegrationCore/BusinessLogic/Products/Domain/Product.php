@@ -94,6 +94,10 @@ class Product
 	 */
     protected $categoryTrail;
     /**
+     * @var boolean
+     */
+    protected $hasThreeLevelSync;
+    /**
      * @var Variant[]
      */
     protected $variants;
@@ -121,6 +125,7 @@ class Product
      * @param string[] $additionalImageUrls
      * @param CustomAttribute[] $customAttributes
      * @param string $categoryTrail
+     * @param boolean $hasThreeLevelSync
      * @param Variant[] $variants
      */
     public function __construct(
@@ -144,6 +149,7 @@ class Product
         array $additionalImageUrls = [],
         array $customAttributes = [],
 	    $categoryTrail = '',
+        $hasThreeLevelSync = false,
         array $variants = []
     ) {
         $this->id = $id;
@@ -166,6 +172,7 @@ class Product
         $this->additionalImageUrls = $additionalImageUrls;
         $this->customAttributes = $customAttributes;
         $this->categoryTrail = $categoryTrail;
+        $this->hasThreeLevelSync = $hasThreeLevelSync;
         $this->variants = $variants;
     }
 
@@ -346,4 +353,22 @@ class Product
 	{
 		return $this->categoryTrail;
 	}
+
+    /**
+     * @return boolean
+     */
+    public function getHasThreeLevelSync()
+    {
+        return $this->hasThreeLevelSync;
+    }
+
+    /**
+     * @param bool $hasThreeLevelSync
+     */
+    public function setHasThreeLevelSync($hasThreeLevelSync)
+    {
+        $this->hasThreeLevelSync = $hasThreeLevelSync;
+    }
+
+
 }

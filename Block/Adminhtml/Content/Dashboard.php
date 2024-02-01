@@ -9,6 +9,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Servic
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PluginStatusService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StoreService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ThreeLevelSyncSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Utility\UrlHelper;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\View\Element\Template;
@@ -119,6 +120,19 @@ class Dashboard extends Template
     }
 
     /**
+     * Checks if integration is disabled due to a deleted three sync level attribute.
+     *
+     * @return bool
+     *
+     * @throws QueryFilterInvalidParamException
+     */
+    public function shouldRenderIntegrationDisabledThreeLevelSyncMessage(): bool
+    {
+        $threeLevelSyncSettings = $this->getThreeLevelSyncSettingsService()->getThreeLevelSyncSettings();
+        return $threeLevelSyncSettings && $threeLevelSyncSettings->getAttributeDeleted();
+    }
+
+    /**
      * Retrieves current store id.
      *
      * @return string
@@ -191,6 +205,14 @@ class Dashboard extends Template
     private function getPluginStatusService(): PluginStatusService
     {
         return new PluginStatusService();
+    }
+
+    /**
+     * @return ThreeLevelSyncSettingsService
+     */
+    private function getThreeLevelSyncSettingsService(): ThreeLevelSyncSettingsService
+    {
+        return ServiceRegister::getService(ThreeLevelSyncSettingsService::class);
     }
 
     /**

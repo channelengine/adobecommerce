@@ -12,6 +12,9 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Data\T
  */
 class Product extends DataTransferObject
 {
+    const GRANDPARENT_PREFIX = 'CEG-';
+    const PARENT_PREFIX = 'CE-';
+
     /**
      * @var string | null
      */

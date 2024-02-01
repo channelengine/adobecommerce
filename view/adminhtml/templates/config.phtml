@@ -102,6 +102,8 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Scope;
                     echo $block->getLayout()->createBlock(ProductSync::class)
                         ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/stockSettings.phtml")->toHtml();
                     echo $block->getLayout()->createBlock(ProductSync::class)
+                        ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/threeLevelSync.phtml")->toHtml();
+                    echo $block->getLayout()->createBlock(ProductSync::class)
                         ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/attributeMapping.phtml")->toHtml();
                     echo $block->getLayout()->createBlock(ProductSync::class)
                         ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/extraDataMapping.phtml")->toHtml();
@@ -144,6 +146,11 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Scope;
         <div id="ce-trigger-modal" class="ce-hidden">
             <?=  $block->getLayout()->createBlock(Dashboard::class)
                 ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/triggerSync.phtml")->toHtml();
+            ?>
+        </div>
+        <div id="ce-save-config-modal" class="ce-hidden">
+            <?=  $block->getLayout()->createBlock(Dashboard::class)
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/triggerSyncThreeLevelChanged.phtml")->toHtml();
             ?>
         </div>
         <input id="ce-disconnect-header-text" type="hidden"

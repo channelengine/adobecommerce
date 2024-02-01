@@ -17,11 +17,13 @@ class ProductEvent extends Entity
 
     const DELETED = 'DELETED';
     const UPSERT = 'UPSERT';
+    const PURGED = 'PURGED';
+    const REPLACED = 'REPLACED';
 
     protected $fields = ['id', 'type', 'productId'];
 
     /**
-     * @var string one of ['DELETED', 'UPSERT']
+     * @var string one of ['DELETED', 'UPSERT', 'PURGED', 'REPLACED']
      */
     protected $type;
     /**

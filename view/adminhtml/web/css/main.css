@@ -941,6 +941,10 @@ fieldset[disabled] .ce-store-switcher .actions.dropdown .action.toggle {
   overflow: visible;
 }
 
+.three-level-sync-changed-modal {
+  max-width: 600px;
+}
+
 .ce-account-group {
   padding-left: 25px;
 }

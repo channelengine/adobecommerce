@@ -2,8 +2,8 @@
 
 namespace ChannelEngine\ChannelEngineIntegration\Observer;
 
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductUpsert;
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Handlers\ProductUpsertEventHandler;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductReplaced;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Handlers\ProductReplacedEventHandler;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigEntity;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigurationManager;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
@@ -90,9 +90,9 @@ class CategoryChangedObserver implements ObserverInterface
     private function saveProductUpdateEvent(array $productIds): void
     {
         if ($productIds) {
-            $handler = new ProductUpsertEventHandler();
+            $handler = new ProductReplacedEventHandler();
             foreach ($productIds as $id) {
-                $handler->handle(new ProductUpsert($id));
+                $handler->handle(new ProductReplaced($id));
             }
         }
     }

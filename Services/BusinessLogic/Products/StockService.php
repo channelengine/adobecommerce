@@ -11,10 +11,11 @@ use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Inventory\Model\SourceItem\Command\GetSourceItemsBySku;
+use Magento\InventoryApi\Api\Data\StockSourceLinkInterface;
 use Magento\InventoryConfigurationApi\Exception\SkuIsNotAssignedToStockException;
 use Magento\InventoryConfigurationApi\Model\IsSourceItemManagementAllowedForProductTypeInterface;
-use Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku;
-use Magento\Inventory\Model\Source\Command\GetSourcesAssignedToStockOrderedByPriority;
+use Magento\InventorySalesAdminUi\Model\GetStockSourceLinksBySourceCode;
+use Magento\InventorySalesApi\Api\GetProductSalableQtyInterface;
 
 /**
  * Class StockService
@@ -31,12 +32,6 @@ class StockService
      * @var StockSettings
      */
     private $stockSettings;
-    private $getSalableQuantityDataBySku;
-
-    /**
-     * @var GetSourcesAssignedToStockOrderedByPriority
-     */
-    private $getSourcesAssignedToStockOrderedByPriority;
 
     /**
      * @var IsSourceItemManagementAllowedForProductTypeInterface
@@ -44,21 +39,31 @@ class StockService
     private $isSourceItemManagementAllowedForProductType;
 
     /**
-     * @param  GetSourceItemsBySku  $getSourceItemsBySku
-     * @param  \Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku  $getSalableQuantityDataBySku
-     * @param  \Magento\Inventory\Model\Source\Command\GetSourcesAssignedToStockOrderedByPriority  $getSourcesAssignedToStockOrderedByPriority
-     * @param  \Magento\InventoryConfigurationApi\Model\IsSourceItemManagementAllowedForProductTypeInterface  $isSourceItemManagementAllowedForProductType
+     * @var GetStockSourceLinksBySourceCode
+     */
+    private $getStockSourceLinksBySourceCode;
+
+    /**
+     * @var GetProductSalableQtyInterface
+     */
+    private $productSalableQty;
+
+    /**
+     * @param GetSourceItemsBySku $getSourceItemsBySku
+     * @param IsSourceItemManagementAllowedForProductTypeInterface $isSourceItemManagementAllowedForProductType
+     * @param GetStockSourceLinksBySourceCode $getStockSourceLinksBySourceCode
+     * @param GetProductSalableQtyInterface $productSalableQty
      */
     public function __construct(
         GetSourceItemsBySku $getSourceItemsBySku,
-        GetSalableQuantityDataBySku $getSalableQuantityDataBySku,
-        GetSourcesAssignedToStockOrderedByPriority $getSourcesAssignedToStockOrderedByPriority,
-        IsSourceItemManagementAllowedForProductTypeInterface $isSourceItemManagementAllowedForProductType
+        IsSourceItemManagementAllowedForProductTypeInterface $isSourceItemManagementAllowedForProductType,
+        GetStockSourceLinksBySourceCode $getStockSourceLinksBySourceCode,
+        GetProductSalableQtyInterface $productSalableQty
     ) {
         $this->getSourceItemsBySku                         = $getSourceItemsBySku;
-        $this->getSalableQuantityDataBySku                 = $getSalableQuantityDataBySku;
-        $this->getSourcesAssignedToStockOrderedByPriority  = $getSourcesAssignedToStockOrderedByPriority;
         $this->isSourceItemManagementAllowedForProductType = $isSourceItemManagementAllowedForProductType;
+        $this->getStockSourceLinksBySourceCode = $getStockSourceLinksBySourceCode;
+        $this->productSalableQty = $productSalableQty;
     }
 
     /**
@@ -88,39 +93,15 @@ class StockService
             return $stockSettings->getQuantity();
         }
 
-        $inInventory = false;
-        $stocks = $this->getSalableQuantityDataBySku->execute($product->getSku());
-        foreach ($stocks as $stock) {
-            $sources = $this->getSourcesAssignedToStockByPriority($stock['stock_id']);
-            foreach ($sources as $source) {
-                if (in_array($source['source_code'], $stockSettings->getInventories(), true)) {
-                    $inInventory = true;
-                    $quantity += $stock['qty'];
-                }
+        foreach ($stockSettings->getInventories() as $inventory) {
+            /** @var StockSourceLinkInterface $stockSourceLink */
+            $stockSourceLinks = $this->getStockSourceLinksBySourceCode->execute($inventory);
+            foreach ($stockSourceLinks as $stockSourceLink) {
+                $quantity += $this->productSalableQty->execute($product->getSku(), $stockSourceLink->getStockId());
             }
         }
 
-        if (!$inInventory) {
-            return $stockSettings->getQuantity();
-        }
-
         return $quantity;
-    }
-
-    /**
-     * @param $stockId
-     * @return array
-     * @throws InputException
-     * @throws LocalizedException
-     */
-    private function getSourcesAssignedToStockByPriority($stockId): array
-    {
-        $sources = [];
-        foreach ($this->getSourcesAssignedToStockOrderedByPriority->execute($stockId) as $item) {
-            $sources[] = $item->getData();
-        }
-
-        return $sources;
     }
 
     /**

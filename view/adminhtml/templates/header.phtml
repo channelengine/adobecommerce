@@ -1,5 +1,7 @@
 <?php
 
+/** @var Header $block */
+
 use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Header;
 use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Config;
 use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Account;
@@ -8,7 +10,7 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Account;
 $configBlock = $block->getLayout()->createBlock(Config::class);
 /** @var Account $accountBlock */
 $accountBlock = $block->getLayout()->createBlock(Account::class);
-/** @var Header $block */
+
 ?>
 
 <header>

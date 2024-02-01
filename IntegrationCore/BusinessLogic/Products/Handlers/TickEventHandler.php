@@ -6,6 +6,8 @@ namespace ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\P
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Contracts\ProductEventsBufferService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Entities\ProductEvent;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Tasks\ProductsDeleteTask;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Tasks\ProductsPurgeTask;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Tasks\ProductsReplaceTask;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Tasks\ProductsUpsertTask;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigurationManager;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
@@ -38,6 +40,8 @@ class TickEventHandler
     {
         $this->handleTickEvent(ProductEvent::DELETED);
         $this->handleTickEvent(ProductEvent::UPSERT);
+        $this->handleTickEvent(ProductEvent::PURGED);
+        $this->handleTickEvent(ProductEvent::REPLACED);
     }
 
     /**
@@ -68,15 +72,20 @@ class TickEventHandler
      * @param $type
      * @param $ids
      *
-     * @return ProductsDeleteTask|ProductsUpsertTask
+     * @return ProductsDeleteTask|ProductsUpsertTask|ProductsPurgeTask|ProductsReplaceTask
      */
     protected function getTask($type, $ids)
     {
-        if ($type === ProductEvent::DELETED) {
-            return new ProductsDeleteTask($ids);
+        switch ($type) {
+            case ProductEvent::DELETED:
+                return new ProductsDeleteTask($ids);
+            case ProductEvent::PURGED:
+                return new ProductsPurgeTask($ids);
+            case ProductEvent::REPLACED:
+                return new ProductsReplaceTask($ids);
+            default:
+                return new ProductsUpsertTask($ids);
         }
-
-        return new ProductsUpsertTask($ids);
     }
 
     /**

@@ -79,7 +79,7 @@ class CheckStatus extends Action
         $this->setContext($this->_request);
 
         $data = [
-            'product_sync' => $this->getTaskData('ProductSync'),
+            'product_sync' => $this->getTaskData('ProductsResyncTask'),
             'order_sync' => $this->getTaskData('OrderSync'),
         ];
 
@@ -109,6 +109,10 @@ class CheckStatus extends Action
     {
         $queueItem = $this->getQueueService()->findLatestByType($taskType);
 
+        if ($taskType === 'ProductsResyncTask' && !$queueItem) {
+            $queueItem = $this->getQueueService()->findLatestByType('ProductSync');
+        }
+
         if (!$queueItem) {
             return [
                 'status' => 'not created',
@@ -122,7 +126,7 @@ class CheckStatus extends Action
         $status = ($log && $log->getSynchronizedEntities()) ? $log->getSynchronizedEntities() : 0;
         $count = 0;
 
-        if ($taskType === 'ProductSync') {
+        if ($taskType === 'ProductsResyncTask') {
             $count = $this->getProductsService()->count();
         }
 
@@ -136,10 +140,18 @@ class CheckStatus extends Action
             $status = 100;
         }
 
+        $progress = (int)$status;
+        $synced = ($log && $log->getSynchronizedEntities()) ? $log->getSynchronizedEntities() : 0;
+
+        if ($queueItem->getTask()->getType() === 'ProductsResyncTask') {
+            $progress = round($progress / 2);
+            $synced = round($synced / 2);
+        }
+
         return [
             'status' => $queueItem->getStatus(),
-            'progress' => (int)$status,
-            'synced' => ($log && $log->getSynchronizedEntities()) ? $log->getSynchronizedEntities() : 0,
+            'progress' => $progress,
+            'synced' => $synced,
             'total' => $count ?? '?',
         ];
     }

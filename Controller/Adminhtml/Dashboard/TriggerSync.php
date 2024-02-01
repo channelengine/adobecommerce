@@ -4,7 +4,7 @@ namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Dashboard;
 
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\InitialSync\OrderSync;
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\InitialSync\ProductSync;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\ManualSync\ProductsResyncTask;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException;
@@ -80,7 +80,7 @@ class TriggerSync extends Action
             if ($productSync) {
                 $this->getQueueService()->enqueue(
                     'channel-engine-products',
-                    new ProductSync(),
+                    new ProductsResyncTask(),
                     $this->_request->getParam('storeId')
                 );
                 $this->getStateService()->setManualProductSyncInProgress(true);
