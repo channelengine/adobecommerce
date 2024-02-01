@@ -2,6 +2,7 @@
 
 namespace ChannelEngine\ChannelEngineIntegration\Setup\Patch\Schema;
 
+use _PHPStan_3bfe2e67c\Nette\Neon\Exception;
 use ChannelEngine\ChannelEngineIntegration\Setup\Patch\AbstractPatch;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\Patch\SchemaPatchInterface;
@@ -50,6 +51,6 @@ class AddTypeOfFulfillmentColumnInCeOrderTable extends AbstractPatch implements 
      */
     public static function getVersion(): string
     {
-        return '1.0.1';
+        return '1.0.2';
     }
 }
