@@ -44,7 +44,11 @@ class Collection extends CoreSalesGrid
         $this->getSelect()->joinLeft(
             $joinTable,
             'main_table.entity_id = channel_engine_order.order_id',
-            ['channel_name', 'channel_order_no', 'channel_type_of_fulfillment']
+            [
+                'channel_name as ce_channel_name',
+                'channel_order_no as ce_channel_order_no',
+                'channel_type_of_fulfillment as ce_channel_type_of_fulfillment'
+            ]
         );
         parent::_renderFiltersBefore();
     }

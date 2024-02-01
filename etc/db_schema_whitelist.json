@@ -136,7 +136,8 @@
             "order_id": true,
             "channel_name": true,
             "channel_order_no": true,
-            "order_canceled": true
+            "order_canceled": true,
+            "channel_type_of_fulfillment": true
         },
         "constraint": {
             "PRIMARY": true,

@@ -200,6 +200,7 @@
         <column xsi:type="varchar" name="channel_name" nullable="false" comment="ChannelEngine channel name"/>
         <column xsi:type="varchar" name="channel_order_no" nullable="false" length="191" comment="ChannelEngine channel order number"/>
         <column xsi:type="boolean" name="order_canceled" nullable="false" comment="Is order cancelled"/>
+        <column xsi:type="text" name="channel_type_of_fulfillment" nullable="true" comment="ChannelEngine channel type of fulfillment"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>
