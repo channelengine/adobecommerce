@@ -58,7 +58,8 @@ document.addEventListener(
                 duplicatesText = document.getElementById('ceExtraDataDuplicatesText').value,
                 duplicatesHeaderText = document.getElementById('ceExtraDataDuplicatesHeader').value,
                 exportProducts = document.getElementById('ce-export-products'),
-                exportProductsValue = exportProducts.getAttribute('data-group-export-products').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, '');
+                exportProductsValue = exportProducts.getAttribute('data-group-export-products').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, ''),
+                enableMSI = document.getElementById('ce-enable-msi').getAttribute('msi-enabled');
 
             if (exportProductsValue === '1' && (!ean.getAttribute('data-ean-attribute') || ean.getAttribute('data-ean-attribute') === 'not_mapped')) {
                 ean.classList.add('ce-required-attribute');
@@ -113,6 +114,7 @@ document.addEventListener(
                     quantity: groupPricingValue === '1' || enableStockSync === '0' ? quantity.value : '',
                     selectedInventories: selectedInventories,
                     enableStockSync: enableStockSync,
+                    enableMSI: enableMSI,
                     stockQuantity: stockQuantity.value,
                     threeLevelSync: {
                         enableThreeLevelSync: enableThreeLevelSync,

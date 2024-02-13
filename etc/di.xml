@@ -28,4 +28,8 @@
                 type="ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ReturnsService"/>
     <preference for="ChannelEngine\ChannelEngineIntegration\Api\ReturnsServiceFactoryInterface"
                 type="ChannelEngine\ChannelEngineIntegration\Model\ReturnsServiceFactory"/>
+    <preference for="ChannelEngine\ChannelEngineIntegration\Api\StockServiceFactoryInterface"
+                type="ChannelEngine\ChannelEngineIntegration\Model\StockServiceFactory"/>
+    <preference for="ChannelEngine\ChannelEngineIntegration\Api\SourceCollectionFactoryInterface"
+                type="ChannelEngine\ChannelEngineIntegration\Model\SourceCollectionFactory"/>
 </config>

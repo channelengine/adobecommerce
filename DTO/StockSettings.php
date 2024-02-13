@@ -26,15 +26,22 @@ class StockSettings extends DataTransferObject
     private $quantity;
 
     /**
+     * @var bool
+     */
+    private $enableMSI;
+
+    /**
      * @param bool $enableStockSync
      * @param array $inventories
      * @param int $quantity
+     * @param bool $enableMSI
      */
-    public function __construct(bool $enableStockSync, array $inventories, int $quantity)
+    public function __construct(bool $enableStockSync, array $inventories, int $quantity, bool $enableMSI)
     {
         $this->enableStockSync = $enableStockSync;
         $this->inventories = $inventories;
         $this->quantity = $quantity;
+        $this->enableMSI = $enableMSI;
     }
 
     /**
@@ -62,6 +69,14 @@ class StockSettings extends DataTransferObject
     }
 
     /**
+     * @return bool
+     */
+    public function isEnableMSI(): bool
+    {
+        return $this->enableMSI;
+    }
+
+    /**
      * @inheritDoc
      */
     public function toArray(): array
@@ -70,6 +85,7 @@ class StockSettings extends DataTransferObject
             'enableStockSync' => $this->enableStockSync,
             'inventories' => $this->inventories,
             'quantity' => $this->quantity,
+            'enableMSI' => $this->enableMSI,
         ];
     }
 
@@ -81,7 +97,8 @@ class StockSettings extends DataTransferObject
         return new self(
             static::getDataValue($data, 'enableStockSync'),
             static::getDataValue($data, 'inventories'),
-            static::getDataValue($data, 'quantity')
+            static::getDataValue($data, 'quantity'),
+            static::getDataValue($data, 'enableMSI')
         );
     }
 }

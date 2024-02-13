@@ -2,6 +2,7 @@
 
 namespace ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content;
 
+use ChannelEngine\ChannelEngineIntegration\Api\SourceCollectionFactoryInterface;
 use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappings;
 use ChannelEngine\ChannelEngineIntegration\DTO\PriceSettings;
 use ChannelEngine\ChannelEngineIntegration\DTO\StockSettings;
@@ -20,8 +21,8 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
 use Magento\Customer\Model\ResourceModel\Group\Collection;
 use Magento\Framework\View\Element\Template;
-use Magento\Inventory\Model\ResourceModel\Source\Collection as SourceCollection;
 use Magento\ConfigurableProduct\Model\ConfigurableAttributeHandler;
+use Magento\Framework\Module\Manager;
 
 /**
  * Class ProductSync
@@ -39,10 +40,6 @@ class ProductSync extends Template
      */
     private $customerGroup;
     /**
-     * @var SourceCollection
-     */
-    private $inventorySource;
-    /**
      * @var CollectionFactory
      */
     private $productAttributes;
@@ -50,30 +47,41 @@ class ProductSync extends Template
      * @var ConfigurableAttributeHandler
      */
     private $configurableAttributeHandler;
+    /**
+     * @var Manager
+     */
+    private $moduleManager;
+    /**
+     * @var SourceCollectionFactoryInterface
+     */
+    private $sourceCollectionFactory;
 
     /**
      * @param UrlHelper $urlHelper
      * @param Collection $customerGroup
-     * @param SourceCollection $inventorySource
      * @param CollectionFactory $productAttributes
      * @param Context $context
+     * @param Manager $moduleManager
      * @param ConfigurableAttributeHandler $configurableAttributeHandler
+     * @param SourceCollectionFactoryInterface $sourceCollectionFactory
      * @param array $data
      */
     public function __construct(
         UrlHelper         $urlHelper,
         Collection        $customerGroup,
-        SourceCollection  $inventorySource,
         CollectionFactory $productAttributes,
         Context           $context,
+        Manager           $moduleManager,
         ConfigurableAttributeHandler $configurableAttributeHandler,
+        SourceCollectionFactoryInterface $sourceCollectionFactory,
         array             $data = []
     ) {
         $this->urlHelper = $urlHelper;
-        $this->inventorySource = $inventorySource;
         $this->customerGroup = $customerGroup;
         $this->productAttributes = $productAttributes;
         $this->configurableAttributeHandler = $configurableAttributeHandler;
+        $this->moduleManager = $moduleManager;
+        $this->sourceCollectionFactory = $sourceCollectionFactory;
         parent::__construct($context, $data);
     }
 
@@ -94,7 +102,8 @@ class ProductSync extends Template
      */
     public function getInventorySources(): array
     {
-        return $this->inventorySource->toOptionArray();
+        return $this->sourceCollectionFactory->create() ?
+            $this->sourceCollectionFactory->create()->toOptionArray() : [];
     }
 
     /**
@@ -368,6 +377,19 @@ class ProductSync extends Template
     public function isExportProductsEnabled(): bool
     {
         return $this->getExportProductsService() && $this->getExportProductsService()->isExportProductsEnabled();
+    }
+
+    /**
+     * Checks if MSI is enabled in shop.
+     *
+     * @return bool
+     */
+    public function isMSIEnabledInShop(): bool
+    {
+        return
+            $this->moduleManager->isEnabled('Magento_Inventory') &&
+            $this->moduleManager->isEnabled('Magento_InventoryConfigurationApi') &&
+            $this->moduleManager->isEnabled('Magento_InventorySalesAdminUi');
     }
 
     /**

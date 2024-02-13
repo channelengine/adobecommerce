@@ -71,7 +71,13 @@ document.addEventListener(
             conditionBtn = document.getElementById('ce-default-condition'),
             resolutionBtn = document.getElementById('ce-default-resolution'),
             returnSyncBtn = document.getElementById('ce-returns-sync'),
-            exportProducts = document.getElementById('ce-export-products');
+            exportProducts = document.getElementById('ce-export-products'),
+            enableMSI = document.getElementById('ce-enable-msi'),
+            msiEnabledInShop = document.getElementById('ce-enable-msi').getAttribute('msi-enabled-in-shop'),
+            enableMSIValue = document.getElementById('ce-enable-msi').getAttribute('msi-enabled'),
+            selectInventoriesSection = document.getElementById('ce-select-inventories-section'),
+            noMSI = document.getElementById('ce-msi-item-no'),
+            msiText = document.getElementById('ce-msi-text');
 
         ChannelEngine.loader.show();
         saveBtnWrapper.style.display = "block";
@@ -153,6 +159,15 @@ document.addEventListener(
 
                 setOrderSyncSetting(response);
                 response.exportProducts ? enableProductSynchronizationFields() : disableProductSynchronizationFields();
+                if (msiEnabledInShop === '0') {
+                    enableMSI.setAttribute('disabled', 'true');
+                    enableMSI.setAttribute('msi-enabled', '0');
+                    msiText.innerText = noMSI.innerText.replace(/\s/g, '');
+                    selectInventoriesSection.style.display = 'none';
+                } else {
+                    enableMSI.removeAttribute('disabled');
+                    enableMSIValue === '0' ? selectInventoriesSection.style.display = 'none' : selectInventoriesSection.style.display = '';
+                }
 
                 ChannelEngine.loader.hide();
             }
@@ -186,7 +201,8 @@ document.addEventListener(
                 document.getElementById('ce-attribute-ean'),
                 document.getElementById('ce-attribute-product-number'),
                 document.getElementById('ce-attribute-ean'),
-                document.getElementById('ceAddNewAttribute')
+                document.getElementById('ceAddNewAttribute'),
+                document.getElementById('ce-enable-msi')
             );
         }
 
@@ -218,7 +234,8 @@ document.addEventListener(
                 document.getElementById('ce-attribute-ean'),
                 document.getElementById('ce-attribute-product-number'),
                 document.getElementById('ce-attribute-ean'),
-                document.getElementById('ceAddNewAttribute')
+                document.getElementById('ceAddNewAttribute'),
+                document.getElementById('ce-enable-msi')
             );
         }
 
@@ -486,6 +503,7 @@ document.addEventListener(
                     quantity: priceQuantity.value,
                     selectedInventories: selectedInventories,
                     enableStockSync: enableStockSync.getAttribute('stock-enabled'),
+                    enableMSI: enableMSI.getAttribute('msi-enabled'),
                     stockQuantity: quantity.value,
                     threeLevelSync: {
                         enableThreeLevelSync: enableThreeLevelSync.getAttribute('three-level-sync-enabled'),

@@ -2,6 +2,7 @@
 
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Products;
 
+use ChannelEngine\ChannelEngineIntegration\Api\StockServiceFactoryInterface;
 use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappings;
 use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappingsTypes;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\CustomAttribute;
@@ -20,6 +21,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
+use Magento\Catalog\Api\Data\ProductInterface;
 
 /**
  * Class ProductFactory
@@ -41,10 +43,6 @@ class ProductFactory
      * @var PriceService
      */
     private $priceService;
-    /**
-     * @var StockService
-     */
-    private $stockService;
     /**
      * @var AttributesService
      */
@@ -69,38 +67,42 @@ class ProductFactory
      * @var ProductResource
      */
     private $productResource;
+    /**
+     * @var StockServiceFactoryInterface
+     */
+    private $stockServiceFactory;
 
     /**
      * @param ProductRepository $productRepository
      * @param PriceService $priceService
-     * @param StockService $stockService
      * @param AttributesService $attributesService
      * @param ExtraFieldsService $extraFieldsService
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param CategoryService $categoryService
      * @param StoreManagerInterface $storeManager
      * @param ProductResource $productResource
+     * @param StockServiceFactoryInterface $stockServiceFactory
      */
     public function __construct(
-        ProductRepository           $productRepository,
-        PriceService                $priceService,
-        StockService                $stockService,
-        AttributesService           $attributesService,
-        ExtraFieldsService          $extraFieldsService,
-        SearchCriteriaBuilder       $searchCriteriaBuilder,
-        CategoryService             $categoryService,
-        StoreManagerInterface       $storeManager,
-        ProductResource             $productResource
+        ProductRepository            $productRepository,
+        PriceService                 $priceService,
+        AttributesService            $attributesService,
+        ExtraFieldsService           $extraFieldsService,
+        SearchCriteriaBuilder        $searchCriteriaBuilder,
+        CategoryService              $categoryService,
+        StoreManagerInterface        $storeManager,
+        ProductResource              $productResource,
+        StockServiceFactoryInterface $stockServiceFactory
     ) {
         $this->productRepository = $productRepository;
         $this->priceService = $priceService;
-        $this->stockService = $stockService;
         $this->attributesService = $attributesService;
         $this->extraFieldsService = $extraFieldsService;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->categoryService = $categoryService;
         $this->storeManager = $storeManager;
         $this->productResource = $productResource;
+        $this->stockServiceFactory = $stockServiceFactory;
     }
 
     /**
@@ -152,7 +154,7 @@ class ProductFactory
             $attributeMappings->getMerchantProductNumber() === AttributeMappingsService::PRODUCT_ID ?
                 $product->getId() : $product->getSku(),
             $this->priceService->getProductPrice($product),
-            $this->stockService->getStock($product),
+            $this->getStock($product),
             $attributeMappings->getName() === 'name' ?
                 $product->getName() :
                 $this->attributesService->getAttribute(
@@ -368,7 +370,7 @@ class ProductFactory
         }
 
         $price = $this->priceService->getProductPrice($product);
-        $stock = $this->stockService->getStock($product);
+        $stock = $this->getStock($product);
         $purchasePrice = $this->attributesService->getAttribute(
             $productAttributes,
             $customAttributes,
@@ -492,6 +494,15 @@ class ProductFactory
             ),
             $categoryTrail ?? $parentProduct->getCategoryTrail()
         );
+    }
+
+    /**
+     * @param ProductInterface $product
+     * @return int
+     */
+    private function getStock(ProductInterface $product): int
+    {
+        return $this->stockServiceFactory->create()->getStock($product);
     }
 
     /**

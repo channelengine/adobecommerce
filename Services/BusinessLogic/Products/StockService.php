@@ -5,6 +5,7 @@ namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Products
 use ChannelEngine\ChannelEngineIntegration\DTO\StockSettings;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\StockServiceInterface;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StockSettingsService;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Exception\InputException;
@@ -22,7 +23,7 @@ use Magento\InventorySalesApi\Api\GetProductSalableQtyInterface;
  *
  * @package ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Products
  */
-class StockService
+class StockService implements StockServiceInterface
 {
     /**
      * @var GetSourceItemsBySku

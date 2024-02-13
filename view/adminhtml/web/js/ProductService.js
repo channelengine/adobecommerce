@@ -12,12 +12,13 @@ if (!window.ChannelEngine) {
             attributeQuantity.classList.add('ce-disabled-product');
         }
 
-        this.disableStockSynchronizationFields = function (stockBtn, inventory, stockQuantity) {
+        this.disableStockSynchronizationFields = function (stockBtn, inventory, stockQuantity, enableMSI) {
             stockBtn.setAttribute('disabled', 'true');
             inventory.setAttribute('disabled', 'true');
             stockQuantity.setAttribute('disabled', 'true');
             stockQuantity.classList.add('ce-disabled-product');
             inventory.classList.add('ce-disabled-product');
+            enableMSI.setAttribute('disabled', 'true');
         }
 
         this.disableThreeLevelSynchronizationFields = function (button, attributeName) {
@@ -77,12 +78,13 @@ if (!window.ChannelEngine) {
             attributeQuantity.classList.remove('ce-disabled-product');
         }
 
-        this.enableStockSynchronizationFields = function (stockBtn, inventory, stockQuantity) {
+        this.enableStockSynchronizationFields = function (stockBtn, inventory, stockQuantity, enableMSI) {
             stockBtn.removeAttribute('disabled');
             inventory.removeAttribute('disabled');
             stockQuantity.removeAttribute('disabled');
             stockQuantity.classList.remove('ce-disabled-product');
             inventory.classList.remove('ce-disabled-product');
+            enableMSI.removeAttribute('disabled');
         }
 
         this.enableThreeLevelSynchronizationFields = function (button, attributeName) {
@@ -156,14 +158,15 @@ if (!window.ChannelEngine) {
             attributeEan,
             attributeProductName,
             ean,
-            newAttributeBtn
+            newAttributeBtn,
+            enableMSI
         ) {
             exportProductsButton.setAttribute('data-group-export-products', '1');
             exportProductsList.style.display = "none";
             exportProductsButtonText.innerText = yesExportProducts.innerText.replace(/\s/g, '');
 
             this.enablePriceSettingsFields(button, attributeButton, customerGroupBtn, attributeQuantity);
-            this.enableStockSynchronizationFields(stockBtn, inventory, stockQuantity);
+            this.enableStockSynchronizationFields(stockBtn, inventory, stockQuantity, enableMSI);
             this.enableThreeLevelSynchronizationFields(enableThreeLevelSyncBtn, attributeThreeLevelSync);
             this.enableAttributeMappingsFields(
                 attributeName,
@@ -209,14 +212,15 @@ if (!window.ChannelEngine) {
             attributeEan,
             attributeProductName,
             ean,
-            newAttributeBtn
+            newAttributeBtn,
+            enableMSI
         ) {
             exportProductsButton.setAttribute('data-group-export-products', '0');
             exportProductsList.style.display = "none";
             exportProductsButtonText.innerText = noExportProducts.innerText.replace(/\s/g, '');
 
             this.disablePriceSettingsFields(button, attributeButton, customerGroupBtn, attributeQuantity);
-            this.disableStockSynchronizationFields(stockBtn, inventory, stockQuantity);
+            this.disableStockSynchronizationFields(stockBtn, inventory, stockQuantity, enableMSI);
             this.disableThreeLevelSynchronizationFields(enableThreeLevelSyncBtn, attributeThreeLevelSync);
             this.disableAttributeMappingsFields(
                 attributeName,

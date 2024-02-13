@@ -16,6 +16,9 @@ $stockSettings = $block->getStockSettings();
 ?>
 <form class="ce-form" onsubmit="return false">
     <h3><?= __("Stock synchronization") ?></h3>
+    <div id="ce-enable-msi-warning" class="ce-sku-warning" style="width: fit-content; display: <?= $block->isMSIEnabledInShop() ? 'none' : ''; ?>">
+        <?= __('Please enable the Magento Multi-Source Inventory module in order to enable it in the ChannelEngine configuration.'); ?>
+    </div>
     <div class="ce-input-group ce-flex">
         <label>
             <span class="label"><?= __('Enable stock synchronization'); ?></span>
@@ -44,6 +47,33 @@ $stockSettings = $block->getStockSettings();
         </div>
     </div>
     <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= __('Enable MSI'); ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip"><?= __('Enable using Multi-Source Inventory.'); ?></span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-enable-msi" class="ce-dropdown"
+                    msi-enabled="<?= (!$stockSettings || $stockSettings->isEnableMSI()) && $block->isMSIEnabledInShop() ? 1 : 0?>"
+                    msi-enabled-in-shop="<?= $block->isMSIEnabledInShop() ? 1 : 0 ?>">
+                <span id="ce-msi-text" class="ce-dropdown-text">
+                    <?= !$stockSettings || $stockSettings->isEnableMSI() ? __('Yes') : __('No');?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-msi-list" class="ce-dropdown-list">
+                    <li id="ce-msi-item-yes" class="ce-dropdown-list-item" value="1">
+                        <span class="ce-dropdown-list-item-text"><?= __('Yes');?></span>
+                    </li>
+                    <li id="ce-msi-item-no" class="ce-dropdown-list-item" value="0">
+                        <span class="ce-dropdown-list-item-text"><?= __('No');?></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex" id="ce-select-inventories-section">
         <label>
             <span class="label"><?= __('Select inventories'); ?></span>
             <span class="ce-help">

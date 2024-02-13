@@ -45,7 +45,6 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Setup\Module\Di\Compiler\Log\Log;
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
@@ -125,7 +124,8 @@ class Save extends Action
                 $params['exportProducts'],
                 $params['enableStockSync'] === '1' ?? false,
                 $params['selectedInventories'] ?? [],
-                $params['stockQuantity'] ?? ''
+                $params['stockQuantity'] ?? '',
+                $params['enableMSI'] === '1' ?? false
             );
 
             $this->saveThreeLevelSyncSettings($params['exportProducts'], $params['threeLevelSync'] ?? []);
@@ -241,19 +241,25 @@ class Save extends Action
      * @param bool $enableStockSync
      * @param array $inventories
      * @param int $quantity
-     *
+     * @param bool $enableMSI
      * @return void
      *
      * @throws BaseException
      * @throws QueryFilterInvalidParamException
      */
-    private function saveStockSettings(bool $exportProducts, bool $enableStockSync, array $inventories, int $quantity): void
+    private function saveStockSettings(
+        bool $exportProducts,
+        bool $enableStockSync,
+        array $inventories,
+        int $quantity,
+        bool $enableMSI
+    ): void
     {
         if (!$exportProducts) {
             return;
         }
 
-        if ($enableStockSync && $inventories === []) {
+        if ($enableStockSync && $inventories === [] && $enableMSI) {
             throw new BaseException(__('Please select at least one inventory.'));
         }
 
@@ -261,7 +267,7 @@ class Save extends Action
             throw new BaseException(__('Stock quantity is required.'));
         }
 
-        $settings = new StockSettings($enableStockSync, $inventories, $quantity);
+        $settings = new StockSettings($enableStockSync, $inventories, $quantity, $enableMSI);
         $this->getStockSettingsService()->setStockSettings($settings);
     }
 

@@ -254,8 +254,9 @@ class ProductSync extends Action
         $enableStockSync = $postParams['enableStockSync'] === '1' ?? false;
         $inventories = $postParams['selectedInventories'] ?? [];
         $quantity = $postParams['stockQuantity'] ?? '';
+        $enableMSI = $postParams['enableMSI'] === '1' ?? false;
 
-        if ($enableStockSync && $inventories === []) {
+        if ($enableStockSync && $inventories === [] && $enableMSI) {
             return $this->returnError('Please select at least one inventory.');
         }
 
@@ -263,7 +264,7 @@ class ProductSync extends Action
             return $this->returnError('Stock quantity is required.');
         }
 
-        $settings = new StockSettings($enableStockSync, $inventories, $quantity);
+        $settings = new StockSettings($enableStockSync, $inventories, $quantity, $enableMSI);
         $this->getStockSettingsService()->setStockSettings($settings);
 
         return ['success' => true];
