@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Content;
 
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
@@ -15,8 +17,10 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StoreService;
 use ChannelEngine\ChannelEngineIntegration\Traits\SetsContextTrait;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\Request\Http;
-use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
@@ -84,10 +88,21 @@ class State extends Action
      * @var PageFactory
      */
     private $resultPageFactory;
+
+    /**
+     * @var ResultFactory
+     */
+    private $resultResponseFactory;
+
     /**
      * @var Http
      */
     private $request;
+
+    /**
+     * @var UrlInterface
+     */
+    private $backendUrl;
 
     /**
      * Initialize State controller.
@@ -95,15 +110,21 @@ class State extends Action
      * @param Context $context
      * @param Http $request
      * @param PageFactory $resultPageFactory
+     * @param ResultFactory $resultFactory
+     * @param UrlInterface $backendUrl
      */
     public function __construct(
         Context     $context,
         Http        $request,
-        PageFactory $resultPageFactory
+        PageFactory $resultPageFactory,
+        ResultFactory $resultFactory,
+        UrlInterface $backendUrl
     ) {
         parent::__construct($context);
         $this->request = $request;
         $this->resultPageFactory = $resultPageFactory;
+        $this->resultResponseFactory = $resultFactory;
+        $this->backendUrl = $backendUrl;
     }
 
     /**
@@ -117,11 +138,13 @@ class State extends Action
     {
         $this->getTaskRunnerWakeupService()->wakeup();
 
-        $this->redirectHandler();
+        if (($redirectResponse = $this->redirectHandler()) !== true) {
+            return $redirectResponse;
+        }
 
-        $this->_view->loadLayout();
 
         $resultPage = $this->resultPageFactory->create();
+        $resultPage->initLayout();
         $resultPage->getConfig()->getTitle()->prepend('ChannelEngine');
         $resultPage->setActiveMenu('ChannelEngine_ChannelEngineIntegration::channelengine_menu');
 
@@ -129,11 +152,11 @@ class State extends Action
     }
 
     /**
-     * @return bool
+     * @return bool|Redirect|ResultInterface|(ResultInterface&Redirect)
      *
      * @throws QueryFilterInvalidParamException
      */
-    protected function redirectHandler(): bool
+    private function redirectHandler()
     {
         try {
             $this->setContext($this->request);
@@ -149,46 +172,38 @@ class State extends Action
         $page = $this->request->get('page');
 
         if (empty($page) || $page === StateService::DASHBOARD) {
-            $this->redirectIfNecessary(self::MAPPINGS[$state]['currentAction'], self::MAPPINGS[$state]['route']);
-
-            return true;
+            return $this->redirectIfNecessary(self::MAPPINGS[$state]['currentAction'], self::MAPPINGS[$state]['route']);
         }
 
         if ($state === StateService::DASHBOARD && $page === StateService::CONFIG
             && $this->getPluginStatusService()->isEnabled()) {
-            $this->redirectIfNecessary(
+            return $this->redirectIfNecessary(
                 self::MAPPINGS[StateService::CONFIG]['currentAction'],
                 self::MAPPINGS[StateService::CONFIG]['route']
             );
 
-            return true;
         }
 
         if ($state === StateService::DASHBOARD && $page === StateService::TRANSACTIONS) {
-            $this->redirectIfNecessary(
+            return $this->redirectIfNecessary(
                 self::MAPPINGS[StateService::TRANSACTIONS]['currentAction'],
                 self::MAPPINGS[StateService::TRANSACTIONS]['route']
             );
-
-            return true;
         }
 
         if (isset(self::VALID_PREVIOUS_PAGES[$state]) && in_array($page, self::VALID_PREVIOUS_PAGES[$state], true)) {
             $this->removeConfigs($page);
-            $this->redirectIfNecessary(
+            return $this->redirectIfNecessary(
                 self::MAPPINGS[$page]['currentAction'],
                 self::MAPPINGS[$page]['route']
             );
-
-            return true;
         }
 
         if (!empty(self::MAPPINGS[$state])) {
-            $this->redirectIfNecessary(
+            return $this->redirectIfNecessary(
                 self::MAPPINGS[$state]['currentAction'],
                 self::MAPPINGS[$state]['route']
             );
-            return true;
         }
 
         return false;
@@ -198,18 +213,22 @@ class State extends Action
      * @param string $currentAction
      * @param string $redirectUrl
      *
-     * @return ResponseInterface|void
+     * @return Redirect|ResultInterface|(Redirect&ResultInterface)|bool
      *
      * @throws QueryFilterInvalidParamException
      */
-    protected function redirectIfNecessary(string $currentAction, string $redirectUrl)
+    private function redirectIfNecessary(string $currentAction, string $redirectUrl)
     {
         $actionName = $this->request->getActionName();
 
         if ($actionName !== $currentAction) {
             $storeId = $this->request->getParam('storeId') ?? $this->getStoreService()->getFirstConnectedStoreId();
-            return $this->_redirect($redirectUrl, ['storeId' => $storeId, 'redirected' => true]);
+            $redirect = $this->resultResponseFactory->create(ResultFactory::TYPE_REDIRECT);
+            $redirect->setUrl($this->backendUrl->getUrl($redirectUrl, ['storeId' => $storeId, 'redirected' => true]));
+            return $redirect;
         }
+
+        return true;
     }
 
     /**

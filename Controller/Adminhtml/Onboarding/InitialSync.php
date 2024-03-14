@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Onboarding;
 
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
@@ -10,7 +12,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Ex
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\QueueService;
-use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationServiceInterface;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\InitialSyncStateService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PluginStatusService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
@@ -114,11 +116,11 @@ class InitialSync extends Action
     }
 
     /**
-     * @return TranslationService
+     * @return TranslationServiceInterface
      */
-    private function getTranslationService(): TranslationService
+    private function getTranslationService(): TranslationServiceInterface
     {
-        return ServiceRegister::getService(TranslationService::class);
+        return ServiceRegister::getService(TranslationServiceInterface::class);
     }
 
     /**

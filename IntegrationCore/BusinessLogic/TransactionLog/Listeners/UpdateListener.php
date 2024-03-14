@@ -3,7 +3,7 @@
 namespace ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Listeners;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Entities\TransactionLog;
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Traits\TransactionLogAware;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Tasks\TransactionalTask;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Events\BaseQueueItemEvent;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueItemDeserializationException;
@@ -55,7 +55,7 @@ class UpdateListener extends Listener
         $this->event = $event;
         $this->queueItem = $this->extractQueueItem();
 
-        /** @var TransactionLogAware $task */
+        /** @var TransactionalTask $task */
         $task = $this->queueItem->getTask();
         $this->transactionLog = $task->getTransactionLog() ? $task->getTransactionLog() : new TransactionLog();
     }
@@ -71,7 +71,7 @@ class UpdateListener extends Listener
 
         $queueItem = $event->getQueueItem();
 
-        /** @var TransactionLogAware $task */
+        /** @var TransactionalTask $task */
         $task = $queueItem->getTask();
         if (!$task || !$task->getTransactionLog()) {
             return false;

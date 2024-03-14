@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="WelcomePage">
+        <annotations>
+            <description>Start on-boarding by passing welcome page</description>
+        </annotations>
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngine"/>
+        <waitForPageLoad stepKey="waitForWelcomePageLoad"/>
+        <conditionalClick
+            selector="{{ChannelEngineWelcomeSection.ceConfigure}}"
+            dependentSelector="{{ChannelEngineWelcomeSection.ceConfigure}}"
+            visible="true"
+            stepKey="ClickConfigure"
+        />
+        <waitForPageLoad stepKey="waitForWelcomePageLoad2"/>
+    </actionGroup>
+</actionGroups>

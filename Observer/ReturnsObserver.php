@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Observer;
 
 use ChannelEngine\ChannelEngineIntegration\Api\ReturnsServiceFactoryInterface;
@@ -28,7 +30,6 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Rma\Model\Rma;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\ProductMetadataInterface;
 
 /**
@@ -50,6 +51,11 @@ class ReturnsObserver implements ObserverInterface
      * @var ReturnsServiceFactoryInterface
      */
     private $returnsServiceFactory;
+
+    /**
+     * @var ProductMetadataInterface
+     */
+    private $productMetadata;
     /**
      * @var Initializer
      */
@@ -59,17 +65,20 @@ class ReturnsObserver implements ObserverInterface
      * @param OrderRepositoryInterface $orderRepository
      * @param CollectionFactory $collectionFactory
      * @param ReturnsServiceFactoryInterface $returnsServiceFactory
+     * @param ProductMetadataInterface $productMetadata
      * @param Initializer $initializer
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         CollectionFactory $collectionFactory,
         ReturnsServiceFactoryInterface $returnsServiceFactory,
+        ProductMetadataInterface $productMetadata,
         Initializer $initializer
     ) {
         $this->orderRepository = $orderRepository;
         $this->collectionFactory = $collectionFactory;
         $this->returnsServiceFactory = $returnsServiceFactory;
+        $this->productMetadata = $productMetadata;
         $this->initializer = $initializer;
     }
 
@@ -86,9 +95,7 @@ class ReturnsObserver implements ObserverInterface
     {
         $this->initializer->init();
 
-        /** @var ProductMetadataInterface $productMetadata */
-        $productMetadata = ObjectManager::getInstance()->get(ProductMetadataInterface::class);
-        $edition = $productMetadata->getEdition();
+        $edition = $this->productMetadata->getEdition();
         if ($edition === 'Community') {
             return;
         }

@@ -37,7 +37,9 @@ class AsyncSocketHttpClient extends CurlHttpClient
      * @param string $body Request payload. String data to send as HTTP request payload. Optional.  Default value for
      * request body is '1' to ensure minimal request data in case of POST, PUT, PATCH methods.
      *
-     * @throws \ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException
+     * @return bool
+     *
+     * @throws HttpRequestException
      */
     protected function sendHttpRequestAsync($method, $url, $headers = array(), $body = '1')
     {
@@ -54,7 +56,7 @@ class AsyncSocketHttpClient extends CurlHttpClient
         $payload = $this->getRequestPayload(strtoupper($method), $urlDetails['host'], $path, $headers, $body);
         $timeOut = $this->getRequestTimeOut();
 
-        $this->executeRequest($transferProtocol, $urlDetails['host'], $port, $timeOut, $payload);
+        return $this->executeRequest($transferProtocol, $urlDetails['host'], $port, $timeOut, $payload);
     }
 
     /**
@@ -158,7 +160,9 @@ class AsyncSocketHttpClient extends CurlHttpClient
      * @param int $timeOut Request timeout in seconds.
      * @param string $payload Payload to be written to the socket.
      *
-     * @throws \ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException Thrown when the request
+     * @return bool
+     *
+     * @throws HttpRequestException Thrown when the request
      *      is not completed successfully.
      */
     protected function executeRequest($transferProtocol, $host, $port, $timeOut, $payload)
@@ -178,6 +182,6 @@ class AsyncSocketHttpClient extends CurlHttpClient
         // We must wait to make sure that the write is actually complete
         usleep(self::FWRITE_SLEEP_USECONDS);
 
-        fclose($socket);
+        return fclose($socket);
     }
 }

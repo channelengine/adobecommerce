@@ -20,52 +20,52 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Transactions;
         <div class="ce-tabs">
             <ul class="nav-tab-wrapper">
                 <li>
-                    <a href="<?= $block->getSubpageUrl('dashboard') ?>"
+                    <a href="<?= $block->escapeHtml($block->getSubpageUrl('dashboard')) ?>"
                        class="nav-tab">
                 <span>
-                    <?= __('Dashboard'); ?>
+                    <?= $block->escapeHtml('Dashboard') ?>
                 </span>
                     </a>
                 </li>
                 <li>
-                    <a href="<?= $block->getSubpageUrl('config') ?>"
+                    <a href="<?= $block->escapeHtml($block->getSubpageUrl('config')) ?>"
                        class="nav-tab">
                 <span>
-                    <?= __('Configuration'); ?>
+                    <?= $block->escapeHtml('Configuration') ?>
                 </span>
                     </a>
                 </li>
                 <li class="nav-tab-active">
-                    <a href="<?= $block->getSubpageUrl('transactions') ?>"
+                    <a href="<?= $block->escapeHtml($block->getSubpageUrl('transactions')) ?>"
                        class="nav-tab">
                 <span>
-                    <?= __('Transaction log'); ?>
+                    <?= $block->escapeHtml('Transaction log') ?>
                 </span>
                     </a>
                 </li>
             </ul>
         </div>
         <div class="ce-page-content">
-            <h1><?= __('Transactions history log'); ?></h1>
+            <h1><?= $block->escapeHtml('Transactions history log') ?></h1>
             <ul class="sub-page-nav">
                 <li><a id="ce-product-link" href="#"
-                       class="ce-current"><?= __('Product sync'); ?></a></li>
-                <li><a id="ce-order-link" href="#"><?= __('Order sync'); ?></a></li>
-                <li><a id="ce-errors-link" href="#"><?= __('Errors'); ?></a></li>
+                       class="ce-current"><?= $block->escapeHtml('Product sync') ?></a></li>
+                <li><a id="ce-order-link" href="#"><?= $block->escapeHtml('Order sync') ?></a></li>
+                <li><a id="ce-errors-link" href="#"><?= $block->escapeHtml('Errors') ?></a></li>
             </ul>
             <table class="ce-table">
                 <thead>
                 <tr>
-                    <th scope="col"><?= __('Task Type'); ?></th>
-                    <th scope="col" class="text-center"><?= __('Status'); ?></th>
+                    <th scope="col"><?= $block->escapeHtml('Task Type') ?></th>
+                    <th scope="col" class="text-center"><?= $block->escapeHtml('Status') ?></th>
                     <th scope="col"
-                        class="text-center ce-table-compact-view"><?= __('Details'); ?></th>
+                        class="text-center ce-table-compact-view"><?= $block->escapeHtml('Details') ?></th>
                     <th scope="col"
-                        class="text-center ce-table-full-view"><?= __('Start Time'); ?></th>
+                        class="text-center ce-table-full-view"><?= $block->escapeHtml('Start Time') ?></th>
                     <th scope="col"
-                        class="text-center ce-table-full-view"><?= __('Time Completed'); ?></th>
+                        class="text-center ce-table-full-view"><?= $block->escapeHtml('Time Completed') ?></th>
                     <th scope="col"
-                        class="text-center ce-table-full-view"><?= __('Details'); ?></th>
+                        class="text-center ce-table-full-view"><?= $block->escapeHtml('Details') ?></th>
                 </tr>
                 </thead>
                 <tbody id="ce-table-body">
@@ -76,13 +76,13 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Transactions;
                         <div class="ce-table-pagination">
                             <div class="ce-horizontal">
                                 <div class="ce-pagination-status">
-                                    <?= __('Displayed'); ?>
-                                    <strong id="ce-logs-from">1</strong> <?= __('to'); ?>
-                                    <strong id="ce-logs-to">17</strong> <?= __('of'); ?>
+                                    <?= $block->escapeHtml('Displayed') ?>
+                                    <strong id="ce-logs-from">1</strong> <?= $block->escapeHtml('to') ?>
+                                    <strong id="ce-logs-to">17</strong> <?= $block->escapeHtml('of') ?>
                                     <strong id="ce-logs-total">17</strong>
                                 </div>
                                 <div class="ce-page-size">
-                                    <label><?= __('Page size:'); ?>
+                                    <label><?= $block->escapeHtml('Page size:') ?>
                                     </label>
                                     <div class="ce-page-size-wrapper">
                                         <button id="ce-page-size" data-page-size="10">
@@ -101,10 +101,10 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Transactions;
                             </div>
                             <div class="ce-pagination-pages">
                                 <button class="ce-button ce-button__prev"
-                                        title="<?= __('Go to the previous page'); ?>">
+                                        title="<?= $block->escapeHtml('Go to the previous page') ?>">
                                 </button>
                                 <button class="ce-button ce-button__next"
-                                        title="<?= __('Go to the next page'); ?>">
+                                        title="<?= $block->escapeHtml('Go to the next page') ?>">
                                 </button>
                             </div>
                         </div>
@@ -114,34 +114,34 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Transactions;
             </table>
         </div>
         <input id="ce-transactions-get" type="hidden"
-               value="<?= $block->getLogsUrl(); ?>">
+               value="<?= $block->escapeHtml($block->getLogsUrl()) ?>">
         <input id="ce-details-get" type="hidden"
-               value="<?= $block->getDetailsUrl(); ?>">
+               value="<?= $block->escapeHtml($block->getDetailsUrl()) ?>">
         <input id="ce-view-details-translation" type="hidden"
-               value="<?= __('View details'); ?>">
-        <input id="ce-start-translation" type="hidden" value="<?= __('Start time'); ?>">
+               value="<?= $block->escapeHtml('View details') ?>">
+        <input id="ce-start-translation" type="hidden" value="<?= $block->escapeHtml('Start time') ?>">
         <input id="ce-completed-translation" type="hidden"
-               value="<?= __('Time completed'); ?>">
-        <input id="ce-modal-header" type="hidden" value="<?= __('Transaction log details'); ?>">
-        <input id="ce-modal-button-text" type="hidden" value="<?= __('Close'); ?>">
-        <input id="ce-details-identifier" type="hidden" value="<?= __('Identifier'); ?>">
-        <input id="ce-details-message" type="hidden" value="<?= __('Message'); ?>">
-        <input id="ce-details-display" type="hidden" value="<?= __('Displayed'); ?>">
-        <input id="ce-details-to" type="hidden" value="<?= __('to'); ?>">
-        <input id="ce-details-from" type="hidden" value="<?= __('of'); ?>">
-        <input id="ce-details-page-size" type="hidden" value="<?= __('Page size:'); ?>">
+               value="<?= $block->escapeHtml('Time completed') ?>">
+        <input id="ce-modal-header" type="hidden" value="<?= $block->escapeHtml('Transaction log details') ?>">
+        <input id="ce-modal-button-text" type="hidden" value="<?= $block->escapeHtml('Close') ?>">
+        <input id="ce-details-identifier" type="hidden" value="<?= $block->escapeHtml('Identifier') ?>">
+        <input id="ce-details-message" type="hidden" value="<?= $block->escapeHtml('Message') ?>">
+        <input id="ce-details-display" type="hidden" value="<?= $block->escapeHtml('Displayed') ?>">
+        <input id="ce-details-to" type="hidden" value="<?= $block->escapeHtml('to') ?>">
+        <input id="ce-details-from" type="hidden" value="<?= $block->escapeHtml('of') ?>">
+        <input id="ce-details-page-size" type="hidden" value="<?= $block->escapeHtml('Page size:') ?>">
         <input id="ce-details-go-to-previous" type="hidden"
-               value="<?= __('Go to previous page'); ?>">
+               value="<?= $block->escapeHtml('Go to previous page') ?>">
         <input id="ce-details-previous" type="hidden" value="<">
-        <input id="ce-details-go-to-next" type="hidden" value="<?= __('Go to next page'); ?>">
+        <input id="ce-details-go-to-next" type="hidden" value="<?= $block->escapeHtml('Go to next page') ?>">
         <input id="ce-details-next" type="hidden" value=">">
-        <input id="ce-no-results" type="hidden" value="<?= __('No results'); ?>">
-        <input id="ce-store-scope" type="hidden" value="<?= $block->getStoreId() ?>">
-        <input type="hidden" id="ce-state-url" value="<?= $block->getStateUrl() ?>">
+        <input id="ce-no-results" type="hidden" value="<?= $block->escapeHtml('No results') ?>">
+        <input id="ce-store-scope" type="hidden" value="<?= $block->escapeHtml($block->getStoreId()) ?>">
+        <input type="hidden" id="ce-state-url" value="<?= $block->escapeHtml($block->getStateUrl()) ?>">
     </main>
     <div id="ce-modal" class="ce-hidden">
         <?=  $block->getLayout()->createBlock(Transactions::class)
-            ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml();
+            ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml()
         ?>
     </div>
 </div>

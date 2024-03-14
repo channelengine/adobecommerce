@@ -15,32 +15,32 @@ $stockSettings = $block->getStockSettings();
 
 ?>
 <form class="ce-form" onsubmit="return false">
-    <h3><?= __("Stock synchronization") ?></h3>
+    <h3><?= $block->escapeHtml("Stock synchronization") ?></h3>
     <div id="ce-enable-msi-warning" class="ce-sku-warning" style="width: fit-content; display: <?= $block->isMSIEnabledInShop() ? 'none' : ''; ?>">
-        <?= __('Please enable the Magento Multi-Source Inventory module in order to enable it in the ChannelEngine configuration.'); ?>
+        <?= $block->escapeHtml('Please enable the Magento Multi-Source Inventory module in order to enable it in the ChannelEngine configuration.') ?>
     </div>
     <div class="ce-input-group ce-flex">
         <label>
-            <span class="label"><?= __('Enable stock synchronization'); ?></span>
+            <span class="label"><?= $block->escapeHtml('Enable stock synchronization') ?></span>
             <span class="ce-help">
                 <span class="ce-help-tooltip">
-                    <?= __('If this field is checked, stock product information will be synced to the ChannelEngine.'); ?>
+                    <?= $block->escapeHtml('If this field is checked, stock product information will be synced to the ChannelEngine.') ?>
                 </span>
             </span>
         </label>
         <div class="ce-dropdown-wrapper">
             <button id="ce-stock" class="ce-dropdown" stock-enabled="<?= !$stockSettings || $stockSettings->isEnableStockSync() ? 1 : 0?>">
                 <span id="ce-stock-text" class="ce-dropdown-text">
-                    <?= !$stockSettings || $stockSettings->isEnableStockSync() ? __('Yes') : __('No');?>
+                    <?= !$stockSettings || $stockSettings->isEnableStockSync() ? $block->escapeHtml('Yes') : $block->escapeHtml('No');?>
                 </span>
             </button>
             <div class="ce-dropdown-menu">
                 <ul id="ce-stock-list" class="ce-dropdown-list">
                     <li id="ce-stock-item-yes" class="ce-dropdown-list-item" value="1">
-                        <span class="ce-dropdown-list-item-text"><?= __('Yes');?></span>
+                        <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('Yes')?></span>
                     </li>
                     <li id="ce-stock-item-no" class="ce-dropdown-list-item" value="0">
-                        <span class="ce-dropdown-list-item-text"><?= __('No');?></span>
+                        <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('No')?></span>
                     </li>
                 </ul>
             </div>
@@ -48,9 +48,9 @@ $stockSettings = $block->getStockSettings();
     </div>
     <div class="ce-input-group ce-flex">
         <label>
-            <span class="label"><?= __('Enable MSI'); ?></span>
+            <span class="label"><?= $block->escapeHtml('Enable MSI') ?></span>
             <span class="ce-help">
-                <span class="ce-help-tooltip"><?= __('Enable using Multi-Source Inventory.'); ?></span>
+                <span class="ce-help-tooltip"><?= $block->escapeHtml('Enable using Multi-Source Inventory.') ?></span>
             </span>
         </label>
         <div class="ce-dropdown-wrapper">
@@ -58,16 +58,16 @@ $stockSettings = $block->getStockSettings();
                     msi-enabled="<?= (!$stockSettings || $stockSettings->isEnableMSI()) && $block->isMSIEnabledInShop() ? 1 : 0?>"
                     msi-enabled-in-shop="<?= $block->isMSIEnabledInShop() ? 1 : 0 ?>">
                 <span id="ce-msi-text" class="ce-dropdown-text">
-                    <?= !$stockSettings || $stockSettings->isEnableMSI() ? __('Yes') : __('No');?>
+                    <?= !$stockSettings || $stockSettings->isEnableMSI() ? $block->escapeHtml('Yes') : $block->escapeHtml('No')?>
                 </span>
             </button>
             <div class="ce-dropdown-menu">
                 <ul id="ce-msi-list" class="ce-dropdown-list">
                     <li id="ce-msi-item-yes" class="ce-dropdown-list-item" value="1">
-                        <span class="ce-dropdown-list-item-text"><?= __('Yes');?></span>
+                        <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('Yes')?></span>
                     </li>
                     <li id="ce-msi-item-no" class="ce-dropdown-list-item" value="0">
-                        <span class="ce-dropdown-list-item-text"><?= __('No');?></span>
+                        <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('No')?></span>
                     </li>
                 </ul>
             </div>
@@ -75,18 +75,18 @@ $stockSettings = $block->getStockSettings();
     </div>
     <div class="ce-input-group ce-flex" id="ce-select-inventories-section">
         <label>
-            <span class="label"><?= __('Select inventories'); ?></span>
+            <span class="label"><?= $block->escapeHtml('Select inventories') ?></span>
             <span class="ce-help">
                 <span class="ce-help-tooltip">
-                    <?= __('Please select which inventories should be used during the product synchronization. The extension will use the sum of the available items in selected sources as the amount for sync.'); ?>
+                    <?= $block->escapeHtml('Please select which inventories should be used during the product synchronization. The extension will use the sum of the available items in selected sources as the amount for sync.') ?>
                 </span>
             </span>
             <select id="ce-inventory-select" class="ce-stock-select" multiple <?= $stockSettings && !$stockSettings->isEnableStockSync() ? "disabled" : "";?>>
                 <?php
                 foreach ($sources as $source) {
-                    echo '<option class="ce-stock-option" value="' . $source['value'] . '" ' .
+                    echo '<option class="ce-stock-option" value="' . $block->escapeHtml($source['value']) . '" ' .
                         ($stockSettings && in_array($source['value'], $stockSettings->getInventories(), true) ? 'selected' : '') .
-                        '>' . $source['label'] . '</option>';
+                        '>' . $block->escapeHtml($source['label']) . '</option>';
                 }
                 ?>
             </select>
@@ -94,14 +94,14 @@ $stockSettings = $block->getStockSettings();
     </div>
     <div class="ce-input-group ce-flex">
         <label>
-            <span class="label"><?= __('Set default stock quantity'); ?></span>
+            <span class="label"><?= $block->escapeHtml('Set default stock quantity') ?></span>
             <span class="ce-help">
                 <span class="ce-help-tooltip">
-                    <?= __('Please select the default stock associated with the selected inventories.'); ?>
+                    <?= $block->escapeHtml('Please select the default stock associated with the selected inventories.') ?>
                 </span>
             </span>
-            <input id="ceStockQuantity" type="text" class="ce-stock-input" value="<?= $stockSettings ? $stockSettings->getQuantity() : 0?>"
-                <?= $stockSettings && !$stockSettings->isEnableStockSync() ? "disabled" : "";?>>&nbsp;<?= __('psc'); ?>
+            <input id="ceStockQuantity" type="text" class="ce-stock-input" value="<?= $stockSettings ? $block->escapeHtml($stockSettings->getQuantity()) : 0?>"
+                <?= $stockSettings && !$stockSettings->isEnableStockSync() ? "disabled" : ""?>>&nbsp;<?= $block->escapeHtml('psc') ?>
         </label>
     </div>
 </form>

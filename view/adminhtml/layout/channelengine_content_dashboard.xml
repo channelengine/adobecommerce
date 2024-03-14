@@ -14,7 +14,6 @@
         <link src="ChannelEngine_ChannelEngineIntegration::js/Dashboard.js"/>
         <link src="ChannelEngine_ChannelEngineIntegration::js/Scope.js"/>
         <link src="ChannelEngine_ChannelEngineIntegration::js/Loader.js"/>
-        <link src="ChannelEngine_ChannelEngineIntegration::js/Config.js"/>
         <link src="ChannelEngine_ChannelEngineIntegration::js/Header.js"/>
     </head>
     <body>

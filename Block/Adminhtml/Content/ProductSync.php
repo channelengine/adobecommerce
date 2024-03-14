@@ -147,7 +147,7 @@ class ProductSync extends Template
     {
         $attributes = [];
         $storeId = $this->getStoreService()->getStoreId();
-        $applicableAttributes = $this->configurableAttributeHandler->getApplicableAttributes($storeId);
+        $applicableAttributes = $this->configurableAttributeHandler->getApplicableAttributes();
 
         foreach ($applicableAttributes as $attribute) {
             if ($attribute->getAttributeCode() !== 'manufacturer') {
@@ -202,7 +202,6 @@ class ProductSync extends Template
      * Retrieve first attribute if possible.
      *
      * @param array $attributes
-     * @param string $name
      *
      * @return string[]
      */

@@ -79,6 +79,8 @@ document.addEventListener(
             noMSI = document.getElementById('ce-msi-item-no'),
             msiText = document.getElementById('ce-msi-text');
 
+        let originalThreeLevelSyncEnabledValue = false;
+        let originalThreeLevelSyncAttributeValue = false;
         ChannelEngine.loader.show();
         saveBtnWrapper.style.display = "block";
         ChannelEngine.triggerSyncService.checkStatus();
@@ -255,10 +257,9 @@ document.addEventListener(
                 }
             }
         }
-
         if (enableThreeLevelSync) {
-            let originalThreeLevelSyncEnabledValue = enableThreeLevelSync.getAttribute('three-level-sync-enabled') === '1';
-            let originalThreeLevelSyncAttributeValue = document.getElementById('ce-three-level-sync-attribute-text').innerText.toUpperCase();
+             originalThreeLevelSyncEnabledValue = enableThreeLevelSync.getAttribute('three-level-sync-enabled') === '1';
+             originalThreeLevelSyncAttributeValue = document.getElementById('ce-three-level-sync-attribute-text').innerText.toUpperCase();
         }
 
         function setThreeLevelSyncSettings(response) {

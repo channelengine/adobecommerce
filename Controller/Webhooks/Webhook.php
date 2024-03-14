@@ -14,9 +14,9 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PluginStatusSe
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ReturnsSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
 use ChannelEngine\ChannelEngineIntegration\Traits\SetsContextTrait;
-use Magento\Framework\App\Action\Action;
-use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 
@@ -25,7 +25,7 @@ use Magento\Framework\Controller\ResultInterface;
  *
  * @package ChannelEngine\ChannelEngineIntegration\Controller\Webhooks
  */
-class Webhook extends Action
+class Webhook implements ActionInterface
 {
     use SetsContextTrait;
 
@@ -35,13 +35,26 @@ class Webhook extends Action
     private $productMetadata;
 
     /**
-     * @param Context $context
-     * @param ProductMetadataInterface $productMetadata
+     * @var RequestInterface
      */
-    public function __construct(Context $context, ProductMetadataInterface $productMetadata)
+    private $request;
+
+    /**
+     * @var ResultFactory
+     */
+    private $resultFactory;
+
+    /**
+     * @param RequestInterface $request
+     * @param ProductMetadataInterface $productMetadata
+     * @param ResultFactory $resultFactory
+     */
+    public function __construct(RequestInterface $request,ProductMetadataInterface $productMetadata,
+        ResultFactory  $resultFactory)
     {
-        parent::__construct($context);
         $this->productMetadata = $productMetadata;
+        $this->request = $request;
+        $this->resultFactory = $resultFactory;
     }
 
     /**
@@ -54,15 +67,15 @@ class Webhook extends Action
      */
     public function execute()
     {
-        $this->setContext($this->_request);
+        $this->setContext($this->request);
 
         if (!$this->getPluginStatusService()->isEnabled() || !$this->getStateService()->isOnboardingCompleted()) {
             return;
         }
 
-        $tenant = $this->_request->getParam('tenant');
-        $token = $this->_request->getParam('token');
-        $type = $this->_request->getParam('type');
+        $tenant = $this->request->getParam('tenant');
+        $token = $this->request->getParam('token');
+        $type = $this->request->getParam('type');
         $webhook = new WebhookDTO($tenant, $token, $type);
         $response = $this->resultFactory->create(ResultFactory::TYPE_RAW);
         $handler = $this->getHandler($type);

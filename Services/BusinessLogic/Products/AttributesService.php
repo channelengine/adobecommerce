@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Products;
 
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Framework\Api\AttributeValue;
-use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Class AttributesService
@@ -59,7 +60,7 @@ class AttributesService
 
         if ($product->getData($selectedAttribute)) {
             if ($this->checkIfDescriptionOrShortDescription($selectedAttribute)) {
-                return strip_tags(html_entity_decode($product->getData($selectedAttribute)));
+                return strip_tags(htmlspecialchars_decode($product->getData($selectedAttribute)));
             }
 
             if ($selectedAttributeType === 'date') {
@@ -114,7 +115,7 @@ class AttributesService
                 }
 
                 if ($this->checkIfDescriptionOrShortDescription($selectedAttribute)) {
-                    return strip_tags(html_entity_decode(
+                    return strip_tags(htmlspecialchars_decode(
                         $source->getOptionText($attribute->getValue()) ?: $attribute->getValue()
                     ));
                 }

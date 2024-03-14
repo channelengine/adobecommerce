@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Setup\Patch\Data;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Contracts\ReturnReason;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryClassException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
-use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationServiceInterface;
 use Magento\Eav\Api\AttributeOptionManagementInterface;
 use Magento\Eav\Api\AttributeRepositoryInterface;
 use Magento\Eav\Api\Data\AttributeInterface;
@@ -14,7 +16,6 @@ use Magento\Eav\Api\Data\AttributeOptionLabelInterfaceFactory;
 use Magento\Eav\Model\Entity\Attribute\OptionLabel;
 use Magento\Eav\Model\Entity\Attribute\Source\Table;
 use Magento\Eav\Model\Entity\Attribute\Source\TableFactory;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -30,31 +31,36 @@ class Initializer implements DataPatchInterface
     /**
      * @var array
      */
-    protected $attributeValues;
+    private $attributeValues;
     /**
      * @var TableFactory
      */
-    protected $tableFactory;
+    private $tableFactory;
     /**
      * @var AttributeOptionManagementInterface
      */
-    protected $attributeOptionManagement;
+    private $attributeOptionManagement;
     /**
      * @var AttributeOptionLabelInterfaceFactory
      */
-    protected $optionLabelFactory;
+    private $optionLabelFactory;
     /**
      * @var AttributeOptionInterfaceFactory
      */
-    protected $optionFactory;
+    private $optionFactory;
     /**
      * @var AttributeRepositoryInterface
      */
     private $attributeRepository;
     /**
-     * @var TranslationService
+     * @var TranslationServiceInterface
      */
     private $translationService;
+
+    /**
+     * @var ProductMetadataInterface
+     */
+    private $productMetadata;
 
     /**
      * Data constructor.
@@ -64,6 +70,7 @@ class Initializer implements DataPatchInterface
      * @param AttributeOptionLabelInterfaceFactory $optionLabelFactory
      * @param AttributeOptionInterfaceFactory $optionFactory
      * @param AttributeRepositoryInterface $attributeRepository
+     * @param ProductMetadataInterface $productMetadata
      * @param \ChannelEngine\ChannelEngineIntegration\Utility\Initializer $initializer
      *
      * @throws RepositoryClassException
@@ -74,6 +81,7 @@ class Initializer implements DataPatchInterface
         AttributeOptionLabelInterfaceFactory $optionLabelFactory,
         AttributeOptionInterfaceFactory      $optionFactory,
         AttributeRepositoryInterface         $attributeRepository,
+        ProductMetadataInterface             $productMetadata,
         \ChannelEngine\ChannelEngineIntegration\Utility\Initializer $initializer
     ) {
         $this->tableFactory = $tableFactory;
@@ -81,6 +89,7 @@ class Initializer implements DataPatchInterface
         $this->optionLabelFactory = $optionLabelFactory;
         $this->optionFactory = $optionFactory;
         $this->attributeRepository = $attributeRepository;
+        $this->productMetadata = $productMetadata;
         $initializer->init();
     }
 
@@ -101,9 +110,7 @@ class Initializer implements DataPatchInterface
      */
     public function apply(): void
     {
-        /** @var ProductMetadataInterface $productMetadata */
-        $productMetadata = ObjectManager::getInstance()->get(ProductMetadataInterface::class);
-        $edition = $productMetadata->getEdition();
+        $edition = $this->productMetadata->getEdition();
         if ($edition === 'Community') {
             return;
         }
@@ -204,12 +211,12 @@ class Initializer implements DataPatchInterface
     }
 
     /**
-     * @return TranslationService
+     * @return TranslationServiceInterface
      */
-    private function getTranslationService(): TranslationService
+    private function getTranslationService(): TranslationServiceInterface
     {
         if ($this->translationService === null) {
-            $this->translationService = ServiceRegister::getService(TranslationService::class);
+            $this->translationService = ServiceRegister::getService(TranslationServiceInterface::class);
         }
 
         return $this->translationService;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Products;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Contracts\ProductsService;
@@ -9,6 +11,7 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StoreService;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -25,11 +28,11 @@ class ProductService implements ProductsService
     /**
      * @var CollectionFactory
      */
-    protected $collectionFactory;
+    private $collectionFactory;
     /**
      * @var ProductRepository
      */
-    protected $productRepository;
+    private $productRepository;
     /**
      * @var SearchCriteriaBuilder
      */
@@ -78,6 +81,7 @@ class ProductService implements ProductsService
     public function getProductIds($page, $limit = 5000): array
     {
         $storeId    = $this->getStoreService()->getStoreId();
+        /** @var Collection $collection */
         $collection = $this->collectionFactory
             ->create()
             ->setPage($page, $limit)

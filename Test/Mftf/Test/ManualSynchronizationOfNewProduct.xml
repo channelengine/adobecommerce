@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminManualSynchronizationOfNewProduct" extends="AdminInitialSynchronizationOfTwoSimpleProducts">
+        <annotations>
+            <stories value="Manual synchronization of new simple product"/>
+            <title value="Manual synchronization of new simple product"/>
+            <description value="Manual synchronization of new simple product to ChannelEngine portal"/>
+            <severity value="MINOR"/>
+            <group value="ChannelEngine"/>
+        </annotations>
+        <after>
+            <deleteData createDataKey="createSimpleProductWithoutCategory3" stepKey="deleteSimpleProduct3"/>
+        </after>
+        <createData entity="simpleProductWithoutCategory" stepKey="createSimpleProductWithoutCategory3"/>
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngine"/>
+        <click selector="#container > div.channel-engine > main > div.ce-tabs > ul > li:nth-child(2) > a" stepKey="clickConfiguration"/>
+        <waitForElementVisible selector="{{ChannelEngineConfigurationSection.ceSyncNow}}" stepKey="waitForConfigurationLoad"/>
+        <click selector="{{ChannelEngineConfigurationSection.ceSyncNow}}" stepKey="clickStartSyncNow"/>
+        <waitForElementVisible selector="{{ChannelEngineConfigurationSection.ceProductSyncCheckbox}}" stepKey="waitForModalOpen"/>
+        <click selector="{{ChannelEngineConfigurationSection.ceProductSyncCheckbox}}" stepKey="clickEnableProductSynchronization"/>
+        <click selector="{{ChannelEngineConfigurationSection.ceStartSyncButton}}" stepKey="clickStartSyncButton"/>
+
+        <click selector="#container > div.channel-engine > main > div.ce-tabs > ul > li:nth-child(1) > a" stepKey="clickDashboard"/>
+        <wait time="3" stepKey="waitForPageLoad" />
+        <actionGroup ref="CheckProductSynchronization" stepKey="checkProductSynchronization">
+            <argument name="productTaskType" value="ProductsResyncTask" />
+        </actionGroup>
+    </test>
+</tests>

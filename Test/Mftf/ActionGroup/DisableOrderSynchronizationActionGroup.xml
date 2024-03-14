@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="DisableOrderSynchronization">
+        <annotations>
+            <description>Disable order synchronization</description>
+        </annotations>
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceMerchantFulfilled}}" stepKey="clickMerchantFulfilled" />
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceNoMerchantFulfilled}}" stepKey="clickNoMerchantFulfilled" />
+        <conditionalClick
+                selector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturns}}"
+                dependentSelector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturns}}"
+                visible="true"
+                stepKey="clickMarketplaceReturns"
+        />
+        <conditionalClick
+                selector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturnsNo}}"
+                dependentSelector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturnsNo}}"
+                visible="true"
+                stepKey="clickMarketplaceReturnsNo"
+        />
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceStatusesSave}}"  stepKey="clickSaveOnOrder" />
+    </actionGroup>
+</actionGroups>

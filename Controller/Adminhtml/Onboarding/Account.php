@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Onboarding;
 
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
@@ -12,7 +14,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Config
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Http\HttpClient;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
-use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationServiceInterface;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StoreService;
 use ChannelEngine\ChannelEngineIntegration\Traits\GetPostParamsTrait;
@@ -45,7 +47,7 @@ class Account extends Action
      */
     private $storeManager;
     /**
-     * @var TranslationService
+     * @var TranslationServiceInterface
      */
     private $translationService;
     /**
@@ -197,12 +199,12 @@ class Account extends Action
     }
 
     /**
-     * @return TranslationService
+     * @return TranslationServiceInterface
      */
-    private function getTranslationService(): TranslationService
+    private function getTranslationService(): TranslationServiceInterface
     {
         if ($this->translationService === null) {
-            $this->translationService = ServiceRegister::getService(TranslationService::class);
+            $this->translationService = ServiceRegister::getService(TranslationServiceInterface::class);
         }
 
         return $this->translationService;

@@ -27,29 +27,29 @@ if ($returnsSettings) {
 
 ?>
 <form class="ce-form" onsubmit="return false">
-    <h3><?= __("Marketplace returns") ?></h3>
+    <h3><?= $block->escapeHtml("Marketplace returns") ?></h3>
     <div class="ce-input-group ce-flex">
         <label>
-            <span class="label"><?= __('Import marketplace returns'); ?></span>
+            <span class="label"><?= $block->escapeHtml('Import marketplace returns') ?></span>
             <span class="ce-help">
                 <span class="ce-help-tooltip">
-                    <?= __('If this field is checked, marketplace returns will be downloaded from ChannelEngine.'); ?>
+                    <?= $block->escapeHtml('If this field is checked, marketplace returns will be downloaded from ChannelEngine.') ?>
                 </span>
             </span>
         </label>
         <div class="ce-dropdown-wrapper">
             <button id="ce-returns" class="ce-dropdown" returns-enabled="<?= !$returnsSettings || $returnsSettings->isReturnsEnabled() ? '1' : '0'?>">
                 <span id="ce-returns-text" class="ce-dropdown-text">
-                    <?= !$returnsSettings || $returnsSettings->isReturnsEnabled() ? __('Yes') : __('No');?>
+                    <?= !$returnsSettings || $returnsSettings->isReturnsEnabled() ? $block->escapeHtml('Yes') : $block->escapeHtml('No')?>
                 </span>
             </button>
             <div class="ce-dropdown-menu">
                 <ul id="ce-returns-list" class="ce-dropdown-list">
                     <li id="ce-returns-item-yes" class="ce-dropdown-list-item" value="1">
-                        <span class="ce-dropdown-list-item-text"><?= __('Yes');?></span>
+                        <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('Yes')?></span>
                     </li>
                     <li id="ce-returns-item-no" class="ce-dropdown-list-item" value="0">
-                        <span class="ce-dropdown-list-item-text"><?= __('No');?></span>
+                        <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('No')?></span>
                     </li>
                 </ul>
             </div>
@@ -57,29 +57,29 @@ if ($returnsSettings) {
     </div>
     <div class="ce-input-group ce-flex">
         <label>
-            <span class="label"><?= __('Default item condition'); ?></span>
+            <span class="label"><?= $block->escapeHtml('Default item condition') ?></span>
             <span class="ce-help">
                 <span class="ce-help-tooltip">
-                    <?= __('Please select the default item condition that will be used when importing a return request from ChannelEngine.'); ?>
+                    <?= $block->escapeHtml('Please select the default item condition that will be used when importing a return request from ChannelEngine.') ?>
                 </span>
             </span>
         </label>
         <div class="ce-dropdown-wrapper">
             <button id="ce-default-condition" class="ce-dropdown" data-default-condition="
-            <?= $returnsSettings ? $returnsSettings->getDefaultCondition() : ''; ?>"
+            <?= $returnsSettings ? $block->escapeHtml($returnsSettings->getDefaultCondition()) : '' ?>"
             <?= !$returnsSettings || $returnsSettings->isReturnsEnabled() ? '' : 'disabled=true'?>
             >
                 <span id="ce-default-condition-text" class="ce-dropdown-text">
-                    <?= $defaultCondition; ?>
+                    <?= $block->escapeHtml($defaultCondition) ?>
                 </span>
             </button>
             <div class="ce-dropdown-menu">
                 <ul id="ce-default-condition-list" class="ce-dropdown-list">
                     <?php
                     foreach ($itemConditions as $itemCondition) {
-                        echo '<li class="ce-dropdown-list-item ce-condition-item" value="' . $itemCondition['value'] . '">
+                        echo '<li class="ce-dropdown-list-item ce-condition-item" value="' . $block->escapeHtml($itemCondition['value']) . '">
                               <span class="ce-dropdown-list-item-text">'
-                            . $itemCondition['label'] . '</span></option>';
+                            . $block->escapeHtml($itemCondition['label']) . '</span></option>';
                     }
                     ?>
                 </ul>
@@ -88,29 +88,29 @@ if ($returnsSettings) {
     </div>
     <div class="ce-input-group ce-flex">
         <label>
-            <span class="label"><?= __('Default item resolution'); ?></span>
+            <span class="label"><?= $block->escapeHtml('Default item resolution') ?></span>
             <span class="ce-help">
                 <span class="ce-help-tooltip">
-                    <?= __('Please select the default item resolution that will be used when importing a return request from ChannelEngine.'); ?>
+                    <?= $block->escapeHtml('Please select the default item resolution that will be used when importing a return request from ChannelEngine.') ?>
                 </span>
             </span>
         </label>
         <div class="ce-dropdown-wrapper">
             <button id="ce-default-resolution" class="ce-dropdown" data-default-resolution="
-            <?= $returnsSettings ? $returnsSettings->getDefaultResolution() : ''; ?>"
+            <?= $returnsSettings ? $block->escapeHtml($returnsSettings->getDefaultResolution()) : '' ?>"
             <?= !$returnsSettings || $returnsSettings->isReturnsEnabled() ? '' : 'disabled=true'?>
             >
                 <span id="ce-default-resolution-text" class="ce-dropdown-text">
-                    <?= $defaultReason; ?>
+                    <?= $block->escapeHtml($defaultReason) ?>
                 </span>
             </button>
             <div class="ce-dropdown-menu">
                 <ul id="ce-default-resolution-list" class="ce-dropdown-list">
                     <?php
                     foreach ($itemResolutions as $itemResolution) {
-                        echo '<li class="ce-dropdown-list-item ce-resolution-item" value="' . $itemResolution['value'] . '">
+                        echo '<li class="ce-dropdown-list-item ce-resolution-item" value="' . $block->escapeHtml($itemResolution['value']) . '">
                               <span class="ce-dropdown-list-item-text">'
-                            . $itemResolution['label'] . '</span></option>';
+                            . $block->escapeHtml($itemResolution['label']) . '</span></option>';
                     }
                     ?>
                 </ul>

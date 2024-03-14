@@ -62,8 +62,8 @@ class Notifications extends Action
         $limit = (int)$this->_request->getParam('limit');
         $notifications = $this->getNotificationService()->find(
             ['isRead' => false, 'context' => $this->_request->getParam('storeId')],
-            $offset ?? 0,
-            $limit ?? 15
+            !empty($offset) ? $offset : 0,
+            !empty($limit) ? $limit : 15
         );
         $formattedNotifications = $this->formatNotifications($notifications);
         $numberOfNotifications = count($formattedNotifications);

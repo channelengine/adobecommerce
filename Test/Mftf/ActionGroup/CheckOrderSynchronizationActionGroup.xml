@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="CheckOrderSynchronization">
+        <annotations>
+            <description>Check if order synchronization finished successfully</description>
+        </annotations>
+        <arguments>
+            <argument name="orderTaskType" defaultValue="Order Sync" type="string" />
+        </arguments>
+        <wait time="10" stepKey="waitOrderSync" />
+        <waitForElementVisible selector="{{ChannelEngineDashboardSection.ceSyncCompleted}}" time="60" stepKey="waitForSyncComplete"/>
+        <click selectorArray="['link' => 'Transaction log']" stepKey="clickTransactionLogs"/>
+        <wait time="5" stepKey="waitForTransactionLog" />
+        <click selector="{{ChannelEngineTransactionLogSection.ceOrderSync}}" stepKey="clickTransactionLogOrderSync"/>
+        <wait time="5" stepKey="waitForOrderTransactionLog" />
+        <see selector="#ce-table-body > tr > td:nth-child(1)" userInput="{{orderTaskType}}" stepKey="seeOrderTaskType" />
+        <see selector="#ce-table-body > tr > td:nth-child(2) > span" userInput="Completed" stepKey="seeOrderSyncFinished" />
+    </actionGroup>
+</actionGroups>

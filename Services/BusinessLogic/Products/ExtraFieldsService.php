@@ -85,7 +85,7 @@ class ExtraFieldsService
                         }
                     } else {
                         $sourceValue = $source->getOptionText($attribute->getValue());
-                        $value = (isset($sourceValue) && $sourceValue) ? $sourceValue : $attribute->getValue();
+                        $value = $sourceValue ?: $attribute->getValue();
                     }
                 }
             }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Observer;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductPurged;
@@ -38,7 +40,7 @@ class ProductDeleteObserver implements ObserverInterface
     /**
      * @var Configurable
      */
-    protected $configurableType;
+    private $configurableType;
 
     /**
      * @param Initializer $initializer

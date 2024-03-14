@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic;
 
+use ChannelEngine\ChannelEngineIntegration\Api\RmaRepositoryFactoryInterface;
 use ChannelEngine\ChannelEngineIntegration\DTO\ReturnsSettings;
 use ChannelEngine\ChannelEngineIntegration\Entity\ReturnData;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Returns\DTO\ReturnResponse;
@@ -15,10 +18,9 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\In
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\ChannelEngineOrder;
-use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationServiceInterface;
 use Magento\Eav\Api\AttributeRepositoryInterface;
 use Magento\Eav\Model\Entity\Attribute\Source\TableFactory;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -56,7 +58,7 @@ class ReturnsService extends BaseService
     /**
      * @var TableFactory
      */
-    protected $tableFactory;
+    private $tableFactory;
     /**
      * @var ChannelEngineOrder
      */
@@ -67,12 +69,18 @@ class ReturnsService extends BaseService
     private $searchCriteriaBuilder;
 
     /**
+     * @var RmaRepositoryFactoryInterface
+     */
+    private $rmaRepositoryFactory;
+
+    /**
      * @param ServiceInputProcessor $serviceInputProcessor
      * @param OrderRepositoryInterface $orderRepository
      * @param AttributeRepositoryInterface $attributeRepository
      * @param TableFactory $tableFactory
      * @param ChannelEngineOrder $ceOrder
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param RmaRepositoryFactoryInterface $rmaRepositoryFactory
      */
     public function __construct(
         ServiceInputProcessor        $serviceInputProcessor,
@@ -80,7 +88,8 @@ class ReturnsService extends BaseService
         AttributeRepositoryInterface $attributeRepository,
         TableFactory                 $tableFactory,
         ChannelEngineOrder           $ceOrder,
-        SearchCriteriaBuilder        $searchCriteriaBuilder
+        SearchCriteriaBuilder        $searchCriteriaBuilder,
+        RmaRepositoryFactoryInterface $rmaRepositoryFactory
     ) {
         $this->serviceInputProcessor = $serviceInputProcessor;
         $this->orderRepository = $orderRepository;
@@ -88,6 +97,7 @@ class ReturnsService extends BaseService
         $this->tableFactory = $tableFactory;
         $this->ceOrder = $ceOrder;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->rmaRepositoryFactory = $rmaRepositoryFactory;
     }
 
     /**
@@ -291,11 +301,11 @@ class ReturnsService extends BaseService
     }
 
     /**
-     * @return TranslationService
+     * @return TranslationServiceInterface
      */
-    private function getTranslationService(): TranslationService
+    private function getTranslationService(): TranslationServiceInterface
     {
-        return ServiceRegister::getService(TranslationService::class);
+        return ServiceRegister::getService(TranslationServiceInterface::class);
     }
 
     /**
@@ -311,6 +321,6 @@ class ReturnsService extends BaseService
      */
     private function getRmaRepository(): RmaRepositoryInterface
     {
-        return ObjectManager::getInstance()->get(RmaRepositoryInterface::class);
+        return $this->rmaRepositoryFactory->create();
     }
 }

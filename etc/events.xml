@@ -41,6 +41,11 @@
                   instance="ChannelEngine\ChannelEngineIntegration\Observer\AttributeSaveObserver"/>
     </event>
 
+    <event name="catalog_entity_attribute_delete_after">
+        <observer name="ce_attribute_after_delete"
+                  instance="ChannelEngine\ChannelEngineIntegration\Observer\AttributeAfterDeleteObserver"/>
+    </event>
+
     <event name="sales_order_save_before">
         <observer name="ce_order_save"
                   instance="ChannelEngine\ChannelEngineIntegration\Observer\OrderObserver"/>

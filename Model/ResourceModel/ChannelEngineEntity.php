@@ -19,6 +19,8 @@ use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
  */
 class ChannelEngineEntity extends AbstractDb
 {
+    public const MAIN_TABLE = 'channel_engine_entity';
+    public const ID_FIELD_NAME = 'id';
     /**
      * Resource model initialization.
      *
@@ -26,6 +28,7 @@ class ChannelEngineEntity extends AbstractDb
      */
     protected function _construct()
     {
+        $this->_init(self::MAIN_TABLE, self::ID_FIELD_NAME);
     }
 
     /**

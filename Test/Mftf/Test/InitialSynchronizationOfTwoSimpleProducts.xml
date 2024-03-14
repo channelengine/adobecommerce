@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminInitialSynchronizationOfTwoSimpleProducts">
+        <annotations>
+            <stories value="Initial sync of products"/>
+            <title value="Initial sync of products"/>
+            <description value="Initial synchronization of two simple product to ChannelEngine portal"/>
+            <severity value="MINOR"/>
+            <group value="ChannelEngine"/>
+        </annotations>
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="logInAsAdmin"/>
+            <createData entity="simpleProductWithoutCategory" stepKey="createSimpleProductWithoutCategory1"/>
+            <createData entity="simpleProductWithoutCategory" stepKey="createSimpleProductWithoutCategory2"/>
+        </before>
+        <after>
+            <actionGroup ref="DisconnectAccount" stepKey="disconnectAccount"/>
+            <deleteData createDataKey="createSimpleProductWithoutCategory1" stepKey="deleteSimpleProduct1"/>
+            <deleteData createDataKey="createSimpleProductWithoutCategory2" stepKey="deleteSimpleProduct2"/>
+        </after>
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngine"/>
+        <actionGroup ref="WelcomePage" stepKey="welcomePage"/>
+        <actionGroup ref="ConnectAccount" stepKey="connectAccount"/>
+        <actionGroup ref="ConfigureProductSynchronization" stepKey="configureProductSynchronization"/>
+        <actionGroup ref="DisableOrderSynchronization" stepKey="disableOrderSynchronization"/>
+
+        <click selector="{{EnableIntegrationSection.ceStartSync}}"  stepKey="clickStartSync" />
+        <wait time="5" stepKey="waitForPageLoad" />
+        <actionGroup ref="CheckProductSynchronization" stepKey="checkProductSynchronizationStatus"/>
+    </test>
+</tests>

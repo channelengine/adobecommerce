@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="ConnectAccount">
+        <annotations>
+            <description>Connect Channel Engine account</description>
+        </annotations>
+
+        <fillField userInput="{{_CREDS.channelengine/CE_ACCOUNT_NAME}}" selector="{{ChannelEngineLoginFormSection.ceAccountName}}" stepKey="fillAccountName"/>
+        <fillField userInput="{{_CREDS.channelengine/CE_API_KEY}}" selector="{{ChannelEngineLoginFormSection.ceApiKey}}" stepKey="fillApiKey"/>
+        <click selector="{{ChannelEngineLoginFormSection.ceConnect}}"  stepKey="ClickConnect" />
+
+    </actionGroup>
+</actionGroups>

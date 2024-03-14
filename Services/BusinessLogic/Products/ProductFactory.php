@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Products;
 
 use ChannelEngine\ChannelEngineIntegration\Api\StockServiceFactoryInterface;
@@ -13,13 +15,14 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Servic
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsTypesService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ThreeLevelSyncSettingsService;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Catalog\Model\ProductFactory as CatalogProductFactory;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
 use Magento\Catalog\Api\Data\ProductInterface;
 
@@ -73,6 +76,11 @@ class ProductFactory
     private $stockServiceFactory;
 
     /**
+     * @var ProductRepositoryInterface
+     */
+    private $apiProductRepository;
+
+    /**
      * @param ProductRepository $productRepository
      * @param PriceService $priceService
      * @param AttributesService $attributesService
@@ -82,6 +90,7 @@ class ProductFactory
      * @param StoreManagerInterface $storeManager
      * @param ProductResource $productResource
      * @param StockServiceFactoryInterface $stockServiceFactory
+     * @param ProductRepositoryInterface $apiProductRepository
      */
     public function __construct(
         ProductRepository            $productRepository,
@@ -92,7 +101,8 @@ class ProductFactory
         CategoryService              $categoryService,
         StoreManagerInterface        $storeManager,
         ProductResource              $productResource,
-        StockServiceFactoryInterface $stockServiceFactory
+        StockServiceFactoryInterface $stockServiceFactory,
+        ProductRepositoryInterface   $apiProductRepository
     ) {
         $this->productRepository = $productRepository;
         $this->priceService = $priceService;
@@ -103,6 +113,7 @@ class ProductFactory
         $this->storeManager = $storeManager;
         $this->productResource = $productResource;
         $this->stockServiceFactory = $stockServiceFactory;
+        $this->apiProductRepository = $apiProductRepository;
     }
 
     /**
@@ -244,7 +255,7 @@ class ProductFactory
                     $product
                 ),
             $imageUrl,
-            $productImages ?? [],
+            $productImages,
             array_merge(
                 $this->extraFieldsService->getExtraFields($productAttributes, $customAttributes, $this->getData($product)),
                 $extraDataImages
@@ -283,9 +294,8 @@ class ProductFactory
         $ceProduct->setHasThreeLevelSync($hasThreeLevelSync);
 
         foreach ($variants as $variant) {
-            $objectManager = ObjectManager::getInstance();
-            $variant = $objectManager->get('Magento\Catalog\Model\Product')->load($variant->getId());
-
+            /** @var \Magento\Catalog\Model\Product $variant */
+            $variant = $this->apiProductRepository->getById($variant->getId());
             $domainVariant = $this->getVariant($variant, $ceProduct);
 
             if ($ceProduct->getHasThreeLevelSync() && $variant->getData($threeLevelSyncAttribute)) {
@@ -307,6 +317,7 @@ class ProductFactory
     {
         $this->productResource->load($product, $product->getId());
         $attributes = $product->getAttributes();
+        $data = [];
 
         foreach ($attributes as $attribute) {
             $attributeCode = $attribute->getAttributeCode();
@@ -464,7 +475,7 @@ class ProductFactory
                 $product->getId() : $product->getSku(),
             $parentProduct,
             $price ?? $parentProduct->getPrice(),
-            $stock ?? $parentProduct->getStock(),
+            $stock,
             $name ?? $parentProduct->getName(),
             $description ?? $parentProduct->getDescription(),
             (float)($purchasePrice ?? $parentProduct->getPurchasePrice()),
@@ -480,9 +491,9 @@ class ProductFactory
             $size ?? $parentProduct->getSize(),
             $color ?? $parentProduct->getColor(),
             $imageUrl ?? $parentProduct->getMainImageUrl(),
-            $productImages ?? $parentProduct->getAdditionalImageUrls(),
+            !empty($productImages) ? $productImages : $parentProduct->getAdditionalImageUrls(),
             array_merge(
-                $extraFields ?? $parentProduct->getCustomAttributes(),
+                !empty($extraFields) ? $extraFields : $parentProduct->getCustomAttributes(),
                 $extraDataImages,
                 [
                     new CustomAttribute(

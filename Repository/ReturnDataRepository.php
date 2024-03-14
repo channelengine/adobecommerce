@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Repository;
 
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\ReturnData;
+use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\ReturnDataFactory;
 
 /**
  * Class ReturnDataRepository
@@ -21,6 +25,16 @@ class ReturnDataRepository extends BaseRepository
     public const TABLE_NAME = 'channel_engine_returns';
 
     /**
+     * ProductEventRepository constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setResourceEntityObject($this->getReturnDataFactory()->create());
+        $this->getResourceEntityObject()->setTableName(self::TABLE_NAME);
+    }
+
+    /**
      * Returns resource entity.
      *
      * @return string Resource entity class name.
@@ -28,5 +42,13 @@ class ReturnDataRepository extends BaseRepository
     protected function getResourceEntity(): string
     {
         return ReturnData::class;
+    }
+
+    /**
+     * @return ReturnDataFactory
+     */
+    private function getReturnDataFactory(): ReturnDataFactory
+    {
+        return ServiceRegister::getService(ReturnDataFactory::class);
     }
 }

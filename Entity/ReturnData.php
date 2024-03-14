@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Entity;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Configuration\EntityConfiguration;
@@ -20,15 +22,15 @@ class ReturnData extends Entity
     /**
      * @var string
      */
-    protected $rmaId;
+    private $rmaId;
     /**
      * @var int
      */
-    protected $returnId;
+    private $returnId;
     /**
      * @var string
      */
-    protected $context;
+    private $context;
     /**
      * Array of field names.
      *

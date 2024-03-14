@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="OrderSynchronizationSettingsFormSection">
+        <element name="ceMerchantFulfilled" type="button" selector="button#ce-merchant-fulfilled"/>
+        <element name="ceNoMerchantFulfilled" type="text" selector="#ce-merchant-fulfilled-item-no"/>
+        <element name="ceYesMerchantFulfilled" type="text" selector="#ce-merchant-fulfilled-item-yes"/>
+        <element name="ceMarketplaceFulfilled" type="button" selector="button#ce-import-fulfilled"/>
+        <element name="ceYesMarketplaceFulfilled" type="text" selector="#ce-import-fulfilled-list > li:nth-child(2)"/>
+        <element name="ceMarketplaceReturns" type="button" selector="#ce-returns"/>
+        <element name="ceMarketplaceReturnsNo" type="text" selector="#ce-returns-item-no"/>
+        <element name="ceStatusesSave" type="button" selector="#ceStatusesSave" timeout="30"/>
+    </section>
+</sections>

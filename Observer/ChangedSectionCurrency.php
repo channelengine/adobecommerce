@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Observer;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Authorization\Http\Proxy;
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\BootstrapComponent;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigEntity;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigurationManager;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
@@ -13,6 +14,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Servic
 use ChannelEngine\ChannelEngineIntegration\Repository\BaseRepository;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PluginStatusService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StoreService;
+use ChannelEngine\ChannelEngineIntegration\Utility\Initializer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -42,9 +44,9 @@ class ChangedSectionCurrency implements ObserverInterface
     private $storeService;
 
     /**
-     * @param  StoreManagerInterface  $storeManager
-     * @param  PluginStatusService  $statusService
-     * @param  StoreService  $storeService
+     * @param StoreManagerInterface $storeManager
+     * @param PluginStatusService $statusService
+     * @param StoreService $storeService
      */
     public function __construct(
         StoreManagerInterface $storeManager,
@@ -69,7 +71,13 @@ class ChangedSectionCurrency implements ObserverInterface
      */
     public function execute(Observer $observer): void
     {
-        $this->init();
+        try {
+            /** @var Initializer $initializer */
+            $initializer = ServiceRegister::getService(Initializer::class);
+            $initializer->init();
+        } catch (\Exception $e) {
+            return;
+        }
 
         $storeId = $observer->getData('store');
         if ($storeId === '') {
@@ -107,18 +115,6 @@ class ChangedSectionCurrency implements ObserverInterface
         if ($this->checkIfUnsupportedCurrency($store)) {
             $this->statusService->disable();
         }
-    }
-
-    /**
-     * This event is triggered during installation, so we can't use an initializer due to the dependency
-     * on an entity that is not available at that moment
-     *
-     * @throws \ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryClassException
-     */
-    private function init(): void
-    {
-        BootstrapComponent::init();
-        RepositoryRegistry::registerRepository(ConfigEntity::getClassName(), BaseRepository::getClassName());
     }
 
     /**

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="DisconnectAccount">
+        <annotations>
+            <description>Click disconnect button</description>
+        </annotations>
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngineToDisconnect"/>
+        <conditionalClick
+            selector="{{DisconnectSection.ceDisconnectButton}}"
+            dependentSelector="{{DisconnectSection.ceDisconnectButton}}"
+            visible="true"
+            stepKey="clickDisconnect"
+        />
+        <conditionalClick
+            selector="{{DisconnectSection.ceModalDisconnectButton}}"
+            dependentSelector="{{DisconnectSection.ceModalDisconnectButton}}"
+            visible="true"
+            stepKey="clickModalDisconnect"/>
+        <waitForElementVisible selector="{{ChannelEngineLoginFormSection.ceConnect}}" time="30" stepKey="waitForCeConnect"/>
+    </actionGroup>
+</actionGroups>

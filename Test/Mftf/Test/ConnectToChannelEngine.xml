@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminConnectToChannelEngine">
+        <annotations>
+            <features value="Cache"/>
+            <stories value="Channel Engine Connection"/>
+            <title value="Connect to Channel Engine"/>
+            <description value="Connect to Channel Engine, finish on-boarding process and start initial synchronization"/>
+            <severity value="MINOR"/>
+            <group value="ChannelEngine"/>
+        </annotations>
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="logInAsAdmin"/>
+        </before>
+        <after>
+            <actionGroup ref="DisconnectAccount" stepKey="disconnectAccount"/>
+        </after>
+
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngine"/>
+        <actionGroup ref="WelcomePage" stepKey="welcomePage"/>
+        <actionGroup ref="ConnectAccount" stepKey="connectAccount"/>
+        <actionGroup ref="DisableProductSynchronization" stepKey="disableProductSynchronization"/>
+        <actionGroup ref="DisableOrderSynchronization" stepKey="disableOrderSynchronization"/>
+
+        <click selector="{{EnableIntegrationSection.ceStartSync}}"  stepKey="clickStartSync" />
+
+        <wait time="20" stepKey="waitForStartSync"/>
+        <see userInput="All is up and running" selector=".ce-page" stepKey="seeSyncStart" />
+    </test>
+</tests>

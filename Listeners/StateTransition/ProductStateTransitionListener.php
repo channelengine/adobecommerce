@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Listeners\StateTransition;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\ManualSync\ProductsResyncTask;
@@ -26,7 +28,7 @@ class ProductStateTransitionListener
      * @throws QueryFilterInvalidParamException
      * @throws QueueItemDeserializationException
      */
-    public static function handle(QueueStatusChangedEvent $event): void
+    public function handle(QueueStatusChangedEvent $event): void
     {
         $queueItem = $event->getQueueItem();
         $task = $queueItem->getTask();

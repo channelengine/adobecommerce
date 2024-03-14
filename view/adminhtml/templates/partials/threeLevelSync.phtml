@@ -22,32 +22,32 @@ if ($attributeMappings) {
 
 ?>
 <form class="ce-form" onsubmit="return false">
-    <h3><?= __("Three-level synchronization") ?></h3>
-    <div id="ce-sku-warning" class="ce-sku-warning" style="width: fit-content; display: <?= $block->shouldRenderProductNumberMapping() ? 'none' : ''; ?>">
-        <?= __('Please note that if you change this configuration, the integration will delete all products from ChannelEngine and sync them again.'); ?>
+    <h3><?= $block->escapeHtml("Three-level synchronization") ?></h3>
+    <div id="ce-sku-warning" class="ce-sku-warning" style="width: fit-content; display: <?= $block->shouldRenderProductNumberMapping() ? 'none' : '' ?>">
+        <?= $block->escapeHtml('Please note that if you change this configuration, the integration will delete all products from ChannelEngine and sync them again.') ?>
     </div>
     <div class="ce-input-group ce-flex">
         <label>
-            <span class="label"><?= __('Enable three-level synchronization (Zalando)'); ?></span>
+            <span class="label"><?= $block->escapeHtml('Enable three-level synchronization (Zalando)') ?></span>
             <span class="ce-help">
                 <span class="ce-help-tooltip">
-                    <?= __('By enabling this feature all your products will be synchronized in a three-level structure. The virtual products will be created using the selected attribute below as a parent attribute.'); ?>
+                    <?= $block->escapeHtml('By enabling this feature all your products will be synchronized in a three-level structure. The virtual products will be created using the selected attribute below as a parent attribute.') ?>
                 </span>
             </span>
         </label>
         <div class="ce-dropdown-wrapper">
             <button id="ce-three-level-sync" class="ce-dropdown" three-level-sync-enabled="<?= $threeLevelSyncSettings && $threeLevelSyncSettings->getEnableThreeLevelSync() ? 1 : 0?>">
                 <span id="ce-three-level-sync-text" class="ce-dropdown-text">
-                    <?= $threeLevelSyncSettings && $threeLevelSyncSettings->getEnableThreeLevelSync() ? __('Yes') : __('No');?>
+                    <?= $threeLevelSyncSettings && $threeLevelSyncSettings->getEnableThreeLevelSync() ? $block->escapeHtml('Yes') : $block->escapeHtml('No')?>
                 </span>
             </button>
             <div class="ce-dropdown-menu">
                 <ul id="ce-three-level-sync-list" class="ce-dropdown-list">
                     <li id="ce-three-level-sync-item-yes" class="ce-dropdown-list-item" value="1">
-                        <span class="ce-dropdown-list-item-text"><?= __('Yes');?></span>
+                        <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('Yes')?></span>
                     </li>
                     <li id="ce-three-level-sync-item-no" class="ce-dropdown-list-item" value="0">
-                        <span class="ce-dropdown-list-item-text"><?= __('No');?></span>
+                        <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('No')?></span>
                     </li>
                 </ul>
             </div>
@@ -55,29 +55,29 @@ if ($attributeMappings) {
     </div>
     <div id="three-level-sync-attribute-picker" class="ce-input-group ce-flex" style="display: <?= $threeLevelSyncSettings && $threeLevelSyncSettings->getEnableThreeLevelSync() ? '' : 'none'?>">
         <label>
-            <span class="label"><?= __('Three-level synchronization attribute'); ?></span>
+            <span class="label"><?= $block->escapeHtml('Three-level synchronization attribute') ?></span>
             <span class="ce-help">
                 <span class="ce-help-tooltip">
-                    <?= __('Please select the attribute which should be used for creating the parent in the three-level product structure.'); ?>
+                    <?= $block->escapeHtml('Please select the attribute which should be used for creating the parent in the three-level product structure.') ?>
                 </span>
             </span>
         </label>
         <div class="ce-dropdown-wrapper">
             <button id="ce-attribute-three-level-sync" class="ce-dropdown"
-                    data-three-level-sync-attribute="<?= $defaultThreeLevelSyncAttribute['value']; ?>"
-                    data-three-level-sync-type="<?= array_key_exists('type', $defaultThreeLevelSyncAttribute) ? $defaultThreeLevelSyncAttribute['type'] : ''; ?>"
+                    data-three-level-sync-attribute="<?= $block->escapeHtml($defaultThreeLevelSyncAttribute['value']) ?>"
+                    data-three-level-sync-type="<?= array_key_exists('type', $defaultThreeLevelSyncAttribute) ? $block->escapeHtml($defaultThreeLevelSyncAttribute['type']) : '' ?>"
             >
                 <span id="ce-three-level-sync-attribute-text" class="ce-dropdown-text">
-                    <?= $defaultThreeLevelSyncAttribute['label']; ?>
+                    <?= $block->escapeHtml($defaultThreeLevelSyncAttribute['label']) ?>
                 </span>
             </button>
             <div class="ce-dropdown-menu">
                 <ul id="ce-sync-attribute-list" class="ce-dropdown-list">
                     <?php
                     foreach ($attributes as $attribute) {
-                        echo '<li class="ce-dropdown-list-item ce-mapping-item" data-type="' . $attribute['type'] . '" value="' . $attribute['value'] . '">
+                        echo '<li class="ce-dropdown-list-item ce-mapping-item" data-type="' . $block->escapeHtml($attribute['type']) . '" value="' . $block->escapeHtml($attribute['value']) . '">
                         <span class="ce-dropdown-list-item-text">'
-                            . $attribute['label'] . '</span></option>';
+                            . $block->escapeHtml($attribute['label']) . '</span></option>';
                     }
                     ?>
                 </ul>

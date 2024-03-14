@@ -59,7 +59,7 @@ class CheckSalePricesTask extends Task
     {
         $priceSettings = $this->getPriceSettingsService()->getPriceSettings();
 
-        return $priceSettings || $priceSettings->getPriceAttribute() === 'FINAL_PRICE';
+        return $priceSettings !== null && $priceSettings->getPriceAttribute() === 'FINAL_PRICE';
     }
 
     /**

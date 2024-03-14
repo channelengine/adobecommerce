@@ -5,7 +5,7 @@ namespace ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\M
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Tasks\ProductsPurgeTask;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Tasks\ProductsUpsertTask;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Tasks\TransactionalComposite;
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Task;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Serializer\Interfaces\Serializable;
 
 class ProductsResyncJobTask extends TransactionalComposite
 {
@@ -27,12 +27,15 @@ class ProductsResyncJobTask extends TransactionalComposite
 
     /**
      * @param array $serializedData
-     * @return \ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Serializer\Interfaces\Serializable
+     *
+     * @return Serializable
      */
     public static function fromArray(array $serializedData)
     {
         $entity = parent::fromArray($serializedData);
-        $entity->productIds = $serializedData['productIds'];
+        if (property_exists($entity, 'productIds') && array_key_exists('productIds', $serializedData)) {
+            $entity->productIds = $serializedData['productIds'];
+        }
 
         return $entity;
     }

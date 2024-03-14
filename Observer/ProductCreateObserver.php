@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Observer;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductDeleted;
@@ -47,11 +49,11 @@ class ProductCreateObserver implements ObserverInterface
     /**
      * @var Configurable
      */
-    protected $configurableType;
+    private $configurableType;
     /**
      * @var ProductRepository
      */
-    protected $productRepository;
+    private $productRepository;
 
     /**
      * @param StoreManagerInterface $storeManager
@@ -131,7 +133,7 @@ class ProductCreateObserver implements ObserverInterface
      *
      * @throws QueryFilterInvalidParamException
      */
-    protected function saveProductEvent(string $storeId, Product $product): void
+    private function saveProductEvent(string $storeId, Product $product): void
     {
         ConfigurationManager::getInstance()->setContext($storeId);
 

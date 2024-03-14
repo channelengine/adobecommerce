@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminCreateOrderFromCE">
+        <annotations>
+            <stories value="Live sync of marketplace order"/>
+            <title value="Live sync of marketplace order"/>
+            <description value="Live synchronization of one order created on Channel Engine by marketplace"/>
+            <severity value="MINOR"/>
+            <group value="ChannelEngine"/>
+        </annotations>
+        <before>
+            <magentoCLI command="ce:set-config"
+                        arguments="--key di_order_proxy_class --value ChannelEngine\\ChannelEngineIntegration\\Test\\Mftf\\Helper\\OrderProxy"
+                        stepKey="config"
+            />
+            <magentoCLI command="ce:set-config"
+                        arguments="--key CHANNELENGINE_WEBHOOK_TOKEN --value CHANNELENGINE_WEBHOOK_TOKEN_CE"
+                        stepKey="config_token"
+            />
+            <actionGroup ref="AdminLoginActionGroup" stepKey="logInAsAdmin"/>
+        </before>
+        <after>
+            <actionGroup ref="DisconnectAccount" stepKey="disconnectAccount"/>
+            <magentoCLI command="ce:set-config"
+                        arguments="--key di_order_proxy_class --value ChannelEngine\\ChannelEngineIntegration\\IntegrationCore\\BusinessLogic\\API\\Orders\\Http\\Proxy"
+                        stepKey="config_di"
+            />
+        </after>
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngine"/>
+        <actionGroup ref="WelcomePage" stepKey="welcomePage"/>
+        <actionGroup ref="ConnectAccount" stepKey="connectAccount"/>
+        <actionGroup ref="DisableProductSynchronization" stepKey="configureProductSynchronization"/>
+        <actionGroup ref="ConfigureOrderByMarketplaceSynchronization" stepKey="configureFulfilledByMarketplaceOrderSynchronization"/>
+
+        <click selector="{{EnableIntegrationSection.ceStartSync}}"  stepKey="clickStartSync" />
+        <wait time="5" stepKey="waitForStartSync"/>
+        <waitForElementVisible selector="{{ChannelEngineDashboardSection.ceSyncCompleted}}" time="60" stepKey="waitForSyncComplete"/>
+
+
+        <helper class="ChannelEngine\ChannelEngineIntegration\Test\Mftf\Helper\CeWebhook"
+                method="executeWebHook"
+                stepKey="sendSimpleWebHook">
+            <argument name="url">channelengine/webhooks/webhook/storeId/1?type=orders&amp;updatedSince=1707677959&amp;token=CHANNELENGINE_WEBHOOK_TOKEN_CE</argument>
+        </helper>
+
+        <wait time="30" stepKey="waitForWebhookFinish" />
+        <actionGroup ref="CheckOrderSynchronization" stepKey="checkOrderSynchronizationStatus"/>
+
+        <!-- Check if order exists in Magento -->
+        <actionGroup ref="AdminNavigateMenuActionGroup" stepKey="navigateToSalesOrderPage2">
+            <argument name="menuUiId" value="{{AdminMenuSales.dataUiId}}"/>
+            <argument name="submenuUiId" value="{{AdminMenuSalesOrders.dataUiId}}"/>
+        </actionGroup>
+        <wait time="3" stepKey="waitForDataLoad"/>
+
+        <see
+                userInput="CE-TEST-MFTF-3"
+                selector="#container > div > div.admin__data-grid-wrap > table > tbody > tr:nth-child(1) > td:nth-child(13) > div"
+                stepKey="mtft1Order" />
+    </test>
+</tests>

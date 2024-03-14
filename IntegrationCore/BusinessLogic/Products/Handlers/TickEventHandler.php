@@ -21,7 +21,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskEx
  */
 class TickEventHandler
 {
-    const BATCH_SIZE = 2500;
+    const BATCH_SIZE = 500;
     /**
      * @var ProductEventsBufferService
      */

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminUpdateSynchronizedProduct" extends="AdminInitialSynchronizationOfTwoSimpleProducts">
+        <annotations>
+            <stories value="Update synchronized product"/>
+            <title value="Update synchronized product"/>
+            <description value="Update synchronized product in Magento and wait for synchronization to ChannelEngine"/>
+            <severity value="MINOR"/>
+            <group value="ChannelEngine"/>
+        </annotations>
+        <actionGroup ref="AdminOpenCatalogProductPageActionGroup" stepKey="goToProductCatalogPage" />
+        <actionGroup ref="OpenEditProductOnBackendActionGroup" stepKey="clickFirstRowToOpenDefaultSimpleProduct">
+            <argument name="product" value="$$createSimpleProductWithoutCategory1$$"/>
+        </actionGroup>
+
+        <!-- Update simple product with regular price(in stock) -->
+        <fillField selector="{{AdminProductFormSection.productName}}" userInput="new-name" stepKey="fillSimpleProductName"/>
+        <scrollToTopOfPage stepKey="scrollToTopOfAdminProductFormSection"/>
+        <actionGroup ref="AdminProductFormSaveButtonClickActionGroup" stepKey="clickSaveButton"/>
+        <wait time="60" stepKey="waitForProductSave" />
+
+        <magentoCLI command="ce:set-config" arguments="--key lastEventsReadTime --value 1" stepKey="setLastEventReadTime"/>
+        <wait time="30" stepKey="waitForProductResync" />
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngineAfterEvent"/>
+        <wait time="3" stepKey="waitForPageLoad" />
+        <actionGroup ref="CheckProductSynchronization" stepKey="checkProductSynchronizationStatusAfterEvent">
+            <argument name="productTaskType" value="ProductsReplaceTask" />
+        </actionGroup>
+    </test>
+</tests>

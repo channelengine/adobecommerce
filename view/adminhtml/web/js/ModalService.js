@@ -8,7 +8,7 @@ if (!window.ChannelEngine) {
             let modal = this.getModal(transactionLogsModal);
 
             let node = document.createElement('div'),
-                modalContent = modal.getElementsByTagName('MAIN')[0],
+                modalContent = modal.querySelector('#ce-modal-main'),
                 modalHeader = modal.getElementsByTagName('H3')[0],
                 modalButton = modal.getElementsByTagName('BUTTON')[0],
                 closeButton = modal.getElementsByClassName('ce-close-modal')[0],

@@ -1,12 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Setup;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Contracts\ReturnReason;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Webhooks\Contracts\WebhooksService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
-use Magento\Config\Model\ResourceModel\Config\Data;
-use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 use Magento\Eav\Api\AttributeOptionManagementInterface;
 use Magento\Eav\Api\AttributeRepositoryInterface;
 use Magento\Eav\Api\Data\AttributeInterface;
@@ -25,25 +25,17 @@ use Magento\Framework\Setup\UninstallInterface;
 class Uninstall implements UninstallInterface
 {
     /**
-     * @var CollectionFactory
-     */
-    protected $collectionFactory;
-    /**
-     * @var Data
-     */
-    protected $configResource;
-    /**
      * @var array
      */
-    protected $attributeValues;
+    private $attributeValues;
     /**
      * @var TableFactory
      */
-    protected $tableFactory;
+    private $tableFactory;
     /**
      * @var AttributeOptionManagementInterface
      */
-    protected $attributeOptionManagement;
+    private $attributeOptionManagement;
     /**
      * @var AttributeRepositoryInterface
      */
@@ -54,23 +46,17 @@ class Uninstall implements UninstallInterface
     private $productMetadata;
 
     /**
-     * @param CollectionFactory $collectionFactory
-     * @param Data $configResource
      * @param TableFactory $tableFactory
      * @param AttributeOptionManagementInterface $attributeOptionManagement
      * @param AttributeRepositoryInterface $attributeRepository
      * @param ProductMetadataInterface $productMetadata
      */
     public function __construct(
-        CollectionFactory                  $collectionFactory,
-        Data                               $configResource,
         TableFactory                       $tableFactory,
         AttributeOptionManagementInterface $attributeOptionManagement,
         AttributeRepositoryInterface       $attributeRepository,
         ProductMetadataInterface           $productMetadata
     ) {
-        $this->collectionFactory = $collectionFactory;
-        $this->configResource = $configResource;
         $this->tableFactory = $tableFactory;
         $this->attributeOptionManagement = $attributeOptionManagement;
         $this->attributeRepository = $attributeRepository;
@@ -138,7 +124,7 @@ class Uninstall implements UninstallInterface
         ];
 
         foreach ($ceReasons as $reason) {
-            $this->deleteOption('reason', __($reason));
+            $this->deleteOption('reason', __($reason)->getText());
         }
     }
 

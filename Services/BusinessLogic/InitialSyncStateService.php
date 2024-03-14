@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\Configuration;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
- * Class InitiralSyncStateService
+ * Class InitialSyncStateService
  *
  * @package ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic
  */
@@ -41,7 +43,7 @@ class InitialSyncStateService
      *
      * @return Configuration
      */
-    protected function getConfigService(): Configuration
+    private function getConfigService(): Configuration
     {
         return ServiceRegister::getService(Configuration::class);
     }

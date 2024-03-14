@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminDisconnectAccountFromCE">
+        <annotations>
+            <stories value="Disconnect from the plugin"/>
+            <title value="Disconnection from the plugin "/>
+            <description value="Disconnect from the CE plugin"/>
+            <severity value="MINOR"/>
+            <group value="ChannelEngine"/>
+        </annotations>
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="logInAsAdmin"/>
+        </before>
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngine"/>
+        <actionGroup ref="WelcomePage" stepKey="welcomePage"/>
+        <actionGroup ref="ConnectAccount" stepKey="connectAccount"/>
+        <actionGroup ref="DisableProductSynchronization" stepKey="disableProductSynchronization"/>
+        <actionGroup ref="DisableOrderSynchronization" stepKey="disableOrderSynchronization"/>
+
+        <click selector="{{EnableIntegrationSection.ceStartSync}}"  stepKey="clickStartSync" />
+        <wait time="10" stepKey="waitForInitialSync"/>
+        <actionGroup ref="DisconnectAccount" stepKey="disconnectAccount"/>
+    </test>
+</tests>

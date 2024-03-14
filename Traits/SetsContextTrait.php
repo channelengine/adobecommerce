@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Traits;
 
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
@@ -37,7 +39,7 @@ trait SetsContextTrait
      *
      * @throws ContextNotSetException
      */
-    public static function setContextWithStoreId(string $storeId): void
+    public function setContextWithStoreId(string $storeId): void
     {
         if (empty($storeId)) {
             throw new ContextNotSetException('Store id is not set.');

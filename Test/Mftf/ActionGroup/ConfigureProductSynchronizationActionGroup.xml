@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="ConfigureProductSynchronization">
+        <annotations>
+            <description>Configure parameters for product synchronization</description>
+        </annotations>
+        <waitForElementVisible selector="#container > div.channel-engine > main > div > h1" time="30" stepKey="waitForProductConfig" />
+        <selectOption
+            parameterArray= "['Default Source']"
+            selector="{{ProductSynchronizationSettingsFormSection.ceInventorySelect}}"
+            stepKey="selectDefaultInventory"
+        />
+
+        <scrollTo selector="{{ProductSynchronizationSettingsFormSection.ceAttributeEAN}}" stepKey="scrollToEANDropdown"/>
+        <click selector="{{ProductSynchronizationSettingsFormSection.ceAttributeEAN}}"  stepKey="clickEANDropdown" />
+        <click selector="{{ProductSynchronizationSettingsFormSection.ceChooseAttribute}}" stepKey="chooseAttribute"/>
+        <click selector="{{ProductSynchronizationSettingsFormSection.ceSave}}"  stepKey="clickSaveOnProduct" />
+    </actionGroup>
+</actionGroups>

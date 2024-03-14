@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Webhooks\Contracts\WebhooksService;
@@ -55,7 +57,7 @@ class DisconnectService
             Logger::logError('Failed to delete webhook because ' . $e->getMessage());
         }
 
-        if (sizeof($this->getConfigRepository()->getContexts()) === 1) {
+        if (count($this->getConfigRepository()->getContexts()) === 1) {
             $this->truncateOrderData();
         }
 
@@ -79,8 +81,7 @@ class DisconnectService
     {
         $connection = $this->resource->getConnection();
         $tableName = $this->resource->getTableName($tableName);
-        $sql = "delete from $tableName where $column = " . ConfigurationManager::getInstance()->getContext();
-        $connection->query($sql);
+        $connection->delete($tableName, [$connection->quoteInto($column . ' = ?', ConfigurationManager::getInstance()->getContext())]);
     }
 
     /**
@@ -90,8 +91,7 @@ class DisconnectService
     {
         $connection = $this->resource->getConnection();
         $tableName = $this->resource->getTableName('channel_engine_order');
-        $sql = "truncate table $tableName";
-        $connection->query($sql);
+        $connection->truncateTable($tableName);
     }
 
     /**

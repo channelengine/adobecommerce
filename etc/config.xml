@@ -17,8 +17,12 @@
             <channelengine_payment>
                 <title>ChannelEngine Payment Option</title>
                 <active>0</active>
+                <group>offline</group>
+                <can_use_internal>1</can_use_internal>
+                <can_use_checkout>0</can_use_checkout>
+                <is_offline>1</is_offline>
                 <payment_action>preferred_method</payment_action>
-                <model>ChannelEngine\ChannelEngineIntegration\Model\PaymentMethod</model>
+                <model>CePaymentMethod</model>
                 <order_status>pending_payment</order_status>
             </channelengine_payment>
         </payment>

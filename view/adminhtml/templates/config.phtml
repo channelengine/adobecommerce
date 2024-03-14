@@ -25,26 +25,26 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Scope;
         <div class="ce-tabs">
             <ul class="nav-tab-wrapper">
                 <li>
-                    <a href="<?= $block->getSubpageUrl('dashboard') ?>"
+                    <a href="<?= $block->escapeHtml($block->getSubpageUrl('dashboard')) ?>"
                        class="nav-tab">
                 <span>
-                    <?= __('Dashboard'); ?>
+                    <?= $block->escapeHtml('Dashboard') ?>
                 </span>
                     </a>
                 </li>
                 <li class="nav-tab-active">
-                    <a href="<?= $block->getSubpageUrl('config') ?>"
+                    <a href="<?= $block->escapeHtml($block->getSubpageUrl('config')) ?>"
                        class="nav-tab">
                 <span>
-                    <?= __('Configuration'); ?>
+                    <?= $block->escapeHtml('Configuration'); ?>
                 </span>
                     </a>
                 </li>
                 <li>
-                    <a href="<?= $block->getSubpageUrl('transactions') ?>"
+                    <a href="<?= $block->escapeHtml($block->getSubpageUrl('transactions')) ?>"
                        class="nav-tab">
                 <span>
-                    <?= __('Transaction log'); ?>
+                    <?= $block->escapeHtml('Transaction log') ?>
                 </span>
                     </a>
                 </li>
@@ -53,30 +53,30 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Scope;
         <div class="ce-page-content">
             <header class="ce-disable-header">
                 <label class="ce-disable-integration">
-                    <span class="label"><?= __('Disable integration'); ?></span>
+                    <span class="label"><?= $block->escapeHtml('Disable integration') ?></span>
                     <label class="ce-switch">
                         <input id="ce-disable-switch" type="checkbox" checked="checked">
                         <span class="ce-switch__slider"></span>
                     </label>
                 </label>
                 <div class="ce-manual-sync">
-                    <span><?= __('Manually trigger synchronization'); ?></span>
+                    <span><?= $block->escapeHtml('Manually trigger synchronization') ?></span>
                     <button id="ce-sync-now" class="ce-button ce-button__primary ce-start-sync">
-                        <?= __('Start sync now'); ?></button>
+                        <?= $block->escapeHtml('Start sync now') ?></button>
                     <button id="ce-sync-in-progress" class="ce-button ce-button__primary ce-loading ce-hidden"
-                            disabled><?= __('In progress'); ?></button>
+                            disabled><?= $block->escapeHtml('In progress') ?></button>
                 </div>
             </header>
             <main class="ce-page">
                 <section>
-                    <h1><?= __("Disconnect your account") ?></h1>
-                    <h3><?= __("Account data"); ?></h3>
+                    <h1><?= $block->escapeHtml("Disconnect your account") ?></h1>
+                    <h3><?= $block->escapeHtml("Account data") ?></h3>
                     <div class="ce-input-group">
                         <label>
-                            <span class="label"><?= __('Account name'); ?></span>
+                            <span class="label"><?= $block->escapeHtml('Account name') ?></span>
                             <span class="ce-help">
                                 <span class="ce-help-tooltip">
-                                    <?= __('The account name is a subdomain of your ChannelEngine instance (subdomain.channelengine.net). For example, the account name for ChannelEngine instance myshop.channelengine.net is myshop.'); ?>
+                                    <?= $block->escapeHtml('The account name is a subdomain of your ChannelEngine instance (subdomain.channelengine.net). For example, the account name for ChannelEngine instance myshop.channelengine.net is myshop.') ?>
                                 </span>
                             </span>
                             <input id="ceAccountName" type="text" autocomplete="new-password"/>
@@ -84,17 +84,17 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Scope;
                     </div>
                     <div class="ce-input-group">
                         <label>
-                            <span class="label"><?= __('API Key'); ?></span>
+                            <span class="label"><?= $block->escapeHtml('API Key') ?></span>
                             <span class="ce-help">
                                 <span class="ce-help-tooltip">
-                                    <?= __('You can generate merchant API key inside ChannelEngine under Settings > Merchant API keys.'); ?>
+                                    <?= $block->escapeHtml('You can generate merchant API key inside ChannelEngine under Settings > Merchant API keys.') ?>
                                 </span>
                             </span>
                             <input id="ceApiKey" type="password" autocomplete="new-password"/>
                         </label>
                     </div>
                     <button id="ce-disconnect-btn"
-                            class="ce-button ce-button__primary"><?= __('Disconnect'); ?></button>
+                            class="ce-button ce-button__primary"><?= $block->escapeHtml('Disconnect') ?></button>
                 </section>
                 <section>
                     <?=  $block->getLayout()->createBlock(ProductSync::class)
@@ -111,7 +111,7 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Scope;
                 </section>
                 <section>
                     <?=  $block->getLayout()->createBlock(OrderSettings::class)
-                        ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/orderSettings.phtml")->toHtml();
+                        ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/orderSettings.phtml")->toHtml()
                     ?>
                 </section>
                 <section>
@@ -124,45 +124,45 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Scope;
                 </section>
             </main>
             <input id="ce-config-data-url" type="hidden"
-                   value="<?= $block->getConfigUrl(); ?>">
+                   value="<?= $block->escapeHtml($block->getConfigUrl()) ?>">
             <input id="ce-disconnect-url" type="hidden"
-                   value="<?= $block->getDisconnectUrl(); ?>">
+                   value="<?= $block->escapeHtml($block->getDisconnectUrl()) ?>">
             <input id="ce-disable-url" type="hidden"
-                   value="<?= $block->getDisableUrl(); ?>">
+                   value="<?= $block->escapeHtml($block->getDisableUrl()) ?>">
             <input id="ce-trigger-sync-url" type="hidden"
-                   value="<?= $block->getTriggerSyncUrl(); ?>">
+                   value="<?= $block->escapeHtml($block->getTriggerSyncUrl()) ?>">
             <input id="ce-save-url" type="hidden"
-                   value="<?= $block->getConfigSaveUrl(); ?>">
+                   value="<?= $block->escapeHtml($block->getConfigSaveUrl()) ?>">
             <input id="ce-check-status-url" type="hidden"
-                   value="<?= $block->getCheckStatusUrl(); ?>">
-            <input id="ce-store-scope" type="hidden" value="<?= $block->getStoreId() ?>">
-            <input type="hidden" id="ce-state-url" value="<?= $block->getStateUrl() ?>">
+                   value="<?= $block->escapeHtml($block->getCheckStatusUrl()) ?>">
+            <input id="ce-store-scope" type="hidden" value="<?= $block->escapeHtml($block->getStoreId()) ?>">
+            <input type="hidden" id="ce-state-url" value="<?= $block->escapeHtml($block->getStateUrl()) ?>">
         </div>
         <div id="ce-modal" class="ce-hidden">
             <?=  $block->getLayout()->createBlock(Dashboard::class)
-                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml();
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml()
             ?>
         </div>
         <div id="ce-trigger-modal" class="ce-hidden">
             <?=  $block->getLayout()->createBlock(Dashboard::class)
-                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/triggerSync.phtml")->toHtml();
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/triggerSync.phtml")->toHtml()
             ?>
         </div>
         <div id="ce-save-config-modal" class="ce-hidden">
             <?=  $block->getLayout()->createBlock(Dashboard::class)
-                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/triggerSyncThreeLevelChanged.phtml")->toHtml();
+                ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/triggerSyncThreeLevelChanged.phtml")->toHtml()
             ?>
         </div>
         <input id="ce-disconnect-header-text" type="hidden"
-               value="<?= __('Disconnect account'); ?>">
-        <input id="ce-disconnect-button-text" type="hidden" value="<?= __('Disconnect'); ?>">
+               value="<?= $block->escapeHtml('Disconnect account'); ?>">
+        <input id="ce-disconnect-button-text" type="hidden" value="<?= $block->escapeHtml('Disconnect') ?>">
         <input id="ce-disable-header-text" type="hidden"
-               value="<?= __('Disable integration'); ?>">
-        <input id="ce-disable-button-text" type="hidden" value="<?= __('Disable'); ?>">
+               value="<?= $block->escapeHtml('Disable integration'); ?>">
+        <input id="ce-disable-button-text" type="hidden" value="<?= $block->escapeHtml('Disable') ?>">
         <input id="ce-disable-text" type="hidden"
-               value="<?= __('If you disable integration, synchronization between Magento 2 and ChannelEngine will be disabled.') ?>">
+               value="<?= $block->escapeHtml('If you disable integration, synchronization between Magento 2 and ChannelEngine will be disabled.') ?>">
         <input id="ce-disconnect-text" type="hidden"
-               value="<?= __('You are about to disconnect your ChannelEngine account.'); ?>">
+               value="<?= $block->escapeHtml('You are about to disconnect your ChannelEngine account.') ?>">
         <div id="ce-disconnect-modal-content-wrapper" class="ce-hidden">
             <div id="ce-disconnect-modal-content">
                 <label id="ce-disconnect-modal-label">

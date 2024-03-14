@@ -3,11 +3,11 @@
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts;
 
 /**
- * Class TranslationService
+ * Class TranslationServiceInterface
  *
  * @package ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts
  */
-interface TranslationService
+interface TranslationServiceInterface
 {
     /**
      * Class name.

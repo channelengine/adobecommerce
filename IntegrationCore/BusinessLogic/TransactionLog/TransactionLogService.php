@@ -4,14 +4,13 @@ namespace ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\T
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Entities\TransactionLog;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Enums\Status;
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Traits\TransactionLogAware;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Tasks\TransactionalTask;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\QueryFilter\Operators;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\QueryFilter\QueryFilter;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueItemDeserializationException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Task;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Utility\TimeProvider;
 
 class TransactionLogService implements Contracts\TransactionLogService
@@ -23,7 +22,7 @@ class TransactionLogService implements Contracts\TransactionLogService
      */
     public function create(QueueItem $item)
     {
-        /** @var Task | TransactionLogAware $task */
+        /** @var TransactionalTask $task */
         $task = $item->getTask();
         if ($task === null) {
             return;
@@ -102,7 +101,7 @@ class TransactionLogService implements Contracts\TransactionLogService
      */
     public function load(QueueItem $item)
     {
-        /** @var TransactionLogAware $task */
+        /** @var TransactionalTask $task */
         $task = $item->getTask();
         if ($task === null) {
             return;

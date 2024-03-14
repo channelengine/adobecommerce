@@ -5,32 +5,32 @@
 use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Dashboard;
 
 ?>
-<script type="text/javascript" src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/CheckStatus.js') ?>">
+<script src="<?= $block->escapeHtml($block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/CheckStatus.js')) ?>">
 </script>
 <div class="ce-page">
-    <h1><?= __('Full synchronization in progress'); ?></h1>
+    <h1><?= $block->escapeHtml('Full synchronization in progress') ?></h1>
     <section id="ce-product-sync-in-progress" class="ce-sync-progress">
-        <div class="label"><?= __('Product synchronization:'); ?></div>
+        <div class="label"><?= $block->escapeHtml('Product synchronization:') ?></div>
         <div class="ce-progress-bar">
             <div id="ce-product-progress" class="ce-progress-bar__inner">0%</div>
             <div id="ce-product-progress-bar" class="ce-progress-bar__progress" style="clip-path: inset(0 0 0 0%);">0%
             </div>
         </div>
         <div class="ce-sync-status">
-            <strong id="ce-product-synced">0</strong> <?= __('of'); ?>
-            <strong id="ce-product-total">0</strong> <?= __('products uploaded'); ?>
+            <strong id="ce-product-synced">0</strong> <?= $block->escapeHtml('of') ?>
+            <strong id="ce-product-total">0</strong> <?= $block->escapeHtml('products uploaded') ?>
         </div>
     </section>
     <section id="ce-order-sync-in-progress" class="ce-sync-progress">
-        <div class="label"><?= __('Order synchronization:'); ?></div>
+        <div class="label"><?= $block->escapeHtml('Order synchronization:') ?></div>
         <div class="ce-progress-bar">
             <div id="ce-order-progress" class="ce-progress-bar__inner">0%</div>
             <div id="ce-order-progress-bar" class="ce-progress-bar__progress" style="clip-path: inset(0 0 0 0%);">0%
             </div>
         </div>
         <div class="ce-sync-status">
-            <strong id="ce-order-synced">0</strong> <?= __('of'); ?>
-            <strong id="ce-order-total">0</strong> <?= __('orders downloaded'); ?>
+            <strong id="ce-order-synced">0</strong> <?= $block->escapeHtml('of') ?>
+            <strong id="ce-order-total">0</strong> <?= $block->escapeHtml('orders downloaded') ?>
         </div>
     </section>
 </div>

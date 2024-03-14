@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminChangePluginConfiguration">
+        <annotations>
+            <stories value="Admin change plugin configuration for sync order"/>
+            <title value="Admin change plugin configuration for sync order"/>
+            <description value="Admin change plugin configuration for sync order"/>
+            <severity value="MINOR"/>
+            <group value="ChannelEngine"/>
+        </annotations>
+        <before>
+            <magentoCLI command="ce:set-config"
+                        arguments="--key di_order_proxy_class --value ChannelEngine\\ChannelEngineIntegration\\Test\\Mftf\\Helper\\OrderProxy"
+                        stepKey="config"
+            />
+            <actionGroup ref="AdminLoginActionGroup" stepKey="logInAsAdmin"/>
+        </before>
+
+        <after>
+            <actionGroup ref="DisconnectAccount" stepKey="disconnectAccount"/>
+            <magentoCLI command="ce:set-config"
+                        arguments="--key di_order_proxy_class --value ChannelEngine\\ChannelEngineIntegration\\IntegrationCore\\BusinessLogic\\API\\Orders\\Http\\Proxy"
+                        stepKey="config_di"
+            />
+        </after>
+
+
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngine"/>
+        <actionGroup ref="WelcomePage" stepKey="welcomePage"/>
+        <actionGroup ref="ConnectAccount" stepKey="connectAccount"/>
+        <actionGroup ref="DisableProductSynchronization" stepKey="configureProductSynchronization"/>
+        <actionGroup ref="DisableOrderSynchronization" stepKey="disableOrderSynchronization"/>
+
+        <click selector="{{EnableIntegrationSection.ceStartSync}}"  stepKey="clickStartSync" />
+        <wait time="5" stepKey="waitForStartSync"/>
+        <waitForElementVisible
+                selector="{{ChannelEngineDashboardSection.ceSyncCompleted}}"
+                time="60"
+                stepKey="waitForSyncComplete"/>
+
+        <magentoCLI command="ce:set-config"
+                    arguments="--key CHANNELENGINE_WEBHOOK_TOKEN --value CHANNELENGINE_WEBHOOK_TOKEN_CE --store 1"
+                    stepKey="config_token"
+        />
+        <helper class="ChannelEngine\ChannelEngineIntegration\Test\Mftf\Helper\CeWebhook"
+                method="executeWebHook"
+                stepKey="sendOrderWebHook">
+            <argument name="url">channelengine/webhooks/webhook/storeId/1?type=orders&amp;updatedSince=1707677959&amp;token=CHANNELENGINE_WEBHOOK_TOKEN_CE</argument>
+        </helper>
+
+        <wait time="10" stepKey="waitForSync" />
+
+        <actionGroup ref="AdminNavigateMenuActionGroup" stepKey="navigateToSalesOrderPage">
+            <argument name="menuUiId" value="{{AdminMenuSales.dataUiId}}"/>
+            <argument name="submenuUiId" value="{{AdminMenuSalesOrders.dataUiId}}"/>
+        </actionGroup>
+        <wait time="10" stepKey="waitForOrderLoad" />
+        <dontSee userInput="CE-MFTF-TEST-1" selector="#container > div > div.admin__data-grid-wrap > table" stepKey="dontSeeOrder1"/>
+        <dontSee userInput="CE-MFTF-TEST-2" selector="#container > div > div.admin__data-grid-wrap > table" stepKey="dontSeeOrder2"/>
+
+        <actionGroup ref="AdminNavigateMenuActionGroup" stepKey="navigateToCePage">
+            <argument name="menuUiId" value="{{AdminMenuStores.dataUiId}}"/>
+            <argument name="submenuUiId" value="channelengine-channelengineintegration-channelengine-config"/>
+        </actionGroup>
+        <waitForPageLoad stepKey="waitForPageLoad1"/>
+        <click selector="#container > div.channel-engine > main > div.ce-tabs > ul > li:nth-child(2) > a"
+               stepKey="goToConfigurationPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad2"/>
+
+        <scrollTo
+                selector="#container > div.channel-engine > main > div.ce-page-content > main > section:nth-child(3)"
+                stepKey="scrollToOrderConfig"/>
+
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceMerchantFulfilled}}" stepKey="clickMerchantFulfilled" />
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceYesMerchantFulfilled}}" stepKey="clickYesMerchantFulfilled" />
+
+        <scrollToTopOfPage stepKey="scrollToTopOfThePage"/>
+        <click selector="button#ce-save-config"
+               stepKey="SaveConfig"/>
+        <waitForElementVisible selector="button.ce-button.ce-button__secondary.ce-close-modal" stepKey="waitForModalVisible"/>
+        <click selector="button.ce-button.ce-button__secondary.ce-close-modal"
+               stepKey="skipSync"/>
+
+        <helper class="ChannelEngine\ChannelEngineIntegration\Test\Mftf\Helper\CeWebhook"
+                method="executeWebHook"
+                stepKey="sendOrderWebHook2">
+            <argument name="url">channelengine/webhooks/webhook/storeId/1?type=orders&amp;updatedSince=1707677959&amp;token=CHANNELENGINE_WEBHOOK_TOKEN_CE&amp;name=branko</argument>
+        </helper>
+
+        <wait time="30" stepKey="waitForSync2"/>
+        <actionGroup ref="AdminNavigateMenuActionGroup" stepKey="navigateToSalesOrderPage2">
+            <argument name="menuUiId" value="{{AdminMenuSales.dataUiId}}"/>
+            <argument name="submenuUiId" value="{{AdminMenuSalesOrders.dataUiId}}"/>
+        </actionGroup>
+        <wait time="3" stepKey="waitForDataLoad"/>
+
+        <actionGroup ref="CheckSynchronizedOrder" stepKey="checkSynchronizedOrder1">
+            <argument name="orderId" value="CE-TEST-MFTF-1"/>
+            <argument name="orderStatus" value="Processing"/>
+            <argument name="orderNo" value="1"/>
+        </actionGroup>
+        <actionGroup ref="CheckSynchronizedOrder" stepKey="checkSynchronizedOrder2">
+            <argument name="orderId" value="CE-TEST-MFTF-2"/>
+            <argument name="orderStatus" value="Processing"/>
+            <argument name="orderNo" value="2"/>
+        </actionGroup>
+    </test>
+</tests>

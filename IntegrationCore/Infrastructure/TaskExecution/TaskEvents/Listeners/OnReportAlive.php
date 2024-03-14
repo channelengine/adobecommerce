@@ -24,7 +24,7 @@ class OnReportAlive
      */
     public static function handle(QueueItem $queueItem)
     {
-        $queue = static::getQueue();
+        $queue = self::getQueue();
         $queue->keepAlive($queueItem);
         if ($queueItem->getParentId() === null) {
             return;

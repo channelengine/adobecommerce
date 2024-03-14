@@ -28,7 +28,7 @@ class OnReportProgress
      */
     public static function handle(QueueItem $queueItem, $progressBasePoints)
     {
-        $queue = static::getQueueService();
+        $queue = self::getQueueService();
         $queue->updateProgress($queueItem, $progressBasePoints);
         if ($queueItem->getParentId() === null) {
             return;

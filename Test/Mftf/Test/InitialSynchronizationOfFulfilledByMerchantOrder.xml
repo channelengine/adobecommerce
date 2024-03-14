@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminInitialSynchronizationOfFulfilledByMerchantOrder">
+        <annotations>
+            <stories value="Initial sync of merchant order"/>
+            <title value="Initial sync of merchant order"/>
+            <description value="Initial synchronization of one order created on Channel Engine by merchant"/>
+            <severity value="MINOR"/>
+            <group value="ChannelEngine"/>
+        </annotations>
+        <before>
+            <magentoCLI command="ce:set-config"
+                        arguments="--key di_order_proxy_class --value ChannelEngine\\ChannelEngineIntegration\\Test\\Mftf\\Helper\\OrderProxy"
+                        stepKey="config"
+            />
+            <actionGroup ref="AdminLoginActionGroup" stepKey="logInAsAdmin"/>
+        </before>
+        <after>
+            <actionGroup ref="DisconnectAccount" stepKey="disconnectAccount"/>
+            <magentoCLI command="ce:set-config"
+                        arguments="--key di_order_proxy_class --value ChannelEngine\\ChannelEngineIntegration\\IntegrationCore\\BusinessLogic\\API\\Orders\\Http\\Proxy"
+                        stepKey="config"
+            />
+        </after>
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngine"/>
+        <actionGroup ref="WelcomePage" stepKey="welcomePage"/>
+        <actionGroup ref="ConnectAccount" stepKey="connectAccount"/>
+        <actionGroup ref="DisableProductSynchronization" stepKey="configureProductSynchronization"/>
+        <actionGroup ref="ConfigureOrderSynchronization" stepKey="disableOrderSynchronization"/>
+
+        <click selector="{{EnableIntegrationSection.ceStartSync}}"  stepKey="clickStartSync" />
+
+        <actionGroup ref="CheckOrderSynchronization" stepKey="checkOrderSynchronizationStatus"/>
+        <wait time="5" stepKey="waitForPageLoad" />
+        <actionGroup ref="AdminNavigateMenuActionGroup" stepKey="navigateToSalesOrderPage2">
+            <argument name="menuUiId" value="{{AdminMenuSales.dataUiId}}"/>
+            <argument name="submenuUiId" value="{{AdminMenuSalesOrders.dataUiId}}"/>
+        </actionGroup>
+        <wait time="3" stepKey="waitForDataLoad"/>
+        <actionGroup ref="CheckSynchronizedOrder" stepKey="checkSynchronizedOrder1">
+            <argument name="orderId" value="CE-TEST-MFTF-1"/>
+            <argument name="orderStatus" value="Processing"/>
+            <argument name="orderNo" value="1"/>
+        </actionGroup>
+        <actionGroup ref="CheckSynchronizedOrder" stepKey="checkSynchronizedOrder2">
+            <argument name="orderId" value="CE-TEST-MFTF-2"/>
+            <argument name="orderStatus" value="Processing"/>
+            <argument name="orderNo" value="2"/>
+        </actionGroup>
+    </test>
+</tests>

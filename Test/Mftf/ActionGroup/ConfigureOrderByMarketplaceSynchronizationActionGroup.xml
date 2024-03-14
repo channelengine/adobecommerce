@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="ConfigureOrderByMarketplaceSynchronization">
+        <annotations>
+            <description>Configure parameters for order fulfilled by marketplace synchronization</description>
+        </annotations>
+        <waitForElementVisible selector="#container > div.channel-engine > main > div > h1" time="30" stepKey="waitForOrderConfig" />
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceMerchantFulfilled}}"  stepKey="clickMerchantFulfilledOrder" />
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceNoMerchantFulfilled}}"  stepKey="clickNoMerchantFulfilledOrder" />
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceFulfilled}}"  stepKey="clickMarketplaceFulfilledOrder" />
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceYesMarketplaceFulfilled}}"  stepKey="clickYesMarketplaceFulfilledOrder" />
+        <conditionalClick
+                selector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturns}}"
+                dependentSelector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturns}}"
+                visible="true"
+                stepKey="clickMarketplaceReturns"
+        />
+        <conditionalClick
+                selector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturnsNo}}"
+                dependentSelector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturnsNo}}"
+                visible="true"
+                stepKey="clickMarketplaceReturnsNo"
+        />
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceStatusesSave}}"  stepKey="clickSaveOnOrder" />
+    </actionGroup>
+</actionGroups>

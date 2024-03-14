@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Products;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\Configuration;
@@ -37,7 +39,7 @@ class ProductSalePricesService
      *
      * @return Configuration
      */
-    protected function getConfigService(): Configuration
+    private function getConfigService(): Configuration
     {
         return ServiceRegister::getService(Configuration::class);
     }

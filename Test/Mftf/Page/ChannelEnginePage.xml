@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/PageObject.xsd">
+    <page name="ChannelEnginePage" url="channelengine/content/welcome/" area="admin" module="ChannelEngine_ChannelEngineIntegration">
+        <section name="ChannelEngineWelcomeSection" />
+    </page>
+</pages>

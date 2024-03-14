@@ -1,8 +1,4 @@
 <?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
 
 /**
  * @var $block Magento\Shipping\Block\Adminhtml\Order\Tracking\View
@@ -19,7 +15,7 @@ $notification = $block->getNotification();
 ?>
 <?php if ($notification) {
     echo '<div class="ce-notice ce-notice-error"><p>' .
-        $notification . '</p></div>';
+        $block->escapeHtml($notification) . '</p></div>';
 }?>
 
 <div class="admin__control-table-wrapper">
@@ -27,10 +23,10 @@ $notification = $block->getNotification();
         <table class="data-table admin__control-table" id="shipment_tracking_info">
             <thead>
             <tr class="headings">
-                <th class="col-carrier"><?= $block->escapeHtml(__('Carrier')) ?></th>
-                <th class="col-title"><?= $block->escapeHtml(__('Title')) ?></th>
-                <th class="col-number"><?= $block->escapeHtml(__('Number')) ?></th>
-                <th class="col-delete last"><?= $block->escapeHtml(__('Action')) ?></th>
+                <th class="col-carrier"><?= $block->escapeHtml($block->escapeHtml('Carrier')) ?></th>
+                <th class="col-title"><?= $block->escapeHtml($block->escapeHtml('Title')) ?></th>
+                <th class="col-number"><?= $block->escapeHtml($block->escapeHtml('Number')) ?></th>
+                <th class="col-delete last"><?= $block->escapeHtml($block->escapeHtml('Action')) ?></th>
             </tr>
             </thead>
             <tfoot>
@@ -96,7 +92,7 @@ $notification = $block->getNotification();
                         </td>
                         <td class="col-delete last">
                             <button class="action-delete" type="button" id="del-track-<?= (int)$_track->getId() ?>">
-                                <span><?= $block->escapeHtml(__('Delete')) ?></span>
+                                <span><?= $block->escapeHtml($block->escapeHtml('Delete')) ?></span>
                             </button>
                         </td>
                         <?= /* @noEscape */
@@ -132,7 +128,7 @@ function saveTrackingInfo(node, url) {
 
 function deleteTrackingNumber(url) {
     confirm({
-        content: '{$block->escapeJs(__('Are you sure?'))}',
+        content: '{$block->escapeJs($block->escapeHtml('Are you sure?'))}',
         actions: {
             /**
              * Confirm action.

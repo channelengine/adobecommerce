@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="ConfigureOrderSynchronization">
+        <annotations>
+            <description>Configure parameters for order synchronization</description>
+        </annotations>
+        <waitForElementVisible selector="#container > div.channel-engine > main > div > h1" time="30" stepKey="waitForOrderConfig" />
+        <conditionalClick
+                selector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturns}}"
+                dependentSelector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturns}}"
+                visible="true"
+                stepKey="clickMarketplaceReturns"
+        />
+        <conditionalClick
+                selector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturnsNo}}"
+                dependentSelector="{{OrderSynchronizationSettingsFormSection.ceMarketplaceReturnsNo}}"
+                visible="true"
+                stepKey="clickMarketplaceReturnsNo"
+        />
+        <click selector="{{OrderSynchronizationSettingsFormSection.ceStatusesSave}}"  stepKey="clickSaveOnOrder" />
+    </actionGroup>
+</actionGroups>

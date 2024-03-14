@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Setup\Patch;
 
 use Magento\Framework\Setup\ModuleDataSetupInterface;

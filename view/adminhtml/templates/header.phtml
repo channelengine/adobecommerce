@@ -14,28 +14,28 @@ $accountBlock = $block->getLayout()->createBlock(Account::class);
 ?>
 
 <header>
-    <img src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/logo.svg'); ?>"
+    <img src="<?= $block->escapeHtml($block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/logo.svg')) ?>"
          height="30" alt="ChannelEngine"/>
     <span style="float: right;">
-        <?= __('Account name: '); ?>
+        <?= $block->escapeHtml('Account name: '); ?>
         <span id="accountNameHeader">
-             <?= $block->getAccountName(); ?>
+             <?= $block->escapeHtml($block->getAccountName()) ?>
         </span>
-        ( <a id="disconnect-header"><?= __('Disconnect'); ?> </a> )
+        ( <a id="disconnect-header"><?= $block->escapeHtml('Disconnect'); ?> </a> )
     </span>
     <span>
         <input id="disconnect-url" type="hidden"
-               value="<?= $configBlock->getDisconnectUrl(); ?>">
+               value="<?= $block->escapeHtml($configBlock->getDisconnectUrl()) ?>">
         <input id="state-url" type="hidden"
-               value="<?= $accountBlock->getStateUrl(); ?>">
+               value="<?= $block->escapeHtml($accountBlock->getStateUrl()) ?>">
         <input id="store-scope" type="hidden"
-               value="<?= $configBlock->getStoreId() ?>">
+               value="<?= $block->escapeHtml($configBlock->getStoreId()) ?>">
         <input id="disconnect-header-text" type="hidden"
-               value="<?= __('Disconnect account'); ?>">
+               value="<?= $block->escapeHtml('Disconnect account') ?>">
         <input id="disconnect-button-text" type="hidden"
-               value="<?= __('Disconnect'); ?>">
+               value="<?= $block->escapeHtml('Disconnect') ?>">
         <input id="disconnect-text" type="hidden"
-               value="<?= __('You are about to disconnect your ChannelEngine account.'); ?>">
+               value="<?= $block->escapeHtml('You are about to disconnect your ChannelEngine account.') ?>">
         <div id="disconnect-modal-content-wrapper" class="ce-hidden">
             <div id="disconnect-modal-content">
                 <label id="disconnect-modal-label">

@@ -11,19 +11,23 @@ $startOnboardingUrl = $block->getStartOnboardingUrl();
 </div>
 <div class="channel-engine">
     <header>
-        <img src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/logo.svg'); ?>"
+        <img src="<?= $block->escapeHtml($block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/logo.svg')) ?>"
              height="30" alt="ChannelEngine"/>
     </header>
     <main>
         <div class="ce-onboarding ce-page ce-page-centered">
-            <img src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/icon.svg'); ?>"
+            <img src="<?= $block->escapeHtml($block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/icon.svg')) ?>"
                  alt="ChannelEngine"
                  class="ce-icon__big"/>
-            <div class="ce-title"><?= $block->escapeQuote((string)__('Welcome to ChannelEngine')); ?></div>
-            <h2 class="ce-subtitle"><?= $block->escapeQuote((string)__('It will only take 5 minutes of your time to configure the integration.')); ?></h2>
+            <div class="ce-title">
+                <?= $block->escapeQuote((string)$block->escapeHtml('Welcome to ChannelEngine')) ?>
+            </div>
+            <h2 class="ce-subtitle">
+                <?= $block->escapeQuote((string)$block->escapeHtml('It will only take 5 minutes of your time to configure the integration.')) ?>
+            </h2>
             <a id="ce-configure"
-               class="ce-button ce-button__primary"><?= $block->escapeQuote((string)__('Configure')); ?></a>
-            <input id="ceOnboardingUrl" type="hidden" value="<?= $startOnboardingUrl; ?>">
+               class="ce-button ce-button__primary"><?= $block->escapeQuote((string)$block->escapeHtml('Configure')) ?></a>
+            <input id="ceOnboardingUrl" type="hidden" value="<?= $block->escapeHtml($startOnboardingUrl) ?>">
         </div>
     </main>
 </div>

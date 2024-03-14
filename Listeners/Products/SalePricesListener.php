@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Listeners\Products;
 
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
@@ -10,7 +12,6 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Servic
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\QueueService;
 use ChannelEngine\ChannelEngineIntegration\Repository\BaseRepository;
-use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ConfigService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\InitialSyncStateService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Products\ProductSalePricesService;
 use ChannelEngine\ChannelEngineIntegration\Tasks\CheckSalePricesTask;
@@ -43,15 +44,15 @@ class SalePricesListener
      * @throws LocalizedException
      * @throws ContextNotSetException
      */
-    public static function handle(): void
+    public function handle(): void
     {
-        $storesIds = static::getConfigRepository()->getContexts();
+        $storesIds = $this->getConfigRepository()->getContexts();
         foreach ($storesIds as $storeId) {
-            static::setContextWithStoreId($storeId);
-            if (static::getInitialSyncStateService()->checkInitialSyncState(InitialSyncStateService::FINISHED)
-                && time() > static::getService()->getLastReadTime() + static::CHECK_PERIOD) {
-                static::getQueue()->enqueue('channel-engine-check-sale-prices', new CheckSalePricesTask(), $storeId);
-                static::getService()->updateLastReadTime(strtotime(self::CHECK_TIME));
+            $this->setContextWithStoreId($storeId);
+            if ($this->getInitialSyncStateService()->checkInitialSyncState(InitialSyncStateService::FINISHED)
+                && time() > $this->getService()->getLastReadTime() + $this::CHECK_PERIOD) {
+                $this->getQueue()->enqueue('channel-engine-check-sale-prices', new CheckSalePricesTask(), $storeId);
+                $this->getService()->updateLastReadTime(strtotime($this::CHECK_TIME));
             }
         }
     }
@@ -59,7 +60,7 @@ class SalePricesListener
     /**
      * @return ProductSalePricesService
      */
-    protected static function getService(): ProductSalePricesService
+    private function getService(): ProductSalePricesService
     {
         return ServiceRegister::getService(ProductSalePricesService::class);
     }
@@ -67,7 +68,7 @@ class SalePricesListener
     /**
      * @return InitialSyncStateService
      */
-    protected static function getInitialSyncStateService(): InitialSyncStateService
+    private function getInitialSyncStateService(): InitialSyncStateService
     {
         return ServiceRegister::getService(InitialSyncStateService::class);
     }
@@ -75,19 +76,9 @@ class SalePricesListener
     /**
      * @return QueueService
      */
-    protected static function getQueue(): QueueService
+    private function getQueue(): QueueService
     {
         return ServiceRegister::getService(QueueService::CLASS_NAME);
-    }
-
-    /**
-     * Retrieves instance of Configuration.
-     *
-     * @return ConfigService
-     */
-    protected function getConfigService(): ConfigService
-    {
-        return ServiceRegister::getService(ConfigService::class);
     }
 
     /**
@@ -95,7 +86,7 @@ class SalePricesListener
      *
      * @throws RepositoryNotRegisteredException
      */
-    private static function getConfigRepository(): BaseRepository
+    private function getConfigRepository(): BaseRepository
     {
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return RepositoryRegistry::getRepository(ConfigEntity::getClassName());

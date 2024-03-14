@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Model\Config\Source;
 
 use ChannelEngine\ChannelEngineIntegration\Model\Carrier;
@@ -47,7 +49,7 @@ class Method implements GenericInterface
      *
      * @return array
      */
-    protected function getShippingMethods(): array
+    private function getShippingMethods(): array
     {
         return $this->carrier->getAllowedMethods();
     }

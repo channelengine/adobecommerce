@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Onboarding;
 
 use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappings;
@@ -15,7 +17,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Ex
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsTypesService;
-use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationServiceInterface;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ExportProductsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ExtraDataAttributeMappingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PriceSettingsService;
@@ -46,7 +48,7 @@ class ProductSync extends Action
      */
     private $resultJsonFactory;
     /**
-     * @var TranslationService
+     * @var TranslationServiceInterface
      */
     private $translationService;
 
@@ -228,7 +230,7 @@ class ProductSync extends Action
         }
 
         $priceSettings = new PriceSettings(
-            $groupPricing,
+            (bool)$groupPricing,
             $priceAttribute,
             $customerGroup !== '' ? $customerGroup : 0,
             $quantity !== '' ? (int)$quantity : 0
@@ -264,7 +266,7 @@ class ProductSync extends Action
             return $this->returnError('Stock quantity is required.');
         }
 
-        $settings = new StockSettings($enableStockSync, $inventories, $quantity, $enableMSI);
+        $settings = new StockSettings($enableStockSync, $inventories, (int)$quantity, $enableMSI);
         $this->getStockSettingsService()->setStockSettings($settings);
 
         return ['success' => true];
@@ -363,7 +365,7 @@ class ProductSync extends Action
      *
      * @return ProductsSyncConfigService
      */
-    protected function getProductsSyncConfigService()
+    private function getProductsSyncConfigService(): ProductsSyncConfigService
     {
         return ServiceRegister::getService(ProductsSyncConfigService::class);
     }
@@ -417,12 +419,12 @@ class ProductSync extends Action
     }
 
     /**
-     * @return TranslationService
+     * @return TranslationServiceInterface
      */
-    private function getTranslationService(): TranslationService
+    private function getTranslationService(): TranslationServiceInterface
     {
         if ($this->translationService === null) {
-            $this->translationService = ServiceRegister::getService(TranslationService::class);
+            $this->translationService = ServiceRegister::getService(TranslationServiceInterface::class);
         }
 
         return $this->translationService;

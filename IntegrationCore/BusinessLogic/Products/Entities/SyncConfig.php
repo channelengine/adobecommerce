@@ -25,7 +25,7 @@ class SyncConfig extends Entity
      */
     protected $language;
     /**
-     * @var string;
+     * @var string
      */
     protected $priceField;
     /**

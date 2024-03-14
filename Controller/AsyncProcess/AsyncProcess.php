@@ -5,16 +5,18 @@ namespace ChannelEngine\ChannelEngineIntegration\Controller\AsyncProcess;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Logger\Logger;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Interfaces\AsyncProcessService;
-use Magento\Framework\App\Action\Action;
-use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\App\RequestInterface;
+
 
 /**
  * Class AsyncProcess
  *
  * @package ChannelEngine\ChannelEngineIntegration\Controller\AsyncProcess
  */
-class AsyncProcess extends Action
+class AsyncProcess implements HttpGetActionInterface, HttpPostActionInterface
 {
     /**
      * @var JsonFactory
@@ -27,14 +29,19 @@ class AsyncProcess extends Action
     private $asyncProcessService;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * AsyncProcess constructor.
      *
-     * @param Context $context
+     * @param RequestInterface $request
      * @param JsonFactory $resultJsonFactory
      */
-    public function __construct(Context $context, JsonFactory $resultJsonFactory)
+    public function __construct(RequestInterface $request,JsonFactory $resultJsonFactory)
     {
-        parent::__construct($context);
+        $this->request = $request;
         $this->resultJsonFactory = $resultJsonFactory;
     }
 
@@ -43,12 +50,13 @@ class AsyncProcess extends Action
      */
     public function execute()
     {
-        $guid = $this->_request->getParam('guid');
+        $guid = $this->request->getParam('guid');
         Logger::logInfo('Received async process request.', 'Integration', ['guid' => $guid]);
 
         $this->getAsyncProcessService()->runProcess($guid);
-
-        return $this->resultJsonFactory->create(['success' => true]);
+        $result = $this->resultJsonFactory->create();
+        $result->setData(['success' => true]);
+        return $result;
     }
 
     /**

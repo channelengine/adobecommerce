@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Utility;
 
 use ChannelEngine\ChannelEngineIntegration\Api\ReturnsServiceFactoryInterface;
 use ChannelEngine\ChannelEngineIntegration\Entity\ReturnData;
 use ChannelEngine\ChannelEngineIntegration\Events\NotificationCreatedEvent;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Orders\Http\Proxy;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Authorization\Contracts\AuthorizationService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\BootstrapComponent;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Cancellation\Contracts\CancellationService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Notifications\Contracts\NotificationService;
@@ -20,6 +24,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Product
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Configuration\ReturnsConfigEntity;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Configuration\ReturnsConfigurationService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Contracts\ReturnsService;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Shipments\Contracts\ShipmentsService as BaseShipmentsService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\SupportConsole\Contracts\SupportService as SupportServiceInterface;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Contracts\TransactionLogService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Entities\Details;
@@ -28,6 +33,8 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Utility
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Webhooks\Contracts\WebhooksService;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigEntity;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\Configuration;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\ConfigurationManager;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Http\HttpClient;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Logger\Interfaces\ShopLoggerAdapter;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Logger\LogData;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryClassException;
@@ -45,6 +52,11 @@ use ChannelEngine\ChannelEngineIntegration\Listeners\Products\SalePricesListener
 use ChannelEngine\ChannelEngineIntegration\Listeners\Products\TickEventListener;
 use ChannelEngine\ChannelEngineIntegration\Listeners\StateTransition\OrderStateTransitionListener;
 use ChannelEngine\ChannelEngineIntegration\Listeners\StateTransition\ProductStateTransitionListener;
+use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\ChannelEngineEntityFactory;
+use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\LogEntityFactory;
+use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\ProductEventFactory;
+use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\QueueItemEntityFactory;
+use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\ReturnDataFactory;
 use ChannelEngine\ChannelEngineIntegration\Repository\BaseRepository;
 use ChannelEngine\ChannelEngineIntegration\Repository\LogRepository;
 use ChannelEngine\ChannelEngineIntegration\Repository\ProductEventRepository;
@@ -54,7 +66,7 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappi
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsTypesService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\CancellationService as IntegrationCancellationService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ConfigService;
-use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationServiceInterface;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\DisconnectService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ExportProductsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ExtraDataAttributeMappingsService;
@@ -73,9 +85,12 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StockSettingsS
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StoreService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\SupportService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ThreeLevelSyncSettingsService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\TranslationService;
 use ChannelEngine\ChannelEngineIntegration\Services\Infrastructure\LoggerService;
+use ChannelEngine\ChannelEngineIntegration\Test\Mftf\Helper\OrderProxy;
+use ChannelEngine\ChannelEngineIntegration\Test\Mftf\Helper\ShipmentProxy;
+use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Notification\NotifierPool;
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Shipments\Contracts\ShipmentsService as BaseShipmentsService;
 
 /**
  * Class Initializer
@@ -134,6 +149,46 @@ class Initializer
     private $returnsServiceFactory;
 
     /**
+     * @var ChannelEngineEntityFactory
+     */
+    private $channelEngineEntityFactory;
+
+    /**
+     * @var QueueItemEntityFactory
+     */
+    private $queueItemEntityFactory;
+
+    /**
+     * @var ProductEventFactory
+     */
+    private $productEventFactory;
+
+    /**
+     * @var LogEntityFactory
+     */
+    private $logEntityFactory;
+
+    /**
+     * @var ReturnDataFactory
+     */
+    private $returnDataFactory;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var OrderProxy
+     */
+    private $orderProxy;
+
+    /**
+     * @var ShipmentProxy
+     */
+    private $shipmentProxy;
+
+    /**
      * @param ConfigService $configService
      * @param SupportService $supportService
      * @param LoggerService $loggerService
@@ -146,6 +201,12 @@ class Initializer
      * @param ShipmentsService $shipmentsService
      * @param SalesPricesService $salesPricesService
      * @param ReturnsServiceFactoryInterface $returnsServiceFactory
+     * @param ChannelEngineEntityFactory $channelEngineEntityFactory
+     * @param QueueItemEntityFactory $queueItemEntityFactory
+     * @param ProductEventFactory $productEventFactory
+     * @param LogEntityFactory $logEntityFactory
+     * @param ReturnDataFactory $returnDataFactory
+     * @param Session $session
      */
     public function __construct(
         ConfigService                  $configService,
@@ -159,7 +220,13 @@ class Initializer
         \ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\WebhooksService $webhooksService,
         ShipmentsService $shipmentsService,
         SalesPricesService $salesPricesService,
-        ReturnsServiceFactoryInterface $returnsServiceFactory
+        ReturnsServiceFactoryInterface $returnsServiceFactory,
+        ChannelEngineEntityFactory  $channelEngineEntityFactory,
+        QueueItemEntityFactory  $queueItemEntityFactory,
+        ProductEventFactory  $productEventFactory,
+        LogEntityFactory  $logEntityFactory,
+        ReturnDataFactory  $returnDataFactory,
+        Session $session
     ) {
         $this->configService = $configService;
         $this->supportService = $supportService;
@@ -173,6 +240,15 @@ class Initializer
         $this->shipmentsService = $shipmentsService;
         $this->salesPricesService = $salesPricesService;
         $this->returnsServiceFactory = $returnsServiceFactory;
+        $this->channelEngineEntityFactory = $channelEngineEntityFactory;
+        $this->queueItemEntityFactory = $queueItemEntityFactory;
+        $this->productEventFactory = $productEventFactory;
+        $this->logEntityFactory = $logEntityFactory;
+        $this->returnDataFactory = $returnDataFactory;
+        $this->session = $session;
+        ServiceRegister::registerService(Initializer::class, function (){
+            return $this;
+        });
     }
 
     /**
@@ -229,9 +305,9 @@ class Initializer
         );
 
         ServiceRegister::registerService(
-            TranslationService::class,
-            static function () {
-                return new \ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\TranslationService();
+            TranslationServiceInterface::class,
+            function () {
+                return new TranslationService($this->session);
             }
         );
 
@@ -409,6 +485,96 @@ class Initializer
                 return new ExportProductsService();
             }
         );
+
+        ServiceRegister::registerService(
+            ChannelEngineEntityFactory::class,
+            function () {
+                return $this->channelEngineEntityFactory;
+            }
+        );
+
+        ServiceRegister::registerService(
+            QueueItemEntityFactory::class,
+            function () {
+                return $this->queueItemEntityFactory;
+            }
+        );
+
+        ServiceRegister::registerService(
+            ProductEventFactory::class,
+            function () {
+                return $this->productEventFactory;
+            }
+        );
+
+        ServiceRegister::registerService(
+            LogEntityFactory::class,
+            function () {
+                return $this->logEntityFactory;
+            }
+        );
+
+        ServiceRegister::registerService(
+            ReturnDataFactory::class,
+            function () {
+                return $this->returnDataFactory;
+            }
+        );
+
+        ServiceRegister::registerService(
+            TranslationServiceInterface::class,
+            function () {
+                return new TranslationService($this->session);
+            }
+        );
+        ServiceRegister::registerService(
+            Proxy::CLASS_NAME,
+            function () {
+                if($this->orderProxy) {
+                    return $this->orderProxy;
+                }
+
+                $orderProxyClass = Proxy::class;
+                /** @var ConfigurationManager $configManager */
+                $configManager = ServiceRegister::getService(ConfigurationManager::CLASS_NAME);
+                if ($diClass = $configManager->getConfigValue('di_order_proxy_class', null, false)) {
+                    $orderProxyClass = $diClass;
+                }
+                /** @var HttpClient $httpClient */
+                $httpClient = ServiceRegister::getService(HttpClient::CLASS_NAME);
+                /** @var AuthorizationService $authService */
+                $authService = ServiceRegister::getService(AuthorizationService::CLASS_NAME);
+                $authInfo = $authService->getAuthInfo();
+                $this->orderProxy = new $orderProxyClass($httpClient, $authInfo->getAccountName(), $authInfo->getApiKey());
+
+                return $this->orderProxy;
+            }
+        );
+
+
+        ServiceRegister::registerService(
+            \ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Shipments\Http\Proxy::class,
+            function () {
+                if($this->shipmentProxy) {
+                    return $this->shipmentProxy;
+                }
+
+                $shipmentProxyClass = \ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Shipments\Http\Proxy::class;
+                /** @var ConfigurationManager $configManager */
+                $configManager = ServiceRegister::getService(ConfigurationManager::CLASS_NAME);
+                if ($diClass = $configManager->getConfigValue('di_shipment_proxy_class', null, false)) {
+                    $shipmentProxyClass = $diClass;
+                }
+                /** @var HttpClient $httpClient */
+                $httpClient = ServiceRegister::getService(HttpClient::CLASS_NAME);
+                /** @var AuthorizationService $authService */
+                $authService = ServiceRegister::getService(AuthorizationService::CLASS_NAME);
+                $authInfo = $authService->getAuthInfo();
+                $this->shipmentProxy = new $shipmentProxyClass($httpClient, $authInfo->getAccountName(), $authInfo->getApiKey());
+
+                return $this->shipmentProxy;
+            }
+        );
     }
 
     /**
@@ -418,20 +584,20 @@ class Initializer
      */
     private function initRepositories(): void
     {
-        RepositoryRegistry::registerRepository(ConfigEntity::getClassName(), BaseRepository::getClassName());
-        RepositoryRegistry::registerRepository(Process::getClassName(), BaseRepository::getClassName());
-        RepositoryRegistry::registerRepository(LogData::getClassName(), BaseRepository::getClassName());
-        RepositoryRegistry::registerRepository(QueueItem::getClassName(), QueueItemRepository::getClassName());
-        RepositoryRegistry::registerRepository(Details::getClassName(), LogRepository::getClassName());
-        RepositoryRegistry::registerRepository(TransactionLog::getClassName(), LogRepository::getClassName());
-        RepositoryRegistry::registerRepository(Notification::getClassName(), LogRepository::getClassName());
-        RepositoryRegistry::registerRepository(ProductEvent::getClassName(), ProductEventRepository::getClassName());
-        RepositoryRegistry::registerRepository(OrdersConfigEntity::getClassName(), BaseRepository::getClassName());
-        RepositoryRegistry::registerRepository(OrdersChannelSupportEntity::getClassName(), BaseRepository::getClassName());
-        RepositoryRegistry::registerRepository(ReturnData::getClassName(), ReturnDataRepository::getClassName());
-        RepositoryRegistry::registerRepository(ReturnsConfigEntity::getClassName(), BaseRepository::getClassName());
-        RepositoryRegistry::registerRepository(SyncConfig::getClassName(), BaseRepository::getClassName());
-        RepositoryRegistry::registerRepository(OrderSyncConfig::getClassName(), BaseRepository::getClassName());
+        RepositoryRegistry::registerRepository(ConfigEntity::getClassName(), BaseRepository::class);
+        RepositoryRegistry::registerRepository(Process::getClassName(), BaseRepository::class);
+        RepositoryRegistry::registerRepository(LogData::getClassName(), BaseRepository::class);
+        RepositoryRegistry::registerRepository(QueueItem::getClassName(), QueueItemRepository::class);
+        RepositoryRegistry::registerRepository(Details::getClassName(), LogRepository::class);
+        RepositoryRegistry::registerRepository(TransactionLog::getClassName(), LogRepository::class);
+        RepositoryRegistry::registerRepository(Notification::getClassName(), LogRepository::class);
+        RepositoryRegistry::registerRepository(ProductEvent::getClassName(), ProductEventRepository::class);
+        RepositoryRegistry::registerRepository(OrdersConfigEntity::getClassName(), BaseRepository::class);
+        RepositoryRegistry::registerRepository(OrdersChannelSupportEntity::getClassName(), BaseRepository::class);
+        RepositoryRegistry::registerRepository(ReturnData::getClassName(), ReturnDataRepository::class);
+        RepositoryRegistry::registerRepository(ReturnsConfigEntity::getClassName(), BaseRepository::class);
+        RepositoryRegistry::registerRepository(SyncConfig::getClassName(), BaseRepository::class);
+        RepositoryRegistry::registerRepository(OrderSyncConfig::getClassName(), BaseRepository::class);
     }
 
     /**
@@ -441,12 +607,12 @@ class Initializer
     {
         EventBus::getInstance()->when(
             QueueStatusChangedEvent::class,
-            [ProductStateTransitionListener::class, 'handle']
+            [new ProductStateTransitionListener(), 'handle']
         );
 
         EventBus::getInstance()->when(
             QueueStatusChangedEvent::class,
-            [OrderStateTransitionListener::class, 'handle']
+            [new OrderStateTransitionListener(), 'handle']
         );
 
         EventBus::getInstance()->when(
@@ -456,7 +622,7 @@ class Initializer
 
         EventBus::getInstance()->when(
             NotificationCreatedEvent::class,
-            [NotificationCreatedListener::class, 'handle']
+            [new NotificationCreatedListener(), 'handle']
         );
 
         EventBus::getInstance()->when(
@@ -466,7 +632,7 @@ class Initializer
 
         EventBus::getInstance()->when(
             TickEvent::class,
-            [SalePricesListener::class, 'handle']
+            [new SalePricesListener(), 'handle']
         );
     }
 }

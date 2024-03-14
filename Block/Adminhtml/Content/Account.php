@@ -168,10 +168,6 @@ class Account extends Template
             }
         }
 
-        if (!$storeViews) {
-            return null;
-        }
-
         return !empty($storeViews) ? array_values($storeViews)[0] : null;
     }
 

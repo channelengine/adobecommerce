@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Configuration\ConfigService as BaseService;
@@ -154,7 +156,7 @@ class ConfigService extends BaseService
      *
      * @return string
      */
-    protected function getIntegrationVersion(): string
+    private function getIntegrationVersion(): string
     {
         return $this->moduleList->getOne('ChannelEngine_ChannelEngineIntegration')['setup_version'];
     }

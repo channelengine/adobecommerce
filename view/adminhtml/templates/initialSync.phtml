@@ -17,39 +17,39 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\InitialSync;
             <div class="ce-onboarding-steps">
                 <div class="ce-step active">
                     <div class="ce-step-number">1</div>
-                    <div class="ce-step-title"><?= __('Account'); ?></div>
+                    <div class="ce-step-title"><?= $block->escapeHtml('Account'); ?></div>
                 </div>
                 <div class="ce-step active">
-                    <a href="<?= $block->getProductSyncPageUrl(); ?>">
+                    <a href="<?= $block->escapeHtml($block->getProductSyncPageUrl()) ?>">
                         <div class="ce-step-number">2</div>
                     </a>
-                    <div class="ce-step-title"><?= __('Product synchronization'); ?></div>
+                    <div class="ce-step-title"><?= $block->escapeHtml('Product synchronization'); ?></div>
                 </div>
                 <div class="ce-step active">
-                    <a href="<?= $block->getOrderSyncPageUrl(); ?>">
+                    <a href="<?= $block->escapeHtml($block->getOrderSyncPageUrl()) ?>">
                         <div class="ce-step-number">3</div>
                     </a>
-                    <div class="ce-step-title"><?= __('Order synchronization'); ?></div>
+                    <div class="ce-step-title"><?= $block->escapeHtml('Order synchronization'); ?></div>
                 </div>
                 <div class="ce-step active">
                     <div class="ce-step-number">4</div>
-                    <div class="ce-step-title"><?= __('Initial sync'); ?></div>
+                    <div class="ce-step-title"><?= $block->escapeHtml('Initial sync'); ?></div>
                 </div>
             </div>
-            <h1><?= __('You are just one step away'); ?></h1>
-            <h2><?= __('Integration status'); ?></h2>
+            <h1><?= $block->escapeHtml('You are just one step away'); ?></h1>
+            <h2><?= $block->escapeHtml('Integration status'); ?></h2>
             <div class="ce-input-group ce-wide-group">
                 <label>
-                    <span class="label ce-big-label"><?= __('Enable the integration and start the initial synchronization'); ?></span>
+                    <span class="label ce-big-label"><?= $block->escapeHtml('Enable the integration and start the initial synchronization'); ?></span>
                     <span class="ce-help">
                         <span class="ce-help-tooltip">
-                            <?= __('By enabling integration, it will trigger the initial synchronization in the background. The integration will synchronize all published shop products to ChannelEngine in the background. Also, the integration will synchronize new and closed orders (fulfilled by the merchant and fulfilled by the marketplace) from ChannelEngine into the shop.'); ?>
+                            <?= $block->escapeHtml('By enabling integration, it will trigger the initial synchronization in the background. The integration will synchronize all published shop products to ChannelEngine in the background. Also, the integration will synchronize new and closed orders (fulfilled by the merchant and fulfilled by the marketplace) from ChannelEngine into the shop.') ?>
                         </span>
                     </span>
                     <a id="ceStartSync"
-                       class="ce-button ce-button__primary"><?= __('Enable and start sync'); ?></a>
+                       class="ce-button ce-button__primary"><?= $block->escapeHtml('Enable and start sync') ?></a>
                     <input id="ceInitialSyncUrl" type="hidden"
-                           value="<?= $block->getInitialSyncUrl(); ?>">
+                           value="<?= $block->escapeHtml($block->getInitialSyncUrl()) ?>">
                 </label>
             </div>
         </div>
@@ -58,7 +58,7 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\InitialSync;
                 ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml();
             ?>
         </div>
-        <input type="hidden" id="ce-state-url" value="<?= $block->getStateUrl() ?>">
-        <input type="hidden" id="ce-store-id" value="<?= $block->getStoreId() ?>">
+        <input type="hidden" id="ce-state-url" value="<?= $block->escapeHtml($block->getStateUrl()) ?>">
+        <input type="hidden" id="ce-store-id" value="<?= $block->escapeHtml($block->getStoreId()) ?>">
     </main>
 </div>

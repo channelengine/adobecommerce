@@ -167,8 +167,6 @@ abstract class CompositeTask extends Task
     /**
      * Runs task logic. Executes each task sequentially.
      *
-     * @final
-     *
      * @throws AbortTaskExecutionException
      */
     public function execute()

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="CheckSynchronizedOrder">
+        <annotations>
+            <description>Check if order is synchronized correctly</description>
+        </annotations>
+        <arguments>
+            <argument name="orderId" defaultValue="0" type="string"/>
+            <argument name="orderStatus" defaultValue="Processing" type="string"/>
+            <argument name="orderNo" defaultValue="0" type="string" />
+        </arguments>
+        <see
+                selector="#container > div > div.admin__data-grid-wrap > table"
+                userInput="{{orderId}}"
+                stepKey="mtftOrder" />
+        <see
+                selector="#container > div > div.admin__data-grid-wrap > table > tbody > tr:nth-child({{orderNo}}) > td:nth-child(9) > div"
+                userInput="{{orderStatus}}"
+                stepKey="mtftOrderStatus" />
+    </actionGroup>
+</actionGroups>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminCreateShipmentForSynchronizedOrder" extends="AdminInitialSynchronizationOfFulfilledByMerchantOrder">
+        <annotations>
+            <stories value="Create shipment for synchronized order"/>
+            <title value="Create shipment for synchronized order"/>
+            <description value="Create shipment for synchronized order fulfilled by merchant"/>
+            <severity value="MINOR"/>
+            <group value="ChannelEngine"/>
+        </annotations>
+        <before>
+            <createData entity="simpleProductWithoutCategory" stepKey="createSimpleProductWithoutCategory1">
+                <field key="sku">1</field>
+                <field key="price">1</field>
+                <field key="quantity">100</field>
+                <field key="name">productsync</field>
+            </createData>
+
+            <magentoCLI command="ce:set-config"
+                        arguments="--key di_shipment_proxy_class --value ChannelEngine\\ChannelEngineIntegration\\Test\\Mftf\\Helper\\ShipmentProxy"
+                        stepKey="configShipmentProxy"
+            />
+        </before>
+
+        <after>
+            <magentoCLI command="ce:set-config"
+                        arguments="--key di_shipment_proxy_class --value ChannelEngine\\ChannelEngineIntegration\\IntegrationCore\\BusinessLogic\\API\\Shipments\\Http\\Proxy"
+                        stepKey="configShipmentProxy_di"
+            />
+            <deleteData createDataKey="createSimpleProductWithoutCategory1" stepKey="deleteSimpleProduct1"/>
+        </after>
+
+        <click selector="{{AdminDataGridTableSection.firstRow}}" stepKey="clickOrderRow"/>
+        <click selector="#order_ship" stepKey="clickShipOrder" />
+        <click selector="button.submit-button" stepKey="createShipment" />
+        <waitForPageLoad stepKey="waitForShipmentCreation" />
+        <see selector="#messages > div > div > div" userInput="The shipment has been created." stepKey="checkShipmentCreated"/>
+    </test>
+</tests>

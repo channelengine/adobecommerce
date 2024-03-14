@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Configuration;
 
 use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappings;
@@ -124,7 +126,7 @@ class Save extends Action
                 $params['exportProducts'],
                 $params['enableStockSync'] === '1' ?? false,
                 $params['selectedInventories'] ?? [],
-                $params['stockQuantity'] ?? '',
+                (int)($params['stockQuantity'] ?? ''),
                 $params['enableMSI'] === '1' ?? false
             );
 
@@ -138,7 +140,7 @@ class Save extends Action
 
             $this->saveOrderSyncSettings(
                 $params['unknownLinesHandling'] ?? '',
-                $params['importFulfilledOrders'] ?? '',
+                (bool)($params['importFulfilledOrders'] ?? ''),
                 $params['merchantOrderSync'] === '1',
                 $params['shipmentSync'] === '1',
                 $params['cancellationSync'] === '1',
@@ -190,9 +192,9 @@ class Save extends Action
             $this->getStoreService()->setStoreId($storeId);
         } catch (QueryFilterInvalidParamException|HttpCommunicationException|
         RequestNotSuccessfulException|HttpRequestException|NoSuchEntityException $e) {
-            throw new BaseException(__('Invalid API key or Account name.'));
+            throw new BaseException(__('Invalid API key or Account name.')->getText());
         } catch (CurrencyMismatchException $e) {
-            throw new BaseException(__('Currency mismatch detected. Please make sure that store currency matches ChannelEngine.'));
+            throw new BaseException(__('Currency mismatch detected. Please make sure that store currency matches ChannelEngine.')->getText());
         }
     }
 
@@ -219,18 +221,18 @@ class Save extends Action
 
         if (($groupPricing === 0 && empty($priceAttribute))
             || ($groupPricing !== 0 && ($customerGroup === '' || empty($quantity)))) {
-            throw new BaseException(__('Price settings are not correctly set.'));
+            throw new BaseException(__('Price settings are not correctly set.')->getText());
         }
 
         if ($groupPricing !== 0 &&
             (!filter_var($quantity, FILTER_VALIDATE_INT) || (int)$quantity < 0)) {
-            throw new BaseException(__('Attribute quantity is required field.'));
+            throw new BaseException(__('Attribute quantity is required field.')->getText());
         }
 
         $priceSettings = new PriceSettings(
-            $groupPricing,
+            (bool)$groupPricing,
             $priceAttribute,
-            $customerGroup !== '' ? $customerGroup : 0,
+            $customerGroup !== '' ? (int)$customerGroup : 0,
             (int)$quantity
         );
         $this->getPriceSettingsService()->setPriceSettings($priceSettings);
@@ -260,11 +262,11 @@ class Save extends Action
         }
 
         if ($enableStockSync && $inventories === [] && $enableMSI) {
-            throw new BaseException(__('Please select at least one inventory.'));
+            throw new BaseException(__('Please select at least one inventory.')->getText());
         }
 
         if ($enableStockSync && (!is_numeric($quantity) || (int)$quantity < 0)) {
-            throw new BaseException(__('Stock quantity is required.'));
+            throw new BaseException(__('Stock quantity is required.')->getText());
         }
 
         $settings = new StockSettings($enableStockSync, $inventories, $quantity, $enableMSI);
@@ -303,12 +305,11 @@ class Save extends Action
     }
 
     /**
-     * @param bool $exportProducts
+     * @param bool $enableStockSync
      * @param array $threeLevelSync
      *
      * @return void
      *
-     * @throws BaseException
      * @throws QueryFilterInvalidParamException
      */
     private function saveSyncConfig(bool $enableStockSync, array $threeLevelSync): void
@@ -347,7 +348,7 @@ class Save extends Action
         }
 
         if (empty($attributeMappings['ean'])) {
-            throw new BaseException(__('Ean is required field.'));
+            throw new BaseException(__('Ean is required field.')->getText());
         }
 
         $oldMappings = $this->getMappingService()->getAttributeMappings();
@@ -411,7 +412,7 @@ class Save extends Action
             $shipmentSync,
             $cancellationsSync
         )) {
-            throw new BaseException(__('Order sync settings are incorrect.'));
+            throw new BaseException(__('Order sync settings are incorrect.')->getText());
         }
 
         try {
@@ -427,7 +428,7 @@ class Save extends Action
             $this->getOrderSettingsService()->saveOrderSyncConfig($orderSettings);
             $this->getStateService()->setOrderConfigured(true);
         } catch (QueryFilterInvalidParamException $e) {
-            throw new BaseException(__('Failed to save order sync settings'));
+            throw new BaseException(__('Failed to save order sync settings')->getText());
         }
     }
 
@@ -448,7 +449,7 @@ class Save extends Action
         }
 
         if ($returnsEnabled && (empty($defaultCondition) || empty($defaultResolution))) {
-            throw new BaseException(__('Return settings are incorrect.'));
+            throw new BaseException(__('Return settings are incorrect.')->getText());
         }
 
         $returnSettings = new ReturnsSettings($returnsEnabled, $defaultCondition, $defaultResolution);
@@ -507,7 +508,7 @@ class Save extends Action
      *
      * @return ProductsSyncConfigService
      */
-    protected function getProductsSyncConfigService()
+    private function getProductsSyncConfigService()
     {
         return ServiceRegister::getService(ProductsSyncConfigService::class);
     }

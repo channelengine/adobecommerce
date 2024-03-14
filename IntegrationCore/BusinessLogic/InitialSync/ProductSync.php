@@ -30,7 +30,9 @@ class ProductSync extends TransactionalOrchestrator
     public static function fromArray(array $array)
     {
         $entity = parent::fromArray($array);
-        $entity->page = $array['page'];
+        if (property_exists($entity, 'page') && array_key_exists('page', $array)) {
+            $entity->page = $array['page'];
+        }
 
         return $entity;
     }

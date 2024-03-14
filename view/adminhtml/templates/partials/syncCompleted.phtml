@@ -4,6 +4,6 @@
 use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\Dashboard;
 ?>
 <div class="ce-page ce-page-centered">
-    <img src="<?= $block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/dashboard.png'); ?>" alt="" />
-    <div class="ce-title"><?= __('All is up and running.'); ?></div>
+    <img src="<?= $block->escapeHtml($block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::images/dashboard.png')) ?>" alt="" />
+    <div class="ce-title"><?= $block->escapeHtml('All is up and running.') ?></div>
 </div>

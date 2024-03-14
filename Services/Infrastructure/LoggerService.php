@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Services\Infrastructure;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Configuration\Configuration;
@@ -9,6 +11,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Logger
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Singleton;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ConfigService;
+use Magento\Framework\Serialize\Serializer\Json;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -43,15 +46,21 @@ class LoggerService extends Singleton implements ShopLoggerAdapter
     private $logger;
 
     /**
+     * @var Json
+     */
+    private $serializer;
+
+    /**
      * Logger service constructor.
      *
      * @param LoggerInterface $logger Magento logger interface.
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, Json $serializer)
     {
         parent::__construct();
 
         $this->logger = $logger;
+        $this->serializer = $serializer;
 
         static::$instance = $this;
     }
@@ -84,12 +93,12 @@ class LoggerService extends Singleton implements ShopLoggerAdapter
             $message .= '
             Context data: [';
             foreach ($context as $item) {
-                $message .= '"' . $item->getName() . '" => "' . print_r($item->getValue(), true) . '", ';
+                $message .= '"' . $item->getName() . '" => "' . $this->serializer->serialize($item->getValue()) . '", ';
             }
 
             $message .= ']';
         }
 
-        \call_user_func([$this->logger, self::$logLevelName[$logLevel]], $message);
+        $this->logger->{self::$logLevelName[$logLevel]}($message, $context);
     }
 }

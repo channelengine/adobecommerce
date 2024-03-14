@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Onboarding;
 
 use ChannelEngine\ChannelEngineIntegration\DTO\ReturnsSettings;
@@ -8,7 +10,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\Configuration\OrderSyncConfig;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
-use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationServiceInterface;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ReturnsSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
 use ChannelEngine\ChannelEngineIntegration\Traits\GetPostParamsTrait;
@@ -39,6 +41,10 @@ class OrderSettings extends Action
      * @var ProductMetadataInterface
      */
     private $productMetadata;
+    /**
+     * @var TranslationServiceInterface
+     */
+    private $translationService;
 
     /**
      * @param Context $context
@@ -157,11 +163,15 @@ class OrderSettings extends Action
     }
 
     /**
-     * @return TranslationService
+     * @return TranslationServiceInterface
      */
-    private function getTranslationService(): TranslationService
+    private function getTranslationService(): TranslationServiceInterface
     {
-        return ServiceRegister::getService(TranslationService::class);
+        if ($this->translationService === null) {
+            $this->translationService = ServiceRegister::getService(TranslationServiceInterface::class);
+        }
+
+        return $this->translationService;
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Listeners\Notifications;
 
 use ChannelEngine\ChannelEngineIntegration\Events\NotificationCreatedEvent;
@@ -20,11 +22,11 @@ class NotificationCreatedListener
      *
      * @return void
      */
-    public static function handle(NotificationCreatedEvent $event): void
+    public function handle(NotificationCreatedEvent $event): void
     {
         $notification = $event->getNotification();
 
-        static::getNotifierPool()->addNotice(
+        $this->getNotifierPool()->addNotice(
             __('ChannelEngine'),
             sprintf($notification->getMessage(), $notification->getArguments())
         );
@@ -33,7 +35,7 @@ class NotificationCreatedListener
     /**
      * @return NotifierPool
      */
-    private static function getNotifierPool(): NotifierPool
+    private function getNotifierPool(): NotifierPool
     {
         return ServiceRegister::getService(NotifierPool::class);
     }

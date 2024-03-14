@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminManualSynchronizationOfNewOrder" extends="AdminInitialSynchronizationOfFulfilledByMarketPlaceOrder">
+        <annotations>
+            <stories value="Manual synchronization of new order"/>
+            <title value="Manual synchronization of new order"/>
+            <description value="Manual synchronization of new order fulfilled by merchant on ChannelEngine portal"/>
+            <severity value="MINOR"/>
+            <group value="ChannelEngine"/>
+        </annotations>
+        <after>
+            <magentoCLI command="ce:set-config"
+                        arguments="--key ce_mftf_orders_manual_sync --value 0"
+                        stepKey="setAcknowledgeConfigForMockOnZero"
+            />
+        </after>
+        <magentoCLI command="ce:set-config"
+                    arguments="--key ce_mftf_orders_manual_sync --value 1"
+                    stepKey="setAcknowledgeConfigForMock"
+        />
+        <amOnPage url="{{ChannelEnginePage.url}}" stepKey="goToChannelEngineConfig"/>
+        <click selector="#container > div.channel-engine > main > div.ce-tabs > ul > li:nth-child(2) > a" stepKey="clickConfiguration"/>
+        <waitForElementVisible selector="{{ChannelEngineConfigurationSection.ceSyncNow}}" stepKey="waitForConfigurationLoad"/>
+        <click selector="{{ChannelEngineConfigurationSection.ceSyncNow}}" stepKey="clickStartSyncNow"/>
+        <waitForElementVisible selector="{{ChannelEngineConfigurationSection.ceOrderSyncCheckbox}}" stepKey="waitForModalOpen"/>
+        <click selector="{{ChannelEngineConfigurationSection.ceOrderSyncCheckbox}}" stepKey="clickEnableOrderSynchronization"/>
+        <click selector="{{ChannelEngineConfigurationSection.ceStartSyncButton}}" stepKey="clickStartSyncButton"/>
+
+        <click selector="#container > div.channel-engine > main > div.ce-tabs > ul > li:nth-child(1) > a" stepKey="clickDashboard"/>
+        <actionGroup ref="CheckOrderSynchronization" stepKey="checkOrderSynchronization"/>
+        <wait time="5" stepKey="waitForPageLoad" />
+        <actionGroup ref="AdminNavigateMenuActionGroup" stepKey="navigateToSalesOrderPage3">
+            <argument name="menuUiId" value="{{AdminMenuSales.dataUiId}}"/>
+            <argument name="submenuUiId" value="{{AdminMenuSalesOrders.dataUiId}}"/>
+        </actionGroup>
+        <wait time="3" stepKey="waitForDataLoad3"/>
+
+        <actionGroup ref="CheckSynchronizedOrder" stepKey="checkSynchronizedOrder2">
+            <argument name="orderId" value="CE-TEST-MFTF-4"/>
+            <argument name="orderStatus" value="Complete"/>
+            <argument name="orderNo" value="1"/>
+        </actionGroup>
+    </test>
+</tests>

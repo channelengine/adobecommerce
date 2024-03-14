@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="ProductSynchronizationSettingsFormSection">
+        <element name="ceExportProducts" type="button" selector="#ce-export-products" />
+        <element name="ceNoExportProducts" type="text" selector="#ce-export-products-item-no" />
+        <element name="ceInventorySelect" type="select" selector=".ce-stock-select"/>
+        <element name="ceAttributeEAN" type="button" selector="#ce-attribute-ean"/>
+        <element name="ceChooseAttribute" type="text" selector="#ce-ean-list > li:nth-child(2)"/>
+        <element name="ceSave" type="button" selector="#ceSave" timeout="30"/>
+    </section>
+</sections>

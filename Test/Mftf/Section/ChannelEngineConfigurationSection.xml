@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="ChannelEngineConfigurationSection">
+        <element name="ceSyncNow" type="button" selector="#ce-sync-now"/>
+        <element name="ceProductSyncCheckbox" type="checkbox" selector="#ce-product-sync-checkbox" />
+        <element name="ceOrderSyncCheckbox" type="checkbox" selector="#ce-order-sync-checkbox" />
+        <element name="ceStartSyncButton" type="button" selector="#ce-start-sync-btn" />
+    </section>
+</sections>

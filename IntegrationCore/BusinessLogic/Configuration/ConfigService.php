@@ -92,6 +92,8 @@ abstract class ConfigService extends Configuration
 
     /**
      * Provides last system cleanup timestamp.
+     *
+     * @return int
      */
     public function getLastSystemCleanupTime()
     {

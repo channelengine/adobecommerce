@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Observer;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\Configuration\OrdersConfigurationService;
@@ -95,10 +97,10 @@ class ShipmentTrackDeleteObserver implements ObserverInterface
     {
         /** @var Track[] $allTracks */
         $allTracks = $shipment->getAllTracks();
-        $lastTrack = $allTracks[sizeof($allTracks) - 1] ?? null;
+        $lastTrack = $allTracks[count($allTracks) - 1] ?? null;
 
         if ($lastTrack && $lastTrack->getEntityId() === $track->getEntityId()) {
-            $lastTrack = $allTracks[sizeof($allTracks) - 2] ?? null;
+            $lastTrack = $allTracks[count($allTracks) - 2] ?? null;
         }
 
 

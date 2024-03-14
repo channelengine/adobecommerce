@@ -1,7 +1,16 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Framework\Model\ActionValidator\RemoveAction" type="Magento\Framework\Model\ActionValidator\RemoveAction\Allowed" />
+
     <type name="Magento\Framework\App\Request\CsrfValidator">
         <plugin name="channelengine" type="ChannelEngine\ChannelEngineIntegration\Utility\CsrfValidatorSkip"/>
+    </type>
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="ceSetConfig_cmd" xsi:type="object">ChannelEngine\ChannelEngineIntegration\Command\ConfigChangeCommand</item>
+            </argument>
+        </arguments>
     </type>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
@@ -18,12 +27,15 @@
             <argument name="resourceModel" xsi:type="string">Magento\Sales\Model\ResourceModel\Order</argument>
         </arguments>
     </type>
+    <type name="ChannelEngine\ChannelEngineIntegration\Command\Init">
+        <arguments>
+            <argument name="initializer" xsi:type="object">ChannelEngine\ChannelEngineIntegration\Utility\Initializer\Proxy</argument>
+        </arguments>
+    </type>
     <preference for="Magento\Shipping\Block\Adminhtml\Order\Tracking\View"
                 type="ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\View\Notification" />
     <preference for="ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Contracts\ReturnsService"
                 type="ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\NullReturnsService"/>
-    <preference for="Magento\Catalog\Model\ResourceModel\Eav\Attribute"
-                type="ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\Eav\Attribute" />
     <preference for="ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Returns\Contracts\ReturnsService"
                 type="ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ReturnsService"/>
     <preference for="ChannelEngine\ChannelEngineIntegration\Api\ReturnsServiceFactoryInterface"
@@ -32,4 +44,36 @@
                 type="ChannelEngine\ChannelEngineIntegration\Model\StockServiceFactory"/>
     <preference for="ChannelEngine\ChannelEngineIntegration\Api\SourceCollectionFactoryInterface"
                 type="ChannelEngine\ChannelEngineIntegration\Model\SourceCollectionFactory"/>
+    <virtualType name="CePaymentMethod" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="string">channelengine_payment
+            </argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Magento\Payment\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">Magento\Payment\Gateway\Config\ValueHandlerPool
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Configuration reader -->
+    <type name="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="string">channelengine_payment
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Value handlers infrastructure -->
+    <type name="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">Magento\Payment\Gateway\Config\ConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">Magento\Payment\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
 </config>

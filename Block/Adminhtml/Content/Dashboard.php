@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Notifications\Contracts\NotificationService;
@@ -159,7 +161,7 @@ class Dashboard extends Template
      *
      * @throws QueryFilterInvalidParamException
      */
-    protected function getState(): string
+    private function getState(): string
     {
         if (!$this->getPluginStatusService()->isEnabled()) {
             return 'disabled-integration';

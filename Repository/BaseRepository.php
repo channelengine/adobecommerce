@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Repository;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Entity;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Interfaces\RepositoryInterface;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\QueryFilter\QueryFilter;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\ChannelEngineEntity;
+use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\ChannelEngineEntityFactory;
 use Exception;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 
 /**
@@ -29,11 +32,11 @@ class BaseRepository implements RepositoryInterface
     /**
      * @var string
      */
-    protected $entityClass;
+    private $entityClass;
     /**
      * @var ChannelEngineEntity
      */
-    protected $resourceEntity;
+    private $resourceEntity;
     /**
      * Name of the base entity table in database.
      */
@@ -54,8 +57,7 @@ class BaseRepository implements RepositoryInterface
      */
     public function __construct()
     {
-        $this->resourceEntity = ObjectManager::getInstance()->create($this->getResourceEntity());
-        $this->resourceEntity->setTableName(static::TABLE_NAME);
+        $this->resourceEntity = $this->getChannelEngineEntityFactory()->create();
     }
 
     /**
@@ -78,6 +80,37 @@ class BaseRepository implements RepositoryInterface
     public function setEntityClass($entityClass): void
     {
         $this->entityClass = $entityClass;
+    }
+
+    /**
+     * Get repository entity class.
+     *
+     * @return string Repository entity's class name.
+     */
+    public function getEntityClass(): string
+    {
+        return $this->entityClass;
+    }
+
+    /**
+     * Returns resource entity object.
+     *
+     * @return ChannelEngineEntity Resource entity object.
+     */
+    public function getResourceEntityObject(): ChannelEngineEntity
+    {
+        return $this->resourceEntity;
+    }
+
+    /**
+     * Sets resource entity object.
+     *
+     * @param ChannelEngineEntity $entity Resource entity object.
+     * @return void
+     */
+    public function setResourceEntityObject(ChannelEngineEntity $entity): void
+    {
+        $this->resourceEntity = $entity;
     }
 
     /**
@@ -269,5 +302,15 @@ class BaseRepository implements RepositoryInterface
         $entity->inflate($jsonEntity);
 
         return $entity;
+    }
+
+    /**
+     * Returns instance of ChannelEngineEntityFactory.
+     *
+     * @return ChannelEngineEntityFactory
+     */
+    private function getChannelEngineEntityFactory(): ChannelEngineEntityFactory
+    {
+        return ServiceRegister::getService(ChannelEngineEntityFactory::class);
     }
 }

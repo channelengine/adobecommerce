@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Dashboard;
 
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
@@ -105,7 +107,7 @@ class CheckStatus extends Action
      * @throws RepositoryNotRegisteredException
      * @throws RequestNotSuccessfulException
      */
-    protected function getTaskData(string $taskType): array
+    private function getTaskData(string $taskType): array
     {
         $queueItem = $this->getQueueService()->findLatestByType($taskType);
 
@@ -161,7 +163,7 @@ class CheckStatus extends Action
      *
      * @return QueueService
      */
-    protected function getQueueService(): QueueService
+    private function getQueueService(): QueueService
     {
         if ($this->queueService === null) {
             $this->queueService = ServiceRegister::getService(QueueService::class);
@@ -175,7 +177,7 @@ class CheckStatus extends Action
      *
      * @return ProductsService
      */
-    protected function getProductsService(): ProductsService
+    private function getProductsService(): ProductsService
     {
         if ($this->productsService === null) {
             $this->productsService = ServiceRegister::getService(ProductsService::class);
@@ -189,7 +191,7 @@ class CheckStatus extends Action
      *
      * @return TransactionLogService
      */
-    protected function getTransactionLogService(): TransactionLogService
+    private function getTransactionLogService(): TransactionLogService
     {
         if ($this->transactionLogService === null) {
             $this->transactionLogService = ServiceRegister::getService(TransactionLogService::class);

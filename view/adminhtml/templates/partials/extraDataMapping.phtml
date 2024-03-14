@@ -8,18 +8,18 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\ProductSync;
 
 <form class="ce-form" onsubmit="return false">
     <div class="ce-extra-data-heading">
-        <h3 style="width: 200px"><?= __("Extra data mapping") ?></h3>
+        <h3 style="width: 200px"><?= $block->escapeHtml("Extra data mapping") ?></h3>
         <a id="ceAddNewAttribute" class="ce-button-extra-data ce-button__primary ce-button-add-mapping">+</a>
     </div>
     <div id="ceExtraDataForm" class="ce-input-extra-data-mapping ce-last" style="display: none;">
         <label class="ce-extra-data-input">
-            <input type="text" class="ce-small-number-input" maxlength="100" minlength="1" placeholder="<?= __("Enter CE field name") ?>"/>
+            <input type="text" class="ce-small-number-input" maxlength="100" minlength="1" placeholder="<?= $block->escapeHtml("Enter CE field name") ?>"/>
             <button class="ce-delete-icon ce-button-remove-mapping"></button>
         </label>
     </div>
-    <input id="ceProductAttributes" type="hidden" value="<?= $block->getExtraDataGetAttributesUrl(); ?>">
-    <input id="ceProductExtraData" type="hidden" value="<?= $block->getExtraDataMappingsUrl(); ?>">
+    <input id="ceProductAttributes" type="hidden" value="<?= $block->escapeHtml($block->getExtraDataGetAttributesUrl()) ?>">
+    <input id="ceProductExtraData" type="hidden" value="<?= $block->escapeHtml($block->getExtraDataMappingsUrl()) ?>">
     <input id="ceExtraDataDuplicatesText" type="hidden"
-           value="<?= __('Duplicate or empty keys founded in extra data mapping. Delete them to continue.'); ?>">
-    <input id="ceExtraDataDuplicatesHeader" type="hidden" value="<?= __('Warning'); ?>">
+           value="<?= $block->escapeHtml('Duplicate or empty keys founded in extra data mapping. Delete them to continue.'); ?>">
+    <input id="ceExtraDataDuplicatesHeader" type="hidden" value="<?= $block->escapeHtml('Warning'); ?>">
 </form>

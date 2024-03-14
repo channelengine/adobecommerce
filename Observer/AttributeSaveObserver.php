@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Observer;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Products\Domain\ProductReplaced;
@@ -16,6 +18,7 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PluginStatusSe
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StoreService;
 use ChannelEngine\ChannelEngineIntegration\Utility\Initializer;
+use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
@@ -129,14 +132,18 @@ class AttributeSaveObserver implements ObserverInterface
             ->addAttributeToFilter('status', Status::STATUS_ENABLED)
             ->addFieldToFilter('type_id', ['in' => ['simple', 'bundle', 'grouped', 'configurable']])
             ->addStoreFilter($storeId);
-
-        return $collection->getAllIds();
+        try {
+            $ids = $collection->getAllIds();
+        } catch (Exception $e) {
+            $ids = [];
+        }
+        return $ids;
     }
 
     /**
-     * @return string
+     * @return int
      */
-    private function getProductAttributeTypeId(): string
+    private function getProductAttributeTypeId(): int
     {
         return $this->objectManager->create(
             Entity::class

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Traits;
 
 trait GetPostParamsTrait
@@ -11,6 +13,6 @@ trait GetPostParamsTrait
      */
     public function getPostParams(): array
     {
-        return json_decode(file_get_contents('php://input'), true);
+        return json_decode($this->_request->getContent(), true);
     }
 }

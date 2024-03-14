@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Repository;
 
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Entity;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Interfaces\QueueItemRepository as QueueItemRepositoryInterface;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Interfaces\Priority;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\QueueItemEntity;
+use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\QueueItemEntityFactory;
 use Magento\Framework\Exception\LocalizedException;
 
 /**
@@ -26,6 +30,17 @@ class QueueItemRepository extends BaseRepository implements QueueItemRepositoryI
      */
     public const TABLE_NAME = 'channel_engine_queue';
 
+
+    /**
+     * QueueItemRepository constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setResourceEntityObject($this->getQueueItemFactory()->create());
+        $this->getResourceEntityObject()->setTableName(self::TABLE_NAME);
+    }
+
     /**
      * @inheritDoc
      */
@@ -36,10 +51,12 @@ class QueueItemRepository extends BaseRepository implements QueueItemRepositoryI
         }
 
         $queuedItems = [];
-        $entity = new $this->entityClass;
+        $entityClass = $this->getEntityClass();
+        $entity = new $entityClass;
 
         try {
-            $records = $this->resourceEntity->findOldestQueuedItems($entity, $limit);
+            $entityObject = $this->getResourceEntityObject();
+            $records = $entityObject->findOldestQueuedItems($entity, $limit);
             /** @var QueueItem[] $queuedItems */
             $queuedItems = $this->deserializeEntities($records);
         } catch (LocalizedException $e) {
@@ -54,7 +71,10 @@ class QueueItemRepository extends BaseRepository implements QueueItemRepositoryI
      */
     public function saveWithCondition(QueueItem $queueItem, array $additionalWhere = []): int
     {
-        return $this->resourceEntity->saveWithCondition($queueItem, $additionalWhere);
+        /** @var QueueItemEntity $entityObject */
+        $entityObject = $this->getResourceEntityObject();
+
+        return $entityObject->saveWithCondition($queueItem, $additionalWhere);
     }
 
     /**
@@ -66,8 +86,9 @@ class QueueItemRepository extends BaseRepository implements QueueItemRepositoryI
             return;
         }
 
-        $entity = new $this->entityClass();
-        $this->resourceEntity->batchStatusUpdate($ids, $status, $entity);
+        $entityClass = $this->getEntityClass();
+        $entity = new $entityClass;
+        $this->getResourceEntityObject()->batchStatusUpdate($ids, $status, $entity);
     }
 
     /**
@@ -114,5 +135,13 @@ class QueueItemRepository extends BaseRepository implements QueueItemRepositoryI
         }
 
         return $entities;
+    }
+
+    /**
+     * @return QueueItemEntityFactory
+     */
+    private function getQueueItemFactory(): QueueItemEntityFactory
+    {
+        return ServiceRegister::getService(QueueItemEntityFactory::class);
     }
 }

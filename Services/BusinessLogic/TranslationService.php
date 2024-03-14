@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic;
 
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationServiceInterface;
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\App\ObjectManager;
 
 /**
  * Class TranslationService
  *
  * @package ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic
  */
-class TranslationService implements Contracts\TranslationService
+class TranslationService implements TranslationServiceInterface
 {
     public const CORE_STRINGS = [
         'loginRequiredFields' => 'API key and Account name fields are required.',
@@ -34,6 +36,16 @@ class TranslationService implements Contracts\TranslationService
     ];
 
     /**
+     * @var Session
+     */
+    private $session;
+
+    public function __construct(Session $session)
+    {
+        $this->session = $session;
+    }
+
+    /**
      * Translates the provided string.
      *
      * @param string $string String to be translated.
@@ -44,12 +56,13 @@ class TranslationService implements Contracts\TranslationService
     public function translate(string $string, array $arguments = []): string
     {
         if (array_key_exists($string, self::CORE_STRINGS)) {
-            $translatedString = __(self::CORE_STRINGS[$string]);
+            $stringForTranslation = self::CORE_STRINGS[$string];
+            $translatedString = __($stringForTranslation);
         } else {
             $translatedString = __($string);
         }
 
-        return vsprintf($translatedString, $arguments);
+        return vsprintf($translatedString->getText(), $arguments);
     }
 
     /**
@@ -72,10 +85,7 @@ class TranslationService implements Contracts\TranslationService
      */
     private function getLocale(): string
     {
-        $om = ObjectManager::getInstance();
-        /** @var Session $session */
-        $session = $om->get(Session::class);
-        $user = $session->getUser();
+        $user = $this->session->getUser();
 
         if ($user === null) {
             $locale = 'en_US';
