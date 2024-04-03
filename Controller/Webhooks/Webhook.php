@@ -81,7 +81,7 @@ class Webhook implements ActionInterface
         $handler = $this->getHandler($type);
 
         if (!$handler) {
-            return;
+            return $response;
         }
 
         try {

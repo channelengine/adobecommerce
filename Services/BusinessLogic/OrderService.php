@@ -236,6 +236,7 @@ class OrderService extends OrdersService
                     'telephone' => $order->getPhone(),
                     'firstname' => $order->getBillingAddress()->getFirstName(),
                     'lastname' => $order->getBillingAddress()->getLastName(),
+                    'company' => $order->getBillingAddress()->getCompanyName(),
                     'vat_id' => $order->getVatNo(),
                     'vat_is_valid' => 1,
                 ],
