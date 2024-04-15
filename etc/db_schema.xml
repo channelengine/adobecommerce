@@ -58,7 +58,7 @@
         <column xsi:type="int" name="parent_id" comment="Queue item parent id"/>
         <column xsi:type="varchar" name="status" length="32" comment="Queue item status"/>
         <column xsi:type="varchar" name="context" length="191" comment="Queue item context"/>
-        <column xsi:type="text" name="serialized_task" comment="Serialized task"/>
+        <column xsi:type="longtext" name="serialized_task" comment="Serialized task"/>
         <column xsi:type="varchar" name="queue_name" length="191" comment="Queue name"/>
         <column xsi:type="int" name="last_execution_progress" padding="11" comment="Last execution progress"/>
         <column xsi:type="int" name="progress_base_points" padding="11" comment="Progress base points"/>
