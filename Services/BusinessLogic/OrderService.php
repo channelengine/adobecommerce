@@ -306,7 +306,7 @@ class OrderService extends OrdersService
                 throw new OrderExcludedException('Order contains unknown product.');
             }
 
-            $items[] = [
+            $item = [
                 'base_original_price' => $lineItem->getOriginalUnitPriceInclVat() - $lineItem->getOriginalUnitVat(),
                 'base_price' => $lineItem->getOriginalUnitPriceInclVat() - $lineItem->getOriginalUnitVat(),
                 'base_price_incl_tax' => $lineItem->getUnitPriceInclVat(),
@@ -318,13 +318,18 @@ class OrderService extends OrdersService
                 'original_price' => $lineItem->getOriginalUnitPriceInclVat() - $lineItem->getOriginalUnitVat(),
                 'price' => $lineItem->getOriginalUnitPriceInclVat(),
                 'price_incl_tax' => $lineItem->getOriginalUnitPriceInclVat(),
-                'product_id' => $product ? $product->getId() : $lineItem->getMerchantProductNo(),
                 'product_type' => $product ? $product->getTypeId() : 'simple',
                 'qty_ordered' => $lineItem->getQuantity(),
                 'row_total' => $lineItem->getLineTotalInclVat() - $lineItem->getLineVat(),
                 'row_total_incl_tax' => $lineItem->getLineTotalInclVat(),
                 'sku' => $product ? $product->getSku() : $lineItem->getMerchantProductNo(),
             ];
+
+            if($product) {
+                $item['product_id'] = $product->getId();
+            }
+
+            $items[] = $item;
         }
 
         return $items;
