@@ -38,6 +38,20 @@ class Collection extends CoreSalesGrid
     /**
      * @inheritDoc
      */
+    public function addFieldToFilter($field, $condition = null): CoreSalesGrid
+    {
+        switch ($field) {
+            case 'ce_channel_name': $field = 'channel_engine_order.channel_name'; break;
+            case 'ce_channel_order_no': $field = 'channel_engine_order.channel_order_no'; break;
+            case 'ce_channel_type_of_fulfillment': $field = 'channel_engine_order.channel_type_of_fulfillment';
+        }
+
+        return parent::addFieldToFilter($field, $condition);
+    }
+
+    /**
+     * @inheritDoc
+     */
     protected function _renderFiltersBefore(): void
     {
         $joinTable = $this->getTable('channel_engine_order');

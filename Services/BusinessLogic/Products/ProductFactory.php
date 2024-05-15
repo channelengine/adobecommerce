@@ -359,7 +359,7 @@ class ProductFactory
 
         if ($imageUrl) {
             $position = strstr($imageUrl, '/w/');
-            $imageUrl = str_replace($position, $product->getImage(), $imageUrl);
+            $imageUrl = $position ? str_replace($position, $product->getImage(), $imageUrl) : null;
         }
 
         $extraImages = array_slice($productImages, 9);
