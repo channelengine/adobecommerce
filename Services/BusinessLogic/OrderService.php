@@ -307,17 +307,17 @@ class OrderService extends OrdersService
             }
 
             $item = [
-                'base_original_price' => $lineItem->getOriginalUnitPriceInclVat() - $lineItem->getOriginalUnitVat(),
-                'base_price' => $lineItem->getOriginalUnitPriceInclVat() - $lineItem->getOriginalUnitVat(),
+                'base_original_price' => $lineItem->getUnitPriceInclVat() - $lineItem->getUnitVat(),
+                'base_price' => $lineItem->getUnitPriceInclVat() - $lineItem->getUnitVat(),
                 'base_price_incl_tax' => $lineItem->getUnitPriceInclVat(),
                 'base_row_total' => $lineItem->getLineTotalInclVat() - $lineItem->getLineVat(),
                 'base_tax_amount' => $lineItem->getLineVat(),
                 'tax_amount' => $lineItem->getLineVat(),
                 'tax_percent' => $lineItem->getVatRate(),
                 'name' => $lineItem->getDescription(),
-                'original_price' => $lineItem->getOriginalUnitPriceInclVat() - $lineItem->getOriginalUnitVat(),
-                'price' => $lineItem->getOriginalUnitPriceInclVat(),
-                'price_incl_tax' => $lineItem->getOriginalUnitPriceInclVat(),
+                'original_price' => $lineItem->getUnitPriceInclVat() - $lineItem->getUnitVat(),
+                'price' => $lineItem->getUnitPriceInclVat(),
+                'price_incl_tax' => $lineItem->getUnitPriceInclVat(),
                 'product_type' => $product ? $product->getTypeId() : 'simple',
                 'qty_ordered' => $lineItem->getQuantity(),
                 'row_total' => $lineItem->getLineTotalInclVat() - $lineItem->getLineVat(),
