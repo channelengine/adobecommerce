@@ -14,6 +14,7 @@ use ChannelEngine\ChannelEngineIntegration\Model\ChannelEngineOrder;
 use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\ChannelEngineOrder\CollectionFactory;
 use ChannelEngine\ChannelEngineIntegration\Utility\Initializer;
 use Exception;
+use Magento\Backend\Model\Session;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -37,14 +38,20 @@ class ShipmentTrackDeleteObserver implements ObserverInterface
      * @var Initializer
      */
     private $initializer;
+    /**
+     * @var Session
+     */
+    private $session;
 
     /**
      * @param CollectionFactory $collectionFactory
+     * @param Session $session
      * @param Initializer $initializer
      */
-    public function __construct(CollectionFactory $collectionFactory, Initializer $initializer)
+    public function __construct(CollectionFactory $collectionFactory, Session $session, Initializer $initializer)
     {
         $this->collectionFactory = $collectionFactory;
+        $this->session = $session;
         $this->initializer = $initializer;
     }
 
@@ -83,7 +90,7 @@ class ShipmentTrackDeleteObserver implements ObserverInterface
         try {
             $handler->handle($updateShipmentRequest);
         } catch (BaseException $e) {
-            throw new Exception(__('ChannelEngine status change not allowed.'));
+            $this->session->setChannelEngineNotification(__('ChannelEngine status change not allowed.'));
         }
     }
 
