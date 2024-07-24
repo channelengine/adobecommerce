@@ -84,7 +84,7 @@ class ShipmentSaveObserver implements ObserverInterface
         try {
             $handler->handle($createShipmentRequest);
         } catch (ShipmentRejectedException $e) {
-            throw new Exception(__('ChannelEngine status change not allowed.'));
+            throw new Exception(__('ChannelEngine status change not allowed. Error: ' . $e->getMessage()));
         }
     }
 
@@ -123,7 +123,7 @@ class ShipmentSaveObserver implements ObserverInterface
                 foreach ($shipment->getAllItems() as $item) {
                     $productId = $item->getProductId();
 
-                    if ($mappings && $mappings->getMerchantProductNumber() === AttributeMappingsService::PRODUCT_SKU) {
+                    if ($mappings === null || $mappings->getMerchantProductNumber() === AttributeMappingsService::PRODUCT_SKU) {
                         $productId = $item->getSku();
                     }
 

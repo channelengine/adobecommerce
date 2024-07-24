@@ -2,8 +2,12 @@
 
 namespace ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Utility\Tasks;
 
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Notifications\Entities\Notification;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Entities\Details;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\TransactionLog\Entities\TransactionLog;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException;
+use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Interfaces\RepositoryInterface;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\QueryFilter\Operators;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\QueryFilter\QueryFilter;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
@@ -18,6 +22,9 @@ class ObsoleteLogsRemover extends Task
 
     /**
      * @inheritDoc
+     *
+     * @throws QueryFilterInvalidParamException
+     * @throws RepositoryNotRegisteredException
      */
     public function execute()
     {
@@ -32,6 +39,10 @@ class ObsoleteLogsRemover extends Task
 
         $this->deleteDetails($cutoff);
 
+        $this->reportProgress(90);
+
+        $this->deleteNotifications($cutoff);
+
         $this->reportProgress(100);
     }
 
@@ -43,6 +54,16 @@ class ObsoleteLogsRemover extends Task
     private function getDetailsRepository()
     {
         return RepositoryRegistry::getRepository(Details::getClassName());
+    }
+
+    /**
+     * @return RepositoryInterface
+     *
+     * @throws RepositoryNotRegisteredException
+     */
+    private function getNotificationsRepository()
+    {
+        return RepositoryRegistry::getRepository(Notification::getClassName());
     }
 
     /**
@@ -67,5 +88,21 @@ class ObsoleteLogsRemover extends Task
         $filter->where('createdAt', Operators::LESS_THAN, $cutoff);
 
         $this->getDetailsRepository()->deleteWhere($filter);
+    }
+
+    /**
+     * @param DateTime $cutoff
+     *
+     * @return void
+     *
+     * @throws QueryFilterInvalidParamException
+     * @throws RepositoryNotRegisteredException
+     */
+    private function deleteNotifications(DateTime $cutoff)
+    {
+        $filter = new QueryFilter();
+        $filter->where('createdAt', Operators::LESS_THAN, $cutoff);
+
+        $this->getNotificationsRepository()->deleteWhere($filter);
     }
 }

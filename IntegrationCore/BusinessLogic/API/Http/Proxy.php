@@ -23,17 +23,17 @@ abstract class Proxy
      * Base ChannelEngine API URL.
      */
     const BASE_API_URL = 'channelengine.net/api/';
-	/**
-	 * Protocol.
-	 */
+    /**
+     * Protocol.
+     */
     const PROTOCOL = 'https:';
     /**
      * Used API version.
      */
     const API_VERSION = 'v2';
-	/**
-	 * Maximum number of request retries.
-	 */
+    /**
+     * Maximum number of request retries.
+     */
     const MAX_RETRIES = 5;
     /**
      * Http client instance.
@@ -42,11 +42,11 @@ abstract class Proxy
      */
     protected $httpClient;
 
-	/**
-	 * Proxy constructor.
-	 *
-	 * @param HttpClient $httpClient
-	 */
+    /**
+     * Proxy constructor.
+     *
+     * @param HttpClient $httpClient
+     */
     public function __construct(HttpClient $httpClient)
     {
         $this->httpClient = $httpClient;
@@ -238,8 +238,10 @@ abstract class Proxy
         $message[] = $body = $response->getBody();
         $responseBody = json_decode($body, true);
 
-        if ((!isset($responseBody['Content']['RejectedCount'])
-            || $responseBody['Content']['RejectedCount'] === 0) && $response->isSuccessful()) {
+        if (((!isset($responseBody['Content']['RejectedCount'])
+                    || $responseBody['Content']['RejectedCount'] === 0) && $response->isSuccessful())
+            && (!isset($responseBody['Content']['ProductMessages']) || count($responseBody['Content']['ProductMessages']) === 0)
+        ) {
             return;
         }
 
@@ -264,6 +266,10 @@ abstract class Proxy
             if (isset($responseBody['Content']['RejectedCount'], $responseBody['Content']['ProductMessages'])
                 && $responseBody['Content']['RejectedCount'] > 0) {
                 $message['errorMessages'] = $responseBody['Content']['ProductMessages'];
+            }
+
+            if (isset($responseBody['Content']['ProductMessages']) && count($responseBody['Content']['ProductMessages']) > 0) {
+                $message['warningMessages'] = $responseBody['Content']['ProductMessages'];
             }
         }
 
@@ -304,18 +310,18 @@ abstract class Proxy
      */
     protected function getQueryString(HttpRequest $request)
     {
-		$queryString = '';
-		$queries = $request->getQueries();
+        $queryString = '';
+        $queries = $request->getQueries();
 
-	    foreach ( $queries as $key => $value ) {
-		    if (is_array($value)) {
-				foreach ($value as $item) {
-					$queryString .= http_build_query([$key => $item]) . '&';
-			    }
+        foreach ( $queries as $key => $value ) {
+            if (is_array($value)) {
+                foreach ($value as $item) {
+                    $queryString .= http_build_query([$key => $item]) . '&';
+                }
 
-				unset($queries[$key]);
-		    }
-		}
+                unset($queries[$key]);
+            }
+        }
 
         return rtrim($queryString . http_build_query($queries), '&');
     }

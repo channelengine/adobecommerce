@@ -193,8 +193,8 @@ abstract class BaseSyncProductsTask extends TransactionalTask
 
             $batch = $this->getBatchOfProductIds();
 
-            $this->updateTransactionLog();
             $this->reportProgress($this->getCurrentProgress());
+            $this->updateTransactionLog();
         }
 
         $this->updateTransactionLog();
@@ -282,21 +282,22 @@ abstract class BaseSyncProductsTask extends TransactionalTask
     /**
      * @param BaseException $exception
      * @param array $batchOfProducts
+     * @param $syncedProducts
      */
     protected function handleExportError(BaseException $exception, &$batchOfProducts, $syncedProducts)
     {
         $this->getTransactionLog()->setHasErrors(true);
         $productIndexes = $this->getProductIndexes($exception, $batchOfProducts);
-        $this->failedNumber += count($productIndexes);
         $this->createExceptionDetails($exception, $batchOfProducts, $productIndexes);
 
         $batchOfProducts = array_values($this->removeFailedProducts($batchOfProducts, $productIndexes));
-        $syncedProducts = count($batchOfProducts) ? $syncedProducts - count($productIndexes) : 0;
+        $syncedProducts = count($batchOfProducts) ? $syncedProducts : 0;
         try {
-            $this->exportProducts($batchOfProducts, $syncedProducts);
+            if (count($batchOfProducts)) {
+                $this->exportProducts($batchOfProducts, $syncedProducts);
+            }
         } catch (BaseException $e) {
             $productIndexes = $this->getProductIndexes($e, $batchOfProducts);
-            $this->failedNumber += count($productIndexes);
             $this->createExceptionDetails($e, $batchOfProducts, $productIndexes);
         }
     }
@@ -304,6 +305,7 @@ abstract class BaseSyncProductsTask extends TransactionalTask
     /**
      * @param PurgeException $exception
      * @param array $batchOfProducts
+     * @param $syncedProducts
      */
     protected function handlePurgeError(PurgeException $exception, &$batchOfProducts, $syncedProducts)
     {
@@ -332,6 +334,7 @@ abstract class BaseSyncProductsTask extends TransactionalTask
     {
         $error = json_decode($exception->getMessage(), true);
         $errorMessages = isset($error['errorMessages']) ? $error['errorMessages'] : [];
+        $warningMessages = isset($error['warningMessages']) ? $error['warningMessages'] : [];
         $validationErrors = isset($error['validationErrors']) ? $error['validationErrors'] : [];
 
         foreach ($productIndexes as $key => $index) {
@@ -339,22 +342,22 @@ abstract class BaseSyncProductsTask extends TransactionalTask
                 continue;
             }
 
-            $this->logProductExceptionDetails($batchOfProducts[$key], $errorMessages, $validationErrors, $index);
+            $this->logProductExceptionDetails($batchOfProducts[$key], $errorMessages, $warningMessages, $validationErrors, $index);
         }
     }
 
-    private function logProductExceptionDetails($product, $errorMessages, $validationErrors, $index) {
+    private function logProductExceptionDetails($product, $errorMessages, $warningMessages, $validationErrors, $index) {
         if (is_array($product)) {
             foreach ($product as $singleProduct) {
                 $this->addLogDetail(
                     $singleProduct->getMerchantProductNo(),
-                    $this->formatErrorMessage($errorMessages, $validationErrors, $index)
+                    $this->formatErrorMessage($errorMessages, $warningMessages, $validationErrors, $index)
                 );
             }
         } else if ($product instanceof \ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Products\DTO\Product) {
             $this->addLogDetail(
                 $product->getMerchantProductNo(),
-                $this->formatErrorMessage($errorMessages, $validationErrors, $index)
+                $this->formatErrorMessage($errorMessages, $warningMessages, $validationErrors, $index)
             );
         }
     }
@@ -368,6 +371,7 @@ abstract class BaseSyncProductsTask extends TransactionalTask
     {
         $error = json_decode($exception->getMessage(), true);
         $errorMessages = isset($error['errorMessages']) ? $error['errorMessages'] : [];
+        $warningMessages = isset($error['warningMessages']) ? $error['warningMessages'] : [];
         $validationErrors = isset($error['validationErrors']) ? $error['validationErrors'] : [];
 
         foreach ($productIndexes as $key => $index) {
@@ -377,7 +381,7 @@ abstract class BaseSyncProductsTask extends TransactionalTask
 
             $this->addLogDetail(
                 $batchOfProducts[$key],
-                $this->formatErrorMessage($errorMessages, $validationErrors, [$index])
+                $this->formatErrorMessage($errorMessages, $warningMessages, $validationErrors, [$index])
             );
         }
     }
@@ -408,10 +412,11 @@ abstract class BaseSyncProductsTask extends TransactionalTask
         $error = json_decode($exception->getMessage(), true);
         $errorMessages = isset($error['errorMessages']) ?
             $error['errorMessages'] : [];
+        $warningMessages = isset($error['warningMessages']) ? $error['warningMessages'] : [];
         $validationErrors = isset($error['validationErrors']) ? $error['validationErrors'] : [];
         $errorKeys = array_keys($validationErrors);
 
-        foreach ($errorMessages as $errorMessage) {
+        foreach (array_merge($errorMessages, $warningMessages) as $errorMessage) {
             $errorKeys[] = isset($errorMessage['Reference']) ? $errorMessage['Reference'] : '';
         }
 
@@ -450,15 +455,25 @@ abstract class BaseSyncProductsTask extends TransactionalTask
      *
      * @return string
      */
-    protected function formatErrorMessage($errorMessages, $validationErrors, $errorKeys)
+    protected function formatErrorMessage($errorMessages, $warningMessages, $validationErrors, $errorKeys)
     {
         $message = '';
+        $isError = false;
 
         foreach ($errorKeys as $key) {
             foreach ($errorMessages as $errorMessage) {
                 if (isset($errorMessage['Reference']) && $errorMessage['Reference'] === (string)$key) {
                     foreach ($errorMessage['Errors'] as $error) {
                         $message .= ' ' . $error;
+                        $isError = true;
+                    }
+                }
+            }
+
+            foreach ($warningMessages as $warningMessage) {
+                if (isset($warningMessage['Reference']) && $warningMessage['Reference'] === (string)$key) {
+                    foreach ($warningMessage['Warnings'] as $warning) {
+                        $message .= ' ' . $warning;
                     }
                 }
             }
@@ -468,20 +483,25 @@ abstract class BaseSyncProductsTask extends TransactionalTask
             $message .= ' ' . (isset($validationErrors[$errorKey]) ? $validationErrors[$errorKey][0] : '');
         }
 
-        return $message ?: 'Unknown error.';
+        if (!$message) {
+            return 'Unknown error.';
+        }
+
+        $isError ? $this->failedNumber++ : $this->syncedNumber++;
+
+        return $isError ? 'Failed to synchronize product %s because: ' . $message : 'Product %s synchronized with warnings: ' . $message;
     }
 
     /**
      * Adds log details.
      */
-    protected function addLogDetail($id, $error)
+    protected function addLogDetail($id, $message)
     {
         $this->getDetailsService()->create(
             $this->getTransactionLog(),
-            'Failed to synchronize product %s because: %s',
+            $message,
             [
                 $id,
-                $error,
             ]
         );
     }
@@ -625,15 +645,15 @@ abstract class BaseSyncProductsTask extends TransactionalTask
         return ServiceRegister::getService(ProductsService::class);
     }
 
-	/**
-	 * Retrieves instance of ProductsSyncConfigService.
-	 *
-	 * @return ProductsSyncConfigService
-	 */
-	protected function getProductsSyncConfigService()
-	{
-		return ServiceRegister::getService(ProductsSyncConfigService::class);
-	}
+    /**
+     * Retrieves instance of ProductsSyncConfigService.
+     *
+     * @return ProductsSyncConfigService
+     */
+    protected function getProductsSyncConfigService()
+    {
+        return ServiceRegister::getService(ProductsSyncConfigService::class);
+    }
 
     /**
      * Retrieves instance of product Proxy.

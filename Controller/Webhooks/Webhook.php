@@ -73,11 +73,15 @@ class Webhook implements ActionInterface
             return;
         }
 
+        $response = $this->resultFactory->create(ResultFactory::TYPE_RAW);
         $tenant = $this->request->getParam('tenant');
         $token = $this->request->getParam('token');
         $type = $this->request->getParam('type');
+        if(!$tenant || !$token || !$type) {
+            return $response;
+        }
+
         $webhook = new WebhookDTO($tenant, $token, $type);
-        $response = $this->resultFactory->create(ResultFactory::TYPE_RAW);
         $handler = $this->getHandler($type);
 
         if (!$handler) {

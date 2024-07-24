@@ -86,7 +86,6 @@ class ProductService implements ProductsService
             ->create()
             ->setPage($page, $limit)
             ->addStoreFilter($storeId)
-            ->addAttributeToFilter('status', Status::STATUS_ENABLED)
             ->addFieldToFilter('type_id', ['in' => ['simple', 'bundle', 'grouped', 'configurable']]);
 
         return $collection->getAllIds($limit, $page * $limit);

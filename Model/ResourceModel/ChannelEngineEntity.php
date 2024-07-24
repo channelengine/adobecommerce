@@ -127,14 +127,21 @@ class ChannelEngineEntity extends AbstractDb
     public function saveEntity(Entity $entity): int
     {
         $connection = $this->getConnection();
-
         $indexes = IndexHelper::transformFieldsToIndexes($entity);
         $data = $this->prepareDataForInsertOrUpdate($entity, $indexes);
         $data['type'] = $entity->getConfig()->getType();
-
         $connection->insert($this->getMainTable(), $data);
 
-        return (int)$connection->fetchOne('SELECT last_insert_id()');
+        $lastInsertId = $connection->lastInsertId($this->getMainTable());
+        if (empty($lastInsertId)) {
+            $select = $connection->select()
+                ->from($this->getMainTable())
+                ->order('id DESC')
+                ->limit(1);
+            $result = $connection->fetchAll($select);
+            $lastInsertId = $result[0]['id'];
+        }
+        return (int) $lastInsertId;
     }
 
     /**
