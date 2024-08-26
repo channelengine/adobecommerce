@@ -19,7 +19,11 @@ document.addEventListener(
             cancellationsSyncList = document.getElementById('ce-cancellations-sync-list'),
             cancellationsSyncYes = document.getElementById('ce-cancellations-sync-item-yes'),
             cancellationsSyncNo = document.getElementById('ce-cancellations-sync-item-no'),
-            returnsSyncButton = document.getElementById('ce-returns-sync');
+            returnsSyncButton = document.getElementById('ce-returns-sync'),
+            marketplaceFulfilledButton = document.getElementById('ce-import-fulfilled'),
+            incomingOrderStatusButton = document.getElementById('ce-incoming-order-status'),
+            shippedOrderStatusButton = document.getElementById('ce-shipped-order-status'),
+            marketplaceOrderStatusButton = document.getElementById('ce-fulfilled-order-status');
 
         merchantFulfilledButton.onclick = () => {
             toggleDropDown(merchantFulfilledButton, merchantFulfilledList);
@@ -37,6 +41,9 @@ document.addEventListener(
             unknownLinesBtn.removeAttribute('disabled');
             shipmentsSyncButton.removeAttribute('disabled');
             cancellationsSyncButton.removeAttribute('disabled');
+            incomingOrderStatusButton.removeAttribute('disabled');
+            shippedOrderStatusButton.removeAttribute('disabled');
+            marketplaceOrderStatusButton.removeAttribute('disabled');
 
             if (returnsSyncButton) {
                 returnsSyncButton.removeAttribute('disabled');
@@ -60,6 +67,12 @@ document.addEventListener(
             merchantFulfilledButtonText.innerText = noMerchantFulfilled.innerText.replace(/\s/g, '');
             shipmentsSyncButtonText.innerText = shipmentsSyncNo.innerText.replace(/\s/g, '');
             cancellationsSyncButtonText.innerText = cancellationsSyncNo.innerText.replace(/\s/g, '');
+
+            if (parseInt(marketplaceFulfilledButton.getAttribute('data-fulfilled-orders')) === 0) {
+                incomingOrderStatusButton.setAttribute('disabled', 'true');
+                shippedOrderStatusButton.setAttribute('disabled', 'true');
+                marketplaceOrderStatusButton.setAttribute('disabled', 'true');
+            }
         }
 
         shipmentsSyncButton.onclick = () => {

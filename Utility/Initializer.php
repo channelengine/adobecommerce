@@ -73,6 +73,7 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ExtraDataAttri
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\InitialSyncStateService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\OrdersConfigurationService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\OrderService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\OrderStatusMappingService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PluginStatusService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PriceSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Products\ProductSalePricesService;
@@ -476,6 +477,13 @@ class Initializer
             ExtraDataAttributeMappingsService::class,
             static function () {
                 return new ExtraDataAttributeMappingsService();
+            }
+        );
+
+        ServiceRegister::registerService(
+            OrderStatusMappingService::class,
+            static function () {
+                return new OrderStatusMappingService();
             }
         );
 

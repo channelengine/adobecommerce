@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Onboarding;
 
+use ChannelEngine\ChannelEngineIntegration\DTO\OrderStatusMappings;
 use ChannelEngine\ChannelEngineIntegration\DTO\ReturnsSettings;
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\Configuration\OrdersConfigurationService;
@@ -11,6 +12,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\Contracts\TranslationServiceInterface;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\OrderStatusMappingService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ReturnsSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
 use ChannelEngine\ChannelEngineIntegration\Traits\GetPostParamsTrait;
@@ -84,6 +86,7 @@ class OrderSettings extends Action
         $cancellationsSync = $postParams['cancellationSync'] === '1';
         $returnsImport = $postParams['returnsEnabled'] === '1';
         $returnsSync = $postParams['returnsSync'] === '1';
+        $orderStatusMappings = $postParams['orderStatusMappings'] ?? [];
 
         if (!$this->validateRequest(
             $unknownLinesHandling,
@@ -114,6 +117,9 @@ class OrderSettings extends Action
         $this->getStateService()->setOrderConfigured(true);
         $returnSettings = new ReturnsSettings($returnsImport, $defaultCondition, $defaultResolution);
         $this->getReturnSettingsService()->setReturnsSettings($returnSettings);
+        $this->getOrderStatusMappingService()->setOrderStatusMappings(
+            OrderStatusMappings::fromArray($orderStatusMappings)
+        );
 
         return $this->resultJsonFactory->create()->setData(['success' => true]);
     }
@@ -180,5 +186,14 @@ class OrderSettings extends Action
     private function getReturnSettingsService(): ReturnsSettingsService
     {
         return ServiceRegister::getService(ReturnsSettingsService::class);
+    }
+
+
+    /**
+     * @return OrderStatusMappingService
+     */
+    private function getOrderStatusMappingService(): OrderStatusMappingService
+    {
+        return ServiceRegister::getService(OrderStatusMappingService::class);
     }
 }

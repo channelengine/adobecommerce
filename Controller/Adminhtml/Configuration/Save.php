@@ -7,6 +7,7 @@ namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Configurat
 use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappings;
 use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappingsTypes;
 use ChannelEngine\ChannelEngineIntegration\DTO\ExtraDataAttributeMappings;
+use ChannelEngine\ChannelEngineIntegration\DTO\OrderStatusMappings;
 use ChannelEngine\ChannelEngineIntegration\DTO\PriceSettings;
 use ChannelEngine\ChannelEngineIntegration\DTO\ReturnsSettings;
 use ChannelEngine\ChannelEngineIntegration\DTO\StockSettings;
@@ -31,6 +32,7 @@ use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappi
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\AttributeMappingsTypesService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ExportProductsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ExtraDataAttributeMappingsService;
+use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\OrderStatusMappingService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\PriceSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\ReturnsSettingsService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
@@ -147,6 +149,8 @@ class Save extends Action
                 $params['fulfilledFromDate'] ?? '',
                 isset($params['returnsSync']) && $params['returnsSync'] === '1'
             );
+
+            $this->saveOrderStatusMapping($params['orderStatusMappings'] ?? []);
 
             $this->saveReturnSettings(
                 $params['returnsEnabled'] === '1',
@@ -433,6 +437,18 @@ class Save extends Action
     }
 
     /**
+     * @param array $orderStatusMappings
+     * @return void
+     * @throws QueryFilterInvalidParamException
+     */
+    private function saveOrderStatusMapping(array $orderStatusMappings): void
+    {
+        $this->getOrderStatusMappingService()->setOrderStatusMappings(
+            OrderStatusMappings::fromArray($orderStatusMappings)
+        );
+    }
+
+    /**
      * @param $returnsEnabled
      * @param $defaultCondition
      * @param $defaultResolution
@@ -613,5 +629,13 @@ class Save extends Action
     private function getExportProductsService(): ExportProductsService
     {
         return ServiceRegister::getService(ExportProductsService::class);
+    }
+
+    /**
+     * @return OrderStatusMappingService
+     */
+    private function getOrderStatusMappingService(): OrderStatusMappingService
+    {
+        return ServiceRegister::getService(OrderStatusMappingService::class);
     }
 }

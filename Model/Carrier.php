@@ -16,7 +16,7 @@ class Carrier extends AbstractCarrier implements CarrierInterface
     /**
      * @var string
      */
-    protected $_code = 'channelengine_carrier';
+    protected $_code = 'channelengine_carrier_channelengine_carrier';
     /**
      * @var bool
      */

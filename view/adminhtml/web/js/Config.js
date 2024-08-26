@@ -77,7 +77,10 @@ document.addEventListener(
             enableMSIValue = document.getElementById('ce-enable-msi').getAttribute('msi-enabled'),
             selectInventoriesSection = document.getElementById('ce-select-inventories-section'),
             noMSI = document.getElementById('ce-msi-item-no'),
-            msiText = document.getElementById('ce-msi-text');
+            msiText = document.getElementById('ce-msi-text'),
+            incomingOrderStatusBtn = document.getElementById('ce-incoming-order-status'),
+            shippedOrderStatusBtn = document.getElementById('ce-shipped-order-status'),
+            fulfilledOrderStatusBtn = document.getElementById('ce-fulfilled-order-status');
 
         let originalThreeLevelSyncEnabledValue = false;
         let originalThreeLevelSyncAttributeValue = false;
@@ -542,7 +545,12 @@ document.addEventListener(
                     defaultResolution: returnsButton && returnsButton.getAttribute('returns-enabled') === '1' ? resolutionBtn.getAttribute('data-default-resolution').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, '') : '',
                     extraDataMappings: extraData,
                     returnsSync: returnSyncBtn ? returnSyncBtn.getAttribute('data-returns-sync-enabled') : '',
-                    exportProducts: exportProducts.getAttribute('data-group-export-products').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, '') === '1'
+                    exportProducts: exportProducts.getAttribute('data-group-export-products').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, '') === '1',
+                    orderStatusMappings: {
+                        statusOfIncomingOrders: incomingOrderStatusBtn.getAttribute('data-incoming-order-status').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, ''),
+                        statusOfShippedOrders: shippedOrderStatusBtn.getAttribute('data-shipped-order-status').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, ''),
+                        statusOfFulfilledOrders: fulfilledOrderStatusBtn.getAttribute('data-fulfilled-order-status').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, ''),
+                    },
                 },
                 function (response) {
                     ChannelEngine.loader.hide();

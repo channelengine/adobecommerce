@@ -130,6 +130,10 @@ class ProductService implements ProductsService
 
         /** @var Product $product */
         foreach ($products as $product) {
+            if( (int)$product->getStatus() !== Status::STATUS_ENABLED ) {
+                continue;
+            }
+
             $parentIds = $this->configurableType->getParentIdsByChild($product->getId());
             if ($parentIds) {
                 $parentId = $parentIds[0];

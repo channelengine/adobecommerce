@@ -4,7 +4,7 @@
     <system>
         <section id="carriers" translate="label" type="text" sortOrder="320" showInDefault="1" showInWebsite="1"
                  showInStore="1">
-            <group id="channelengine_carrier" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1"
+            <group id="channelengine_carrier_channelengine_carrier" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>ChannelEngine Shipping</label>
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"

@@ -7,7 +7,39 @@ use ChannelEngine\ChannelEngineIntegration\Block\Adminhtml\Content\OrderSettings
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\Configuration\OrdersConfigurationService;
 
 $orderSettings = $block->getOrderSettings();
+$orderStatusOptions = $block->getOrderStatusOptions();
+$defaultStatusOfIncomingOrders =  [
+    'value' => 'processing',
+    'label' => 'Processing',
+];
+$defaultStatusOfShippedOrders =  [
+    'value' => 'complete',
+    'label' => 'Complete',
+];
+$defaultStatusOfFulfilledOrders =  [
+    'value' => 'complete',
+    'label' => 'Complete',
+];
+$orderStatusMappings = $block->getOrderStatusMappings();
 
+if ($orderStatusMappings) {
+    foreach ($orderStatusOptions as $orderStatusOption) {
+        if ($orderStatusOption['value'] === $orderStatusMappings->getStatusOfIncomingOrders()) {
+            $defaultStatusOfIncomingOrders['value'] = $orderStatusOption['value'];
+            $defaultStatusOfIncomingOrders['label'] = $orderStatusOption['label'];
+        }
+
+        if ($orderStatusOption['value'] === $orderStatusMappings->getStatusOfShippedOrders()) {
+            $defaultStatusOfShippedOrders['value'] = $orderStatusOption['value'];
+            $defaultStatusOfShippedOrders['label'] = $orderStatusOption['label'];
+        }
+
+        if ($orderStatusOption['value'] === $orderStatusMappings->getStatusOfFulfilledOrders()) {
+            $defaultStatusOfFulfilledOrders['value'] = $orderStatusOption['value'];
+            $defaultStatusOfFulfilledOrders['label'] = $orderStatusOption['label'];
+        }
+    }
+}
 ?>
 <script src="<?= $block->escapeHtml($block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/MerchantOrderSettings.js')) ?>"></script>
 <h1><?= $block->escapeHtml("Order synchronization settings") ?></h1>
@@ -202,10 +234,10 @@ $orderSettings = $block->getOrderSettings();
             </button>
             <div class="ce-dropdown-menu">
                 <ul id="ce-import-fulfilled-list" class="ce-dropdown-list">
-                    <li class="ce-dropdown-list-item ce-fulfilled" value="0">
+                    <li id="ce-import-fulfilled-no" class="ce-dropdown-list-item ce-fulfilled" value="0">
                         <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('No') ?></span>
                     </li>
-                    <li class="ce-dropdown-list-item ce-fulfilled" value="1">
+                    <li id="ce-import-fulfilled-yes" class="ce-dropdown-list-item ce-fulfilled" value="1">
                         <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('Yes') ?></span>
                     </li>
                 </ul>
@@ -231,6 +263,97 @@ $orderSettings = $block->getOrderSettings();
             <button type="button" class="ui-datepicker-trigger v-middle ce-import-fulfilled-date"
                     style="margin-left: 375px"></button>
         </label>
+    </div>
+    <h3><?= $block->escapeHtml('Map order statuses') ?></h3>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= $block->escapeHtml('Status of incoming orders') ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= $block->escapeHtml('Select the status for incoming orders.') ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper ce-order-settings">
+            <button id="ce-incoming-order-status" class="ce-dropdown"
+                    data-incoming-order-status="<?= $defaultStatusOfIncomingOrders['value'] ?: '' ?>"
+            >
+                <span id="ce-incoming-order-status-text" class="ce-dropdown-text">
+                    <?= $defaultStatusOfIncomingOrders['label'] ?: '' ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-incoming-order-status-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($orderStatusOptions as $orderStatusOption) {
+                        echo '<li class="ce-dropdown-list-item ce-incoming-order-status-item" value="' . $block->escapeHtml($orderStatusOption['value']) . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $block->escapeHtml($orderStatusOption['label']) . '</span></li>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= $block->escapeHtml('Status that defines a shipped order') ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= $block->escapeHtml('Select the status for shipped orders.') ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper ce-order-settings">
+            <button id="ce-shipped-order-status" class="ce-dropdown"
+                    data-shipped-order-status="<?= $defaultStatusOfShippedOrders['value'] ?: '' ?>"
+            >
+                <span id="ce-shipped-order-status-text" class="ce-dropdown-text">
+                    <?= $defaultStatusOfShippedOrders['label'] ?: '' ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-shipped-order-status-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($orderStatusOptions as $orderStatusOption) {
+                        echo '<li class="ce-dropdown-list-item ce-shipped-order-status-item" value="' . $block->escapeHtml($orderStatusOption['value']) . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $block->escapeHtml($orderStatusOption['label']) . '</span></li>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= $block->escapeHtml('Status of the orders fulfilled by a marketplace') ?></span>
+            <span class="ce-help">
+                <span class="ce-help-tooltip">
+                    <?= $block->escapeHtml('Select the status for marketplace-fulfilled orders.') ?>
+                </span>
+            </span>
+        </label>
+        <div class="ce-dropdown-wrapper ce-order-settings">
+            <button id="ce-fulfilled-order-status" class="ce-dropdown"
+                    data-fulfilled-order-status="<?= $defaultStatusOfFulfilledOrders['value'] ?: '' ?>"
+            >
+                <span id="ce-fulfilled-order-status-text" class="ce-dropdown-text">
+                    <?= $defaultStatusOfFulfilledOrders['label'] ?: '' ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-fulfilled-order-status-list" class="ce-dropdown-list">
+                    <?php
+                    foreach ($orderStatusOptions as $orderStatusOption) {
+                        echo '<li class="ce-dropdown-list-item ce-fulfilled-order-status-item" value="' . $block->escapeHtml($orderStatusOption['value']) . '">
+                        <span class="ce-dropdown-list-item-text">'
+                            . $block->escapeHtml($orderStatusOption['label']) . '</span></li>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
     </div>
     <div id="ce-modal-order-sync" class="ce-hidden">
         <?=  $block->getLayout()->createBlock(Dashboard::class)

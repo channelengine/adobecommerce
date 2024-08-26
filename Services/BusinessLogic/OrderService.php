@@ -3,6 +3,7 @@
 namespace ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic;
 
 use ChannelEngine\ChannelEngineIntegration\DTO\AttributeMappings;
+use ChannelEngine\ChannelEngineIntegration\DTO\OrderStatusMappings;
 use ChannelEngine\ChannelEngineIntegration\Exceptions\InvalidOrderStatusException;
 use ChannelEngine\ChannelEngineIntegration\Exceptions\OrderExcludedException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\API\Authorization\DTO\AccountInfo;
@@ -25,6 +26,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Webapi\ServiceInputProcessor;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory as StatusCollectionFactory;
 
 /**
  * Class OrderService
@@ -81,6 +83,10 @@ class OrderService extends OrdersService
      * @var AttributeMappingsService
      */
     private $attributeMappingsService;
+    /**
+     * @var StatusCollectionFactory
+     */
+    private $statusCollectionFactory;
 
     /**
      * @param OrderRepositoryInterface $orderRepository
@@ -89,6 +95,7 @@ class OrderService extends OrdersService
      * @param OrdersConfigurationService $orderSettingsService
      * @param ChannelEngineOrderFactory $orderExtensionFactory
      * @param ChannelEngineOrder $orderExtensionResource
+     * @param StatusCollectionFactory $statusCollectionFactory
      */
     public function __construct(
         OrderRepositoryInterface   $orderRepository,
@@ -96,7 +103,8 @@ class OrderService extends OrdersService
         ProductRepository          $productRepository,
         OrdersConfigurationService $orderSettingsService,
         ChannelEngineOrderFactory  $orderExtensionFactory,
-        ChannelEngineOrder         $orderExtensionResource
+        ChannelEngineOrder         $orderExtensionResource,
+        StatusCollectionFactory    $statusCollectionFactory
     ) {
         $this->orderRepository = $orderRepository;
         $this->serviceInputProcessor = $serviceInputProcessor;
@@ -104,6 +112,7 @@ class OrderService extends OrdersService
         $this->orderSettingsService = $orderSettingsService;
         $this->orderExtensionFactory = $orderExtensionFactory;
         $this->orderExtensionResource = $orderExtensionResource;
+        $this->statusCollectionFactory = $statusCollectionFactory;
     }
 
     /**
@@ -214,9 +223,9 @@ class OrderService extends OrdersService
                 'grand_total' => $order->getTotalInclVat(),
                 'base_grand_total' => $order->getTotalInclVat() - $order->getTotalVat(),
                 'shipping_amount' => $order->getShippingCostsInclVat(),
-                'state' => 'new',
                 'tax_amount' => $order->getSubTotalVat(),
-                'status' => $this->getStatus($order->getStatus()),
+                'status' => $this->getStatusAndState($order->getStatus())['status'],
+                'state' => $this->getStatusAndState($order->getStatus())['state'],
                 'total_paid' => $order->getTotalInclVat(),
                 'subtotal' => $order->getSubTotalInclVat() - $order->getSubTotalVat(),
                 'payment' => [
@@ -261,7 +270,7 @@ class OrderService extends OrdersService
                                     ],
                                     'telephone' => $order->getPhone(),
                                 ],
-                                'method' => 'channelengine_carrier',
+                                'method' => 'channelengine_carrier_channelengine_carrier',
                             ],
                         ],
                     ],
@@ -338,20 +347,44 @@ class OrderService extends OrdersService
     /**
      * @param string $status
      *
-     * @return string
+     * @return array
      * @throws InvalidOrderStatusException
+     * @throws QueryFilterInvalidParamException
      */
-    private function getStatus(string $status): string
+    private function getStatusAndState(string $status): array
     {
+        $orderStatusMappings = $this->getOrderStatusMappingService()->getOrderStatusMappings();
+        $availableStatusAndStates = $this->statusCollectionFactory->create()->joinStates()->toArray()['items'];
         switch ($status) {
             case 'NEW':
-                return 'processing';
+                $response['status'] = $orderStatusMappings ? $orderStatusMappings->getStatusOfIncomingOrders() :
+                    OrderStatusMappings::DEFAULT_INCOMING_ORDER_STATUS;
+                break;
             case 'CLOSED':
+                $response['status'] = $orderStatusMappings ? $orderStatusMappings->getStatusOfFulfilledOrders() :
+                    OrderStatusMappings::DEFAULT_FULFILLED_ORDER_STATUS;
+                break;
             case 'SHIPPED':
-                return 'complete';
+                $response['status'] = $orderStatusMappings ? $orderStatusMappings->getStatusOfShippedOrders() :
+                    OrderStatusMappings::DEFAULT_SHIPPED_ORDER_STATUS;
+                break;
+            default:
+                throw new InvalidOrderStatusException('Order import is not available for orders with status ' . $status);
         }
 
-        throw new InvalidOrderStatusException('Order import is not available for orders with status ' . $status);
+        $filteredStatuses = array_filter(
+            $availableStatusAndStates,
+            static function (array $value) use ($response) {
+                return $response['status'] === $value['status'];
+            }
+        );
+        if (empty($filteredStatuses)) {
+            throw new InvalidOrderStatusException('Order import is not available for orders with status ' . $status);
+        }
+
+        $response['state'] = reset($filteredStatuses)['state'];
+
+        return $response;
     }
 
     /**
@@ -414,5 +447,13 @@ class OrderService extends OrdersService
         }
 
         return $this->attributeMappingsService;
+    }
+
+    /**
+     * @return OrderStatusMappingService
+     */
+    private function getOrderStatusMappingService(): OrderStatusMappingService
+    {
+        return ServiceRegister::getService(OrderStatusMappingService::class);
     }
 }

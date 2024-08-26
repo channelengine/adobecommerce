@@ -21,7 +21,19 @@ document.addEventListener(
             merchantSyncButton = document.getElementById('ce-merchant-fulfilled'),
             shipmentSyncButton = document.getElementById('ce-shipments-sync'),
             cancellationSyncButton = document.getElementById('ce-cancellations-sync'),
-            returnsSyncButton = document.getElementById('ce-returns-sync');
+            returnsSyncButton = document.getElementById('ce-returns-sync'),
+            incomingOrderStatusBtn = document.getElementById('ce-incoming-order-status'),
+            incomingOrderStatusList = document.getElementById('ce-incoming-order-status-list'),
+            incomingOrderStatusItems = document.getElementsByClassName('ce-incoming-order-status-item'),
+            incomingOrderStatusText = document.getElementById('ce-incoming-order-status-text'),
+            shippedOrderStatusBtn = document.getElementById('ce-shipped-order-status'),
+            shippedOrderStatusList = document.getElementById('ce-shipped-order-status-list'),
+            shippedOrderStatusItems = document.getElementsByClassName('ce-shipped-order-status-item'),
+            shippedOrderStatusText = document.getElementById('ce-shipped-order-status-text'),
+            fulfilledOrderStatusBtn = document.getElementById('ce-fulfilled-order-status'),
+            fulfilledOrderStatusList = document.getElementById('ce-fulfilled-order-status-list'),
+            fulfilledOrderStatusItems = document.getElementsByClassName('ce-fulfilled-order-status-item'),
+            fulfilledOrderStatusText = document.getElementById('ce-fulfilled-order-status-text');
 
         if (saveBtn) {
             ChannelEngine.loader.hide();
@@ -66,6 +78,11 @@ document.addEventListener(
                         cancellationSync: merchantOrderSync === '1' ? cancellationSyncButton.getAttribute('data-cancellations-sync-enabled') : '0',
                         fulfilledFromDate: fulfilledFromDate.value,
                         returnsSync: returnsSyncButton ? returnsSyncButton.getAttribute('data-returns-sync-enabled') : '0',
+                        orderStatusMappings: {
+                            statusOfIncomingOrders: incomingOrderStatusBtn.getAttribute('data-incoming-order-status').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, ''),
+                            statusOfShippedOrders: shippedOrderStatusBtn.getAttribute('data-shipped-order-status').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, ''),
+                            statusOfFulfilledOrders: fulfilledOrderStatusBtn.getAttribute('data-fulfilled-order-status').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, ''),
+                        },
                     },
                     function (response) {
                         if (response.success) {
@@ -81,30 +98,19 @@ document.addEventListener(
             }
         }
 
-        unknownLinesBtn.onclick = () => {
-            toggleDropDown(unknownLinesBtn, unknownLinesList);
-        }
+        addListenerToDropDownButton(unknownLinesBtn, unknownLinesList);
+        addListenerToDropDownButton(fulfilledBtn, fulfilledList);
+        addListenerToDropDownButton(incomingOrderStatusBtn, incomingOrderStatusList);
+        addListenerToDropDownButton(shippedOrderStatusBtn, shippedOrderStatusList);
+        addListenerToDropDownButton(fulfilledOrderStatusBtn, fulfilledOrderStatusList);
 
-        unknownLinesBtn.onfocusout = () => {
-            unknownLinesBtn.classList.remove('ce-active');
-            unknownLinesList.style.display = "none";
-        }
-
-        fulfilledBtn.onclick = () => {
-            toggleDropDown(fulfilledBtn, fulfilledList);
-        }
-
-        fulfilledBtn.onfocusout = () => {
-            fulfilledBtn.classList.remove('ce-active');
-            fulfilledList.style.display = "none";
-        }
-
-        for (let i = 0; i < unknownLinesItems.length; i++) {
-            unknownLinesItems[i].onmousedown = () => {
-                unknownLinesBtn.setAttribute('data-unknown-lines', unknownLinesItems[i].getAttribute('value'));
-                unknownLinesBtn.classList.remove('ce-active');
-                unknownLinesList.style.display = 'none';
-                unknownLinesText.innerText = unknownLinesItems[i].querySelector('span').innerText.replace(/(\r\n|\n|\r)/gm, "");
+        function addListenerToDropDownButton(button, list) {
+            button.onfocusout = () => {
+                button.classList.remove('ce-active');
+                list.style.display = "none";
+            }
+            button.onclick = () => {
+                toggleDropDown(button, list)
             }
         }
 
@@ -116,8 +122,32 @@ document.addEventListener(
                 fulfilledText.innerText = fulfilledItems[i].querySelector('span').innerText.replace(/(\r\n|\n|\r)/gm, "");
                 if (fulfilledText.innerText === 'No') {
                     fulfilledFromDate.setAttribute('disabled', 'true');
+                    if (parseInt(merchantSyncButton.getAttribute('data-merchant-fulfilled-orders-enabled')) === 0) {
+                        incomingOrderStatusBtn.setAttribute('disabled', 'true');
+                        shippedOrderStatusBtn.setAttribute('disabled', 'true');
+                        fulfilledOrderStatusBtn.setAttribute('disabled', 'true');
+                    }
                 } else {
+                    incomingOrderStatusBtn.removeAttribute('disabled');
+                    shippedOrderStatusBtn.removeAttribute('disabled');
+                    fulfilledOrderStatusBtn.removeAttribute('disabled');
                     fulfilledFromDate.removeAttribute('disabled');
+                }
+            }
+        }
+
+        addEventOnOptionItems(unknownLinesItems, unknownLinesBtn, unknownLinesList, unknownLinesText, 'data-unknown-lines')
+        addEventOnOptionItems(incomingOrderStatusItems, incomingOrderStatusBtn, incomingOrderStatusList, incomingOrderStatusText, 'data-incoming-order-status')
+        addEventOnOptionItems(shippedOrderStatusItems, shippedOrderStatusBtn, shippedOrderStatusList, shippedOrderStatusText, 'data-shipped-order-status')
+        addEventOnOptionItems(fulfilledOrderStatusItems, fulfilledOrderStatusBtn, fulfilledOrderStatusList, fulfilledOrderStatusText, 'data-fulfilled-order-status')
+
+        function addEventOnOptionItems(items, button, list, text, attribute) {
+            for (let i = 0; i < items.length; i++) {
+                items[i].onmousedown = () => {
+                    button.setAttribute(attribute, items[i].getAttribute('value'));
+                    button.classList.remove('ce-active');
+                    list.style.display = 'none';
+                    text.innerText = items[i].querySelector('span').innerText.replace(/(\r\n|\n|\r)/gm, "");
                 }
             }
         }

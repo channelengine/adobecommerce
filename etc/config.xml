@@ -3,7 +3,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <carriers>
-            <channelengine_carrier>
+            <channelengine_carrier_channelengine_carrier>
                 <active>0</active>
                 <sallowspecific>0</sallowspecific>
                 <model>ChannelEngine\ChannelEngineIntegration\Model\Carrier</model>
@@ -11,7 +11,7 @@
                 <title>ChannelEngine Shipping</title>
                 <shipping_cost>0</shipping_cost>
                 <specificerrmsg>This shipping method is not available.</specificerrmsg>
-            </channelengine_carrier>
+            </channelengine_carrier_channelengine_carrier>
         </carriers>
         <payment>
             <channelengine_payment>

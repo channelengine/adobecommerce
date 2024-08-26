@@ -48,7 +48,7 @@ class StockMSIDisabledService implements StockServiceInterface
         $stockItem = $this->stockRegistryInterface->getStockItem($product->getId());
         $quantity = $stockItem->getQty();
 
-        if ($quantity) {
+        if ($quantity && $quantity >= 0) {
             return $quantity;
         }
 
