@@ -4,12 +4,12 @@ namespace ChannelEngine\ChannelEngineIntegration\Controller\Adminhtml\Dashboard;
 
 use ChannelEngine\ChannelEngineIntegration\Exceptions\ContextNotSetException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\InitialSync\OrderSync;
-use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\ManualSync\ProductsResyncTask;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\TaskExecution\QueueService;
 use ChannelEngine\ChannelEngineIntegration\Services\BusinessLogic\StateService;
+use ChannelEngine\ChannelEngineIntegration\Tasks\ProductsResyncTask;
 use ChannelEngine\ChannelEngineIntegration\Traits\GetPostParamsTrait;
 use ChannelEngine\ChannelEngineIntegration\Traits\SetsContextTrait;
 use Magento\Backend\App\Action;

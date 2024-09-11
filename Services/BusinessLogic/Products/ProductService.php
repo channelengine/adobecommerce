@@ -116,16 +116,7 @@ class ProductService implements ProductsService
      */
     public function getProducts(array $ids): array
     {
-        $storeId = $this->getStoreService()->getStoreId();
-        $this->storeManager->setCurrentStore($storeId);
-        $this->searchCriteriaBuilder->addFilter('entity_id', $ids, 'in');
-        $criteria = $this->searchCriteriaBuilder->create();
-        if (count($ids) === 1 && array_key_exists(0, $ids)) {
-            $products[] = $this->productRepository->getById($ids[0], false, $storeId);
-        } else {
-            $products = $this->productRepository->getList($criteria)->getItems();
-        }
-
+        $products = $this->getMagentoProducts($ids);
         $ceProducts = [];
 
         /** @var Product $product */
@@ -144,6 +135,21 @@ class ProductService implements ProductsService
         }
 
         return $ceProducts;
+    }
+
+    public function getMagentoProducts($ids): array
+    {
+        $storeId = $this->getStoreService()->getStoreId();
+        $this->storeManager->setCurrentStore($storeId);
+        $this->searchCriteriaBuilder->addFilter('entity_id', $ids, 'in');
+        $criteria = $this->searchCriteriaBuilder->create();
+        if (count($ids) === 1 && array_key_exists(0, $ids)) {
+            $products[] = $this->productRepository->getById($ids[0], false, $storeId);
+        } else {
+            $products = $this->productRepository->getList($criteria)->getItems();
+        }
+
+        return $products;
     }
 
     /**
