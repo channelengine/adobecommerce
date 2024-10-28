@@ -17,6 +17,7 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\Config
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use ChannelEngine\ChannelEngineIntegration\IntegrationCore\Infrastructure\ServiceRegister;
 use ChannelEngine\ChannelEngineIntegration\Model\ChannelEngineOrderFactory;
+use ChannelEngine\ChannelEngineIntegration\Model\ProcessReservationItems;
 use ChannelEngine\ChannelEngineIntegration\Model\ResourceModel\ChannelEngineOrder;
 use Exception;
 use Magento\Catalog\Model\ProductRepository;
@@ -24,6 +25,11 @@ use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Webapi\ServiceInputProcessor;
+use Magento\InventorySales\Model\ReturnProcessor\GetSalesChannelForOrder;
+use Magento\InventorySalesApi\Api\Data\ItemToSellInterfaceFactory;
+use Magento\InventorySalesApi\Api\Data\SalesEventExtensionFactory;
+use Magento\InventorySalesApi\Api\Data\SalesEventInterfaceFactory;
+use Magento\InventorySalesApi\Api\PlaceReservationsForSalesEventInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory as StatusCollectionFactory;
@@ -87,6 +93,30 @@ class OrderService extends OrdersService
      * @var StatusCollectionFactory
      */
     private $statusCollectionFactory;
+    /**
+     * @var SalesEventInterfaceFactory
+     */
+    private $salesEventFactory;
+
+    /**
+     * @var ItemToSellInterfaceFactory
+     */
+    private $itemsToSellFactory;
+
+    /**
+     * @var PlaceReservationsForSalesEventInterface
+     */
+    private $placeReservationsForSalesEvent;
+
+    /**
+     * @var SalesEventExtensionFactory
+     */
+    private $salesEventExtensionFactory;
+
+    /**
+     * @var GetSalesChannelForOrder
+     */
+    private $getSalesChannelForOrder;
 
     /**
      * @param OrderRepositoryInterface $orderRepository
@@ -96,15 +126,25 @@ class OrderService extends OrdersService
      * @param ChannelEngineOrderFactory $orderExtensionFactory
      * @param ChannelEngineOrder $orderExtensionResource
      * @param StatusCollectionFactory $statusCollectionFactory
+     * @param SalesEventInterfaceFactory $salesEventFactory
+     * @param ItemToSellInterfaceFactory $itemsToSellFactory
+     * @param PlaceReservationsForSalesEventInterface $placeReservationsForSalesEvent
+     * @param SalesEventExtensionFactory $salesEventExtensionFactory
+     * @param GetSalesChannelForOrder $getSalesChannelForOrder
      */
     public function __construct(
-        OrderRepositoryInterface   $orderRepository,
-        ServiceInputProcessor      $serviceInputProcessor,
-        ProductRepository          $productRepository,
-        OrdersConfigurationService $orderSettingsService,
-        ChannelEngineOrderFactory  $orderExtensionFactory,
-        ChannelEngineOrder         $orderExtensionResource,
-        StatusCollectionFactory    $statusCollectionFactory
+        OrderRepositoryInterface                $orderRepository,
+        ServiceInputProcessor                   $serviceInputProcessor,
+        ProductRepository                       $productRepository,
+        OrdersConfigurationService              $orderSettingsService,
+        ChannelEngineOrderFactory               $orderExtensionFactory,
+        ChannelEngineOrder                      $orderExtensionResource,
+        StatusCollectionFactory                 $statusCollectionFactory,
+        SalesEventInterfaceFactory              $salesEventFactory,
+        ItemToSellInterfaceFactory              $itemsToSellFactory,
+        PlaceReservationsForSalesEventInterface $placeReservationsForSalesEvent,
+        SalesEventExtensionFactory              $salesEventExtensionFactory,
+        GetSalesChannelForOrder                 $getSalesChannelForOrder
     ) {
         $this->orderRepository = $orderRepository;
         $this->serviceInputProcessor = $serviceInputProcessor;
@@ -113,6 +153,11 @@ class OrderService extends OrdersService
         $this->orderExtensionFactory = $orderExtensionFactory;
         $this->orderExtensionResource = $orderExtensionResource;
         $this->statusCollectionFactory = $statusCollectionFactory;
+        $this->salesEventFactory = $salesEventFactory;
+        $this->itemsToSellFactory = $itemsToSellFactory;
+        $this->placeReservationsForSalesEvent = $placeReservationsForSalesEvent;
+        $this->salesEventExtensionFactory = $salesEventExtensionFactory;
+        $this->getSalesChannelForOrder = $getSalesChannelForOrder;
     }
 
     /**
@@ -141,6 +186,18 @@ class OrderService extends OrdersService
             if (!$existingOrderData) {
                 $this->saveOrderExtensionData($order, $createdOrder);
             }
+
+            if ($this->getOrderSettings() && $this->getOrderSettings()->isCreateReservationsEnabled()) {
+                $processReservationItems = new ProcessReservationItems(
+                    $this->salesEventFactory,
+                    $this->itemsToSellFactory,
+                    $this->placeReservationsForSalesEvent,
+                    $this->salesEventExtensionFactory,
+                    $this->getSalesChannelForOrder
+                );
+                $processReservationItems->execute($createdOrder);
+            }
+
         } catch (Exception $e) {
             return $this->createResponse(false, '', $e->getMessage());
         }
@@ -211,6 +268,8 @@ class OrderService extends OrdersService
      */
     private function map(Order $order, array $ceOrderData): array
     {
+        $addressFormat = $this->getOrderSettings()->getAddressFormat();
+
         $mappedEntity = [
             'entity' => [
                 'customer_email' => $order->getEmail(),
@@ -236,9 +295,12 @@ class OrderService extends OrdersService
                     'region' => $order->getBillingAddress()->getRegion(),
                     'country_id' => $order->getBillingAddress()->getCountryIso(),
                     'street' => [
-                        $order->getBillingAddress()->getStreetName() . ' ' .
-                        $order->getBillingAddress()->getHouseNumber() . ' ' .
-                        $order->getBillingAddress()->getHouseNumberAddition(),
+                        $this->formatAddress(
+                            $order->getBillingAddress()->getStreetName(),
+                            $order->getBillingAddress()->getHouseNumber(),
+                            $order->getBillingAddress()->getHouseNumberAddition(),
+                            $addressFormat
+                        ),
                     ],
                     'postcode' => $order->getBillingAddress()->getZipCode(),
                     'city' => $order->getBillingAddress()->getCity(),
@@ -264,9 +326,12 @@ class OrderService extends OrdersService
                                     'postcode' => $order->getShippingAddress()->getZipCode(),
                                     'region' => $order->getShippingAddress()->getRegion(),
                                     'street' => [
-                                        $order->getShippingAddress()->getStreetName() . ' ' .
-                                        $order->getShippingAddress()->getHouseNumber() . ' ' .
-                                        $order->getShippingAddress()->getHouseNumberAddition(),
+                                        $this->formatAddress(
+                                            $order->getShippingAddress()->getStreetName(),
+                                            $order->getShippingAddress()->getHouseNumber(),
+                                            $order->getShippingAddress()->getHouseNumberAddition(),
+                                            $addressFormat
+                                        ),
                                     ],
                                     'telephone' => $order->getPhone(),
                                 ],
@@ -388,10 +453,10 @@ class OrderService extends OrdersService
     }
 
     /**
-     * @return OrderSyncConfig
+     * @return OrderSyncConfig|null
      * @throws QueryFilterInvalidParamException
      */
-    private function getOrderSettings(): OrderSyncConfig
+    private function getOrderSettings(): ?OrderSyncConfig
     {
         if ($this->orderSettings === null) {
             $this->orderSettings = $this->orderSettingsService->getOrderSyncConfig();
@@ -455,5 +520,40 @@ class OrderService extends OrdersService
     private function getOrderStatusMappingService(): OrderStatusMappingService
     {
         return ServiceRegister::getService(OrderStatusMappingService::class);
+    }
+
+    /**
+     * Formats the address based on the given address format (US or EU).
+     *
+     * This function takes in the street name, house number, and an optional house number addition
+     * (e.g., apartment number or suite) and returns a formatted address string. The formatting
+     * depends on the provided address format.
+     *
+     * - For US format, the house number and its addition are placed before the street name.
+     * - For EU (default) format, the street name comes first, followed by the house number
+     *   and its addition (if any).
+     *
+     * @param string $streetName The name of the street.
+     * @param string|null $houseNumber The house number, can be null.
+     * @param string|null $houseNumberAddition Optional house number addition (e.g., apartment number), can be null.
+     * @param string $addressFormat The address format (either 'us' or 'eu').
+     *
+     * @return string                     Returns the formatted address as a string.
+     */
+    private function formatAddress(
+        string  $streetName,
+        ?string $houseNumber,
+        ?string $houseNumberAddition,
+        string  $addressFormat
+    ): string
+    {
+        $houseNumber = $houseNumber ?? '';
+        $houseNumberAddition = $houseNumberAddition ?? '';
+
+        if ($addressFormat === 'us') {
+            return trim("$houseNumber $houseNumberAddition $streetName");
+        }
+
+        return trim("$streetName $houseNumber $houseNumberAddition");
     }
 }

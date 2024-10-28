@@ -27,7 +27,9 @@ class OrderSyncConfig extends Entity
         'enableReduceStock',
         'unknownLinesHandling',
         'fromDate',
-        'enableReturnsSync'
+        'enableReturnsSync',
+        'createReservationsEnabled',
+        'addressFormat'
     ];
     /**
      * @var string
@@ -73,6 +75,16 @@ class OrderSyncConfig extends Entity
      * @var bool
      */
     protected $enableReturnsSync;
+
+    /**
+     * @var bool
+     */
+    protected $createReservationsEnabled = true;
+
+    /**
+     * @var string
+     */
+    protected $addressFormat = 'default';
 
     /**
      * @return string
@@ -241,5 +253,37 @@ class OrderSyncConfig extends Entity
     public function getConfig()
     {
         return new EntityConfiguration(new IndexMap(), 'OrderSyncConfig');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCreateReservationsEnabled()
+    {
+        return $this->createReservationsEnabled;
+    }
+
+    /**
+     * @param bool $createReservationsEnabled
+     */
+    public function setCreateReservationsEnabled($createReservationsEnabled)
+    {
+        $this->createReservationsEnabled = $createReservationsEnabled;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddressFormat()
+    {
+        return $this->addressFormat;
+    }
+
+    /**
+     * @param string $addressFormat
+     */
+    public function setAddressFormat($addressFormat)
+    {
+        $this->addressFormat = $addressFormat;
     }
 }

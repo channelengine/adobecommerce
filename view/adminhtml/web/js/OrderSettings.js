@@ -33,7 +33,15 @@ document.addEventListener(
             fulfilledOrderStatusBtn = document.getElementById('ce-fulfilled-order-status'),
             fulfilledOrderStatusList = document.getElementById('ce-fulfilled-order-status-list'),
             fulfilledOrderStatusItems = document.getElementsByClassName('ce-fulfilled-order-status-item'),
-            fulfilledOrderStatusText = document.getElementById('ce-fulfilled-order-status-text');
+            fulfilledOrderStatusText = document.getElementById('ce-fulfilled-order-status-text'),
+            createReservationsBtn = document.getElementById('ce-create-reservations'),
+            createReservationsItems = document.getElementsByClassName('ce-create-reservations-item'),
+            createReservationsList = document.getElementById('ce-create-reservations-list'),
+            createReservationsText = document.getElementById('ce-create-reservations-text'),
+            addressFormatButton = document.getElementById('ce-address-format'),
+            addressFormatList = document.getElementById('ce-address-format-list'),
+            addressFormatItems = document.getElementsByClassName('ce-address-format-item'),
+            addressFormatText = document.getElementById('ce-address-format-text');
 
         if (saveBtn) {
             ChannelEngine.loader.hide();
@@ -76,6 +84,8 @@ document.addEventListener(
                         merchantOrderSync: merchantOrderSync,
                         shipmentSync: merchantOrderSync === '1' ? shipmentSyncButton.getAttribute('data-shipments-sync-enabled') : '0',
                         cancellationSync: merchantOrderSync === '1' ? cancellationSyncButton.getAttribute('data-cancellations-sync-enabled') : '0',
+                        createReservationsEnabled: createReservationsBtn.getAttribute('data-create-reservations-enabled'),
+                        addressFormat: addressFormatButton.getAttribute('data-address-format'),
                         fulfilledFromDate: fulfilledFromDate.value,
                         returnsSync: returnsSyncButton ? returnsSyncButton.getAttribute('data-returns-sync-enabled') : '0',
                         orderStatusMappings: {
@@ -103,6 +113,8 @@ document.addEventListener(
         addListenerToDropDownButton(incomingOrderStatusBtn, incomingOrderStatusList);
         addListenerToDropDownButton(shippedOrderStatusBtn, shippedOrderStatusList);
         addListenerToDropDownButton(fulfilledOrderStatusBtn, fulfilledOrderStatusList);
+        addListenerToDropDownButton(createReservationsBtn, createReservationsList);
+        addListenerToDropDownButton(addressFormatButton, addressFormatList);
 
         function addListenerToDropDownButton(button, list) {
             button.onfocusout = () => {
@@ -140,6 +152,8 @@ document.addEventListener(
         addEventOnOptionItems(incomingOrderStatusItems, incomingOrderStatusBtn, incomingOrderStatusList, incomingOrderStatusText, 'data-incoming-order-status')
         addEventOnOptionItems(shippedOrderStatusItems, shippedOrderStatusBtn, shippedOrderStatusList, shippedOrderStatusText, 'data-shipped-order-status')
         addEventOnOptionItems(fulfilledOrderStatusItems, fulfilledOrderStatusBtn, fulfilledOrderStatusList, fulfilledOrderStatusText, 'data-fulfilled-order-status')
+        addEventOnOptionItems(createReservationsItems, createReservationsBtn, createReservationsList, createReservationsText, 'data-create-reservations-enabled');
+        addEventOnOptionItems(addressFormatItems, addressFormatButton, addressFormatList, addressFormatText, 'data-address-format');
 
         function addEventOnOptionItems(items, button, list, text, attribute) {
             for (let i = 0; i < items.length; i++) {

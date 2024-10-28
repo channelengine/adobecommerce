@@ -8,15 +8,15 @@ use ChannelEngine\ChannelEngineIntegration\IntegrationCore\BusinessLogic\Orders\
 
 $orderSettings = $block->getOrderSettings();
 $orderStatusOptions = $block->getOrderStatusOptions();
-$defaultStatusOfIncomingOrders =  [
+$defaultStatusOfIncomingOrders = [
     'value' => 'processing',
     'label' => 'Processing',
 ];
-$defaultStatusOfShippedOrders =  [
+$defaultStatusOfShippedOrders = [
     'value' => 'complete',
     'label' => 'Complete',
 ];
-$defaultStatusOfFulfilledOrders =  [
+$defaultStatusOfFulfilledOrders = [
     'value' => 'complete',
     'label' => 'Complete',
 ];
@@ -41,9 +41,41 @@ if ($orderStatusMappings) {
     }
 }
 ?>
-<script src="<?= $block->escapeHtml($block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/MerchantOrderSettings.js')) ?>"></script>
+<script
+        src="<?= $block->escapeHtml($block->getViewFileUrl('ChannelEngine_ChannelEngineIntegration::js/MerchantOrderSettings.js')) ?>"></script>
 <h1><?= $block->escapeHtml("Order synchronization settings") ?></h1>
 <form class="ce-form" onsubmit="return false">
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span
+                    class="label"><?= $block->escapeHtml('Create reservations for products when orders are synchronized') ?></span>
+            <span class="ce-help">
+        <span class="ce-help-tooltip">
+            <?= $block->escapeHtml('If this field is enabled, the plugin will create reservations for products included in orders that will be synchronized from ChannelEngine.') ?>
+        </span>
+    </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-create-reservations" class="ce-dropdown"
+                    data-create-reservations-enabled="<?= isset($orderSettings) && $orderSettings->isCreateReservationsEnabled() ? 1 : 0; ?>">
+                <span id="ce-create-reservations-text" class="ce-dropdown-text">
+                    <?= isset($orderSettings) && $orderSettings->isCreateReservationsEnabled()
+                        ? $block->escapeHtml('Yes')
+                        : $block->escapeHtml('No') ?>
+                </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-create-reservations-list" class="ce-dropdown-list">
+                    <li class="ce-dropdown-list-item ce-create-reservations-item" value="1">
+                        <span class="ce-dropdown-list-item-text">Yes</span>
+                    </li>
+                    <li class="ce-dropdown-list-item ce-create-reservations-item" value="0">
+                        <span class="ce-dropdown-list-item-text">No</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <h3><?= $block->escapeHtml('Merchant fulfilled orders synchronization') ?></h3>
     <div class="ce-input-group ce-flex">
         <label>
@@ -169,6 +201,36 @@ if ($orderStatusMappings) {
                     </li>
                     <li id="ce-cancellations-sync-item-no" class="ce-dropdown-list-item" value="0">
                         <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('No') ?></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ce-input-group ce-flex">
+        <label>
+            <span class="label"><?= $block->escapeHtml('Address format') ?></span>
+            <span class="ce-help">
+            <span class="ce-help-tooltip">
+                <?= $block->escapeHtml('Choose the format for the shipping and billing address. Addresses in the USA and Canada have the house number before the street, while other (European) addresses have it the other way around.') ?>
+            </span>
+        </span>
+        </label>
+        <div class="ce-dropdown-wrapper">
+            <button id="ce-address-format" class="ce-dropdown"
+                    data-address-format="<?= isset($orderSettings) && $orderSettings->getAddressFormat() ? $block->escapeHtml($orderSettings->getAddressFormat()) : 'default' ?>">
+            <span id="ce-address-format-text" class="ce-dropdown-text">
+                <?= isset($orderSettings) && $orderSettings->getAddressFormat() === 'us'
+                    ? $block->escapeHtml('North America')
+                    : $block->escapeHtml('Default (Europe)') ?>
+            </span>
+            </button>
+            <div class="ce-dropdown-menu">
+                <ul id="ce-address-format-list" class="ce-dropdown-list">
+                    <li class="ce-dropdown-list-item ce-address-format-item" value="default">
+                        <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('Default (Europe)') ?></span>
+                    </li>
+                    <li class="ce-dropdown-list-item ce-address-format-item" value="us">
+                        <span class="ce-dropdown-list-item-text"><?= $block->escapeHtml('North America') ?></span>
                     </li>
                 </ul>
             </div>
@@ -356,7 +418,7 @@ if ($orderStatusMappings) {
         </div>
     </div>
     <div id="ce-modal-order-sync" class="ce-hidden">
-        <?=  $block->getLayout()->createBlock(Dashboard::class)
+        <?= $block->getLayout()->createBlock(Dashboard::class)
             ->setTemplate("ChannelEngine_ChannelEngineIntegration::partials/modal.phtml")->toHtml();
         ?>
     </div>

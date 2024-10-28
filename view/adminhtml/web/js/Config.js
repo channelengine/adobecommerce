@@ -80,7 +80,9 @@ document.addEventListener(
             msiText = document.getElementById('ce-msi-text'),
             incomingOrderStatusBtn = document.getElementById('ce-incoming-order-status'),
             shippedOrderStatusBtn = document.getElementById('ce-shipped-order-status'),
-            fulfilledOrderStatusBtn = document.getElementById('ce-fulfilled-order-status');
+            fulfilledOrderStatusBtn = document.getElementById('ce-fulfilled-order-status'),
+            createReservationsBtn = document.getElementById('ce-create-reservations'),
+            addressFormatButton = document.getElementById('ce-address-format');
 
         let originalThreeLevelSyncEnabledValue = false;
         let originalThreeLevelSyncAttributeValue = false;
@@ -536,10 +538,12 @@ document.addEventListener(
                         eanType: eanBtn.getAttribute('data-ean-type')
                     },
                     unknownLinesHandling: unknownOrderLinesBtn.getAttribute('data-unknown-lines'),
+                    createReservationsEnabled: createReservationsBtn.getAttribute('data-create-reservations-enabled'),
                     importFulfilledOrders: fulfilledByMarketplaceBtn.getAttribute('data-fulfilled-orders'),
                     merchantOrderSync: merchantOrderSync,
                     shipmentSync: merchantOrderSync === '1' ? shipmentSyncButton.getAttribute('data-shipments-sync-enabled') : '0',
                     cancellationSync: merchantOrderSync === '1' ? cancellationSyncButton.getAttribute('data-cancellations-sync-enabled') : '0',
+                    addressFormat: addressFormatButton.getAttribute('data-address-format'),
                     returnsEnabled: returnsButton ? returnsButton.getAttribute('returns-enabled') : '',
                     defaultCondition: returnsButton && returnsButton.getAttribute('returns-enabled') === '1' ? conditionBtn.getAttribute('data-default-condition').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, '') : '',
                     defaultResolution: returnsButton && returnsButton.getAttribute('returns-enabled') === '1' ? resolutionBtn.getAttribute('data-default-resolution').replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, '') : '',

@@ -2,7 +2,7 @@
   "name": "channelengine/channelengine",
   "description": "ChannelEngine integration.",
   "type": "magento2-module",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "license": [
     "OSL-3.0",
     "AFL-3.0"

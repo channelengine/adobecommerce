@@ -54,10 +54,11 @@ class OrderSettings extends Action
      * @param ProductMetadataInterface $productMetadata
      */
     public function __construct(
-        Context $context,
-        JsonFactory $resultJsonFactory,
+        Context                  $context,
+        JsonFactory              $resultJsonFactory,
         ProductMetadataInterface $productMetadata
-    ) {
+    )
+    {
         parent::__construct($context);
         $this->resultJsonFactory = $resultJsonFactory;
         $this->productMetadata = $productMetadata;
@@ -77,6 +78,7 @@ class OrderSettings extends Action
 
         $postParams = $this->getPostParams();
         $unknownLinesHandling = $postParams['unknownLinesHandling'] ?? '';
+        $createReservationsEnabled = $postParams['createReservationsEnabled'] === '1';
         $importFulfilledOrders = $postParams['importFulfilledOrders'] === '1';
         $fulfilledFromDate = $postParams['fulfilledFromDate'] ?? '';
         $defaultCondition = $postParams['defaultCondition'] ?? '';
@@ -84,6 +86,7 @@ class OrderSettings extends Action
         $merchantFulfilledOrdersSync = $postParams['merchantOrderSync'] === '1';
         $shipmentSync = $postParams['shipmentSync'] === '1';
         $cancellationsSync = $postParams['cancellationSync'] === '1';
+        $addressFormat = $postParams['addressFormat'] ?? 'default';
         $returnsImport = $postParams['returnsEnabled'] === '1';
         $returnsSync = $postParams['returnsSync'] === '1';
         $orderStatusMappings = $postParams['orderStatusMappings'] ?? [];
@@ -112,6 +115,8 @@ class OrderSettings extends Action
         $orderSettings->setEnableOrderCancellationSync($cancellationsSync);
         $orderSettings->setFromDate($fulfilledFromDate);
         $orderSettings->setEnableReturnsSync($returnsSync);
+        $orderSettings->setCreateReservationsEnabled($createReservationsEnabled);
+        $orderSettings->setAddressFormat($addressFormat);
 
         $this->getOrderSettingsService()->saveOrderSyncConfig($orderSettings);
         $this->getStateService()->setOrderConfigured(true);
@@ -135,7 +140,13 @@ class OrderSettings extends Action
      *
      * @return bool
      */
-    private function validateRequest($unknownLinesHandling, $importFulfilledOrders, $defaultCondition, $defaultResolution, $returnsImport): bool
+    private function validateRequest(
+        $unknownLinesHandling,
+        $importFulfilledOrders,
+        $defaultCondition,
+        $defaultResolution,
+        $returnsImport
+    ): bool
     {
         $returnsValid = true;
 

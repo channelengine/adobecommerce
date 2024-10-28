@@ -85,9 +85,9 @@ class Save extends Action
      * @param ProductMetadataInterface $productMetadata
      */
     public function __construct(
-        Context               $context,
-        JsonFactory           $resultJsonFactory,
-        StoreManagerInterface $storeManager,
+        Context                  $context,
+        JsonFactory              $resultJsonFactory,
+        StoreManagerInterface    $storeManager,
         ProductMetadataInterface $productMetadata
     ) {
         parent::__construct($context);
@@ -146,8 +146,10 @@ class Save extends Action
                 $params['merchantOrderSync'] === '1',
                 $params['shipmentSync'] === '1',
                 $params['cancellationSync'] === '1',
+                $params['addressFormat'] ?? 'default',
                 $params['fulfilledFromDate'] ?? '',
-                isset($params['returnsSync']) && $params['returnsSync'] === '1'
+                isset($params['returnsSync']) && $params['returnsSync'] === '1',
+                $params['createReservationsEnabled'] === '1'
             );
 
             $this->saveOrderStatusMapping($params['orderStatusMappings'] ?? []);
@@ -213,12 +215,13 @@ class Save extends Action
      * @throws QueryFilterInvalidParamException
      */
     private function savePriceSettings(
-        bool $exportProducts,
+        bool   $exportProducts,
         int    $groupPricing,
         string $priceAttribute,
         string $customerGroup = '',
         int    $quantity = 0
-    ): void {
+    ): void
+    {
         if (!$exportProducts) {
             return;
         }
@@ -254,11 +257,11 @@ class Save extends Action
      * @throws QueryFilterInvalidParamException
      */
     private function saveStockSettings(
-        bool $exportProducts,
-        bool $enableStockSync,
+        bool  $exportProducts,
+        bool  $enableStockSync,
         array $inventories,
-        int $quantity,
-        bool $enableMSI
+        int   $quantity,
+        bool  $enableMSI
     ): void
     {
         if (!$exportProducts) {
@@ -402,13 +405,16 @@ class Save extends Action
      */
     private function saveOrderSyncSettings(
         string $unknownLinesHandling,
-        bool $importFulfilledOrders,
-        bool $merchantFulfilledOrdersSync,
-        bool $shipmentSync,
-        bool $cancellationsSync,
+        bool   $importFulfilledOrders,
+        bool   $merchantFulfilledOrdersSync,
+        bool   $shipmentSync,
+        bool   $cancellationsSync,
+        string $addressFormat,
         string $fulfilledFromDate,
-        bool $returnsSync
-    ): void {
+        bool  $returnsSync,
+        bool  $createReservationsEnabled
+    ): void
+    {
         if (!$this->validateOrderSyncSettings(
             $unknownLinesHandling,
             $importFulfilledOrders,
@@ -428,6 +434,8 @@ class Save extends Action
             $orderSettings->setEnableOrderCancellationSync($cancellationsSync);
             $orderSettings->setFromDate($fulfilledFromDate);
             $orderSettings->setEnableReturnsSync($returnsSync);
+            $orderSettings->setCreateReservationsEnabled($createReservationsEnabled);
+            $orderSettings->setAddressFormat($addressFormat);
 
             $this->getOrderSettingsService()->saveOrderSyncConfig($orderSettings);
             $this->getStateService()->setOrderConfigured(true);
